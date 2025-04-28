@@ -68,46 +68,46 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     Forbidden:
       description: Недостаточно прав для выполнения операции.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     NotFound:
       description: Ресурс не найден.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     ValidationError:
       description: Ошибка валидации входных данных.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     Conflict:
       description: Логический конфликт — действие невозможно в текущем состоянии.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     ServerError:
       description: Внутренняя ошибка сервера.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
     ServiceUnavailable:
       description: Сервис временно недоступен.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiErrorResponse'
 
   schemas:
-    Error:
+    ApiErrorResponse:
       type: object
       description: Стандартное тело ответа об ошибке.
       properties:
