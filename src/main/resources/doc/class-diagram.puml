@@ -1,0 +1,232 @@
+@startuml UltimatumGameBackend
+
+'----------------------------------------
+'  General style
+'----------------------------------------
+skinparam class {
+    BackgroundColor Snow
+    BorderColor Black
+    ArrowColor Black
+}
+
+title Ultimatum Game – Backend (Class Diagram)
+
+'========================================
+'  Domain layer
+'========================================
+package "domain.model" {
+
+  enum Role {
+    ADMIN
+    PLAYER
+    OBSERVER
+    NPC
+  }
+
+  enum SessionState {
+    CREATED
+    RUNNING
+    FINISHED
+    ABORTED
+  }
+
+  enum RoundPhase {
+    WAITING_FOR_OFFERS
+    WAITING_FOR_DECISIONS
+    FINISHED
+  }
+
+  class SessionConfig <<ValueObject>> {
+    +numRounds : Int
+    +numTeams : Int
+    +numPlayer : Int
+    +roundSum : Int
+    +resourcePerRound : Int
+    +timeoutMoveSec : Int
+    +timeoutRoundSec : Int
+  }
+
+  class Session <<Entity>> {
+    +id : UUID
+    +state : SessionState
+    +createdAt : Instant
+    +adminId : UUID
+    +teams : List<Team>
+    +NPCs : List<NPCStrategy>
+    +config : SessionConfig
+  }
+
+  class Team <<Entity>> {
+    +id : UUID
+    +name : String
+    +score : Int
+  }
+
+  class Player <<Entity>> {
+    +id : UUID
+    +nickname : String
+    +role : Role
+    +teamId : UUID
+    +totalGain : Int
+  }
+
+  class Offer <<Entity>> {
+    +id : UUID
+    +roundId : UUID
+    +proposerId : UUID
+    +responderId : UUID
+    +amount : Int
+    +createdAt : Instant
+  }
+
+  class Decision <<Entity>> {
+    +id : UUID
+    +offerId : UUID
+    +accepted : Boolean
+    +decidedAt : Instant
+  }
+
+  class Event <<Entity>> {
+    +id : Long
+    +sessionId : UUID
+    +happenedAt : Instant
+    +type : String
+    +payload : JsonNode
+  }
+
+  class NPCStrategy <<Entity>> {
+    +id : UUID
+    +name : String
+    +description : String
+    +ranges : List<RangeRule>
+    +offerAmount : Int
+  }
+
+  class RangeRule <<ValueObject>> {
+    +from : Int
+    +to : Int
+    +prob : Double
+  }
+
+  class RoundStatus <<DTO>> {
+    +roundNumber : Int
+    +phase : RoundPhase
+    +proposerId : UUID
+    +responderId : UUID
+    +deadline : Instant
+    +pendingDecisionIds : List<UUID>
+  }
+
+  ' Relationships inside domain
+  SessionConfig -- Session
+  Session "1" *-- "*" Team : teams
+  Session "1" *-- "*" NPCStrategy : NPCs
+  Team "1" *-- "*" Player : players
+  Session "1" o-- "*" Offer
+  Offer "1" *-- "1" Decision
+  Session "1" *-- "*" Event
+  NPCStrategy "1" *-- "*" RangeRule : ranges
+}
+
+'========================================
+'  Persistence layer
+'========================================
+package persistence {
+
+  interface SessionRepository <<Repository>>
+  interface PlayerRepository <<Repository>>
+  interface TeamRepository <<Repository>>
+  interface OfferRepository <<Repository>>
+  interface DecisionRepository <<Repository>>
+  interface EventRepository <<Repository>>
+  interface NPCStrategyRepository <<Repository>>
+}
+
+'========================================
+'  Service layer
+'========================================
+package service {
+
+  class AuthService
+  class SessionService
+  class GameplayService
+  class EventService
+  class StatisticsService
+  class NPCStrategyService
+  class JwtTokenProvider
+}
+
+' Service → Repository dependencies
+service.AuthService ..> persistence.PlayerRepository
+service.AuthService ..> service.JwtTokenProvider
+service.SessionService ..> persistence.SessionRepository
+service.SessionService ..> persistence.TeamRepository
+service.GameplayService ..> persistence.OfferRepository
+service.GameplayService ..> persistence.DecisionRepository
+service.EventService ..> persistence.EventRepository
+service.StatisticsService ..> persistence.EventRepository
+service.NPCStrategyService ..> persistence.NPCStrategyRepository
+service.NPCStrategyService ..> persistence.SessionRepository
+
+'========================================
+'  REST API layer
+'========================================
+package "api.rest" {
+
+  class AuthController <<Controller>>
+  class SessionController <<Controller>>
+  class OfferController <<Controller>>
+  class EventController <<Controller>>
+  class StatisticsController <<Controller>>
+  class NPCStrategyController <<Controller>>
+}
+
+' REST controllers → services
+api.rest.AuthController ..> service.AuthService
+api.rest.SessionController ..> service.SessionService
+api.rest.OfferController ..> service.GameplayService
+api.rest.EventController ..> service.EventService
+api.rest.StatisticsController ..> service.StatisticsService
+api.rest.NPCStrategyController ..> service.NPCStrategyService
+
+'========================================
+'  WebSocket /STOMP layer (AsyncAPI)
+'========================================
+package "api.ws" {
+
+  class OfferMessageController <<MessageController>>
+  class RoundMessageController <<MessageController>>
+}
+
+api.ws.OfferMessageController ..> service.GameplayService
+api.ws.RoundMessageController ..> service.SessionService
+
+'----------------------------------------
+'  STOMP messages & commands
+'----------------------------------------
+package "ws.messages" {
+
+  class OfferCreatedMsg <<Message>>
+  class DecisionMadeMsg <<Message>>
+  class RoundStatusMsg <<Message>>
+
+  class CreateOfferCmd <<Command>>
+  class DecideOfferCmd <<Command>>
+  class FinishRoundCmd <<Command>>
+}
+
+' Message ↔︎ Domain payload bindings
+ws.messages.OfferCreatedMsg --> domain.model.Offer
+ws.messages.DecisionMadeMsg --> domain.model.Decision
+ws.messages.RoundStatusMsg --> domain.model.RoundStatus
+ws.messages.CreateOfferCmd ..> domain.model.Offer
+ws.messages.DecideOfferCmd ..> domain.model.Decision
+ws.messages.FinishRoundCmd ..> domain.model.RoundStatus
+
+api.ws.OfferMessageController ..> ws.messages.CreateOfferCmd
+api.ws.OfferMessageController ..> ws.messages.OfferCreatedMsg
+api.ws.OfferMessageController ..> ws.messages.DecisionMadeMsg
+api.ws.RoundMessageController ..> ws.messages.RoundStatusMsg
+api.ws.RoundMessageController ..> ws.messages.FinishRoundCmd
+
+@enduml

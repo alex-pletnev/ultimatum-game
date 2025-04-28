@@ -1,0 +1,96 @@
+@startuml UltimatumGameUseCases
+' ==========================================
+' Use-Case Diagram – Ultimatum Game backend
+' ==========================================
+
+left to right direction
+' ----------------------------------------
+'  Color scheme for actors’ actions
+' ----------------------------------------
+skinparam actor {
+  BackgroundColor #F5F5F5
+  BorderColor Black
+  FontStyle Bold
+}
+skinparam usecase {
+  BorderColor Black
+}
+
+
+'-------------------------------------------
+' Actors
+'-------------------------------------------
+actor Admin    as A
+actor Player   as P
+actor Observer as O
+actor NPC      as N
+
+'-------------------------------------------
+' System boundary
+'-------------------------------------------
+rectangle "Система «Ultimatum Game»" {
+
+  ' ---------- Аутентификация ----------
+  usecase UC_Login         as "(Быстрый вход / авторизация)"
+
+  ' ---------- Управление сессиями ----------
+  package "Управление сессиями" {
+    usecase UC_ListSessions   as "(Просмотреть список сессий)"
+    usecase UC_CreateSession  as "(Создать игровую сессию)"
+    usecase UC_ControlSession as "(Управлять сессией\nSTART / FINISH / ABORT)"
+    usecase UC_JoinSession    as "(Присоединиться к сессии)"
+  }
+
+  ' ---------- Геймплей ----------
+  package "Геймплей" {
+    usecase UC_CreateOffer    as "(Сделать предложение)"
+    usecase UC_DecideOffer    as "(Ответить на предложение)"
+    usecase UC_ReceiveRealtime as "(Получать события\nв реальном времени)"
+  }
+
+  ' ---------- Аналитика / NPC ----------
+  package "Аналитика и NPC" {
+    usecase UC_ExportStats as "(Экспорт статистики CSV)"
+    usecase UC_ManageNPC   as "(Управлять стратегиями NPC)"
+    usecase UC_NPCDecision as "(Автоматически принять\nрешение по стратегии)"
+  }
+}
+
+'-------------------------------------------
+' Relationships
+'-------------------------------------------
+
+' Аутентификация
+A --> UC_Login #FF9999
+P --> UC_Login #99FF99
+O --> UC_Login #786B00
+
+' Просмотр и выбор сессии
+A --> UC_ListSessions #FF9999
+P --> UC_ListSessions #99FF99
+O --> UC_ListSessions #786B00
+
+' Админские операции
+A --> UC_CreateSession #FF9999
+A --> UC_ControlSession #FF9999
+A --> UC_ExportStats #FF9999
+A --> UC_ManageNPC #FF9999
+
+' Участие игрока
+P --> UC_JoinSession #99FF99
+P --> UC_CreateOffer #99FF99
+P --> UC_DecideOffer #99FF99
+P --> UC_ReceiveRealtime #99FF99
+
+' Наблюдатель
+O --> UC_JoinSession #786B00
+O --> UC_ReceiveRealtime #786B00
+
+' Админ тоже может подписаться на WS-события при мониторинге
+A --> UC_ReceiveRealtime #FF9999
+
+' NPC-активность
+N --> UC_NPCDecision #000000
+UC_NPCDecision .down.> UC_DecideOffer : <<include>>
+
+@enduml

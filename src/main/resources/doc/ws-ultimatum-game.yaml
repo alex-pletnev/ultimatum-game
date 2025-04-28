@@ -1,0 +1,212 @@
+asyncapi: '2.6.0'
+
+info:
+  title: Ultimatum Game Realtime API
+  version: "1.0.0"
+  description: |
+    WebSocket-шлюз (STOMP) для обмена игровыми событиями.
+    * Префикс **/topic** — broadcast (server → clients).
+    * Префикс **/app** — client → server команды (маршрутизируются Spring STOMP Controller'ами).
+
+servers:
+  production:
+    url: wss://game.example.com
+    protocol: stomp
+    description: Production WebSocket endpoint
+    security:
+      - bearerAuth: []
+    bindings:
+      stomp:
+        version: '1.2'
+        commands: [ CONNECT, SEND, SUBSCRIBE, MESSAGE, DISCONNECT ]
+
+defaultContentType: application/json
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  messages:
+    OfferCreatedMsg:
+      name: OfferCreated
+      title: Offer created event
+      summary: Событие, когда пропонент отправил предложение
+      payload:
+        $ref: '#/components/schemas/Offer'
+
+    DecisionMadeMsg:
+      name: DecisionMade
+      title: Decision made event
+      summary: Событие, когда респондент принял / отклонил предложение
+      payload:
+        $ref: '#/components/schemas/Decision'
+
+    RoundStatusMsg:
+      name: RoundStatus
+      title: Round status update
+      summary: Периодические / мгновенные апдейты состояния раунда
+      payload:
+        $ref: '#/components/schemas/RoundStatus'
+
+    CreateOfferCmd:
+      name: CreateOffer
+      title: Make offer command
+      payload:
+        type: object
+        properties:
+          amount:
+            type: integer
+            minimum: 0
+        required: [ amount ]
+
+    DecideCmd:
+      name: DecideOffer
+      title: Respond to offer command
+      payload:
+        type: object
+        properties:
+          accepted:
+            type: boolean
+        required: [ accepted ]
+
+    FinishRoundCmd:
+      name: FinishRound
+      title: Finish round command
+      payload:
+        type: object
+        properties:
+          force:
+            type: boolean
+            description: true — немедленно финализировать, даже если не все ответили
+
+  schemas:
+    Offer:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        roundId: { type: string, format: uuid }
+        proposerId: { type: string, format: uuid }
+        responderId: { type: string, format: uuid }
+        amount: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [ id, roundId, proposerId, responderId, amount ]
+
+    Decision:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        offerId: { type: string, format: uuid }
+        accepted: { type: boolean }
+        decidedAt: { type: string, format: date-time }
+      required: [ id, offerId, accepted ]
+
+    RoundStatus:
+      type: object
+      properties:
+        roundNumber: { type: integer }
+        phase:
+          type: string
+          enum: [ WAITING_FOR_OFFERS, WAITING_FOR_DECISIONS, FINISHED ]
+        proposerId: { type: string, format: uuid, nullable: true }
+        responderId: { type: string, format: uuid, nullable: true }
+        deadline: { type: string, format: date-time, nullable: true }
+        pendingDecisionIds:
+          type: array
+          items: { type: string, format: uuid }
+          description: Список участников, ещё не принявших решение
+
+channels:
+
+  /topic/session.{sessionId}.offerCreated:
+    parameters:
+      sessionId:
+        description: UUID сессии
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      operationId: onOfferCreated
+      summary: Новое предложение
+      message:
+        $ref: '#/components/messages/OfferCreatedMsg'
+    bindings:
+      stomp:
+        destination: /topic/session.{sessionId}.offerCreated
+
+  /topic/session.{sessionId}.decisionMade:
+    parameters:
+      sessionId:
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      operationId: onDecisionMade
+      summary: Решение по предложению
+      message:
+        $ref: '#/components/messages/DecisionMadeMsg'
+    bindings:
+      stomp:
+        destination: /topic/session.{sessionId}.decisionMade
+
+  /topic/session.{sessionId}.roundStatus:
+    parameters:
+      sessionId:
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      operationId: onRoundStatus
+      summary: Текущее состояние раунда
+      message:
+        $ref: '#/components/messages/RoundStatusMsg'
+    bindings:
+      stomp:
+        destination: /topic/session.{sessionId}.roundStatus
+
+  /app/session.{sessionId}.offer.create:
+    parameters:
+      sessionId:
+        schema:
+          type: string
+          format: uuid
+    publish:
+      operationId: createOfferCmd
+      summary: Команда «сделать предложение»
+      message:
+        $ref: '#/components/messages/CreateOfferCmd'
+    bindings:
+      stomp:
+        destination: /app/session.{sessionId}.offer.create
+
+  /app/offer.{offerId}.decision:
+    parameters:
+      offerId:
+        schema:
+          type: string
+          format: uuid
+    publish:
+      operationId: decideOfferCmd
+      summary: Команда «принять / отклонить предложение»
+      message:
+        $ref: '#/components/messages/DecideCmd'
+    bindings:
+      stomp:
+        destination: /app/offer.{offerId}.decision
+
+  /app/session.{sessionId}.round.finish:
+    parameters:
+      sessionId:
+        schema:
+          type: string
+          format: uuid
+    publish:
+      operationId: finishRoundCmd
+      summary: Досрочно завершить текущий раунд (ADMIN)
+      message:
+        $ref: '#/components/messages/FinishRoundCmd'
+    bindings:
+      stomp:
+        destination: /app/session.{sessionId}.round.finish

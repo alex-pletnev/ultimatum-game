@@ -1,0 +1,776 @@
+openapi: 3.1.0
+info:
+  title: Ultimatum Game API
+  version: "1.2.0"
+  description: |
+    Полноценное REST‑API для проведения многопользовательских
+    онлайн‑экспериментов «Ultimatum Game».
+    Передача игровых событий реализована **WebSocket (STOMP)**  
+    и подробно описана в отдельном файле **AsyncAPI**.
+    ### Основные роли
+    * **ADMIN** – создаёт и управляет сессиями, экспортирует статистику, настраивает NPC‑стратегии.
+    * **PLAYER** – участвует в игре, делает предложения и принимает решения.
+    * **OBSERVER** – подключается к сессии только для просмотра событий/результатов.
+    * **NPC** – неигровой агент, управляется сервером согласно стратегии.
+  contact:
+    name: Alex Pletnev
+    email: pletnev.sasa@gmail.com
+
+servers:
+  - url: https://game.example.com/api/v1
+    description: Production
+
+tags:
+  - name: Auth
+    description: Авторизация и управление сессией пользователя
+  - name: Session
+    description: Создание и управление игровыми сессиями
+  - name: Gameplay
+    description: Ходы игроков (предложения / решения)
+  - name: Events
+    description: Все события сессии
+  - name: Statistics
+    description: Экспорт статистических данных
+  - name: NPC
+    description: Стратегии неигровых персонажей (NPC)
+
+security:
+  - bearerAuth: [ ]
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Уникальный идентификатор игровой сессии.
+    OfferId:
+      name: offerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Уникальный идентификатор предложения.
+
+  responses:
+    Unauthorized:
+      description: Требуется действительный JWT‑токен.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Недостаточно прав для выполнения операции.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Ресурс не найден.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Ошибка валидации входных данных.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Логический конфликт — действие невозможно в текущем состоянии.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Внутренняя ошибка сервера.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: Сервис временно недоступен.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      description: Стандартное тело ответа об ошибке.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки.
+        status:
+          type: integer
+          description: HTTP‑статус
+        error:
+          type: string
+          description: Короткое название ошибки
+        message:
+          type: string
+          description: Подробное сообщение
+        path:
+          type: string
+          description: URL запроса
+      required: [ timestamp, status, error, message, path ]
+
+    Role:
+      type: string
+      description: Роль пользователя в системе.
+      enum: [ ADMIN, PLAYER, OBSERVER, NPC ]
+
+    SessionState:
+      type: string
+      description: Текущее состояние игровой сессии.
+      enum: [ CREATED, RUNNING, FINISHED, ABORTED ]
+
+    Player:
+      type: object
+      description: Информация об игроке (любой роли).
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор игрока
+        nickname:
+          type: string
+          description: Анонимный ник
+        role:
+          $ref: '#/components/schemas/Role'
+        teamId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Команда игрока (если применимо)
+        totalGain:
+          type: integer
+          description: Накопленный счёт игрока
+      required: [ id, nickname, role ]
+
+    Team:
+      type: object
+      description: Команда в рамках сессии.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор команды
+        name:
+          type: string
+          description: Название
+        score:
+          type: integer
+          description: Совокупный счёт команды
+      required: [ id, name ]
+
+    SessionConfig:
+      type: object
+      description: Параметры новой игровой сессии.
+      properties:
+        numRounds:
+          type: integer
+          minimum: 1
+          description: Количество раундов
+        numTeams:
+          type: integer
+          minimum: 0
+          description: Количество команд (0 — без команд)
+        resourcePerRound:
+          type: integer
+          minimum: 1
+          description: Сумма (ресурс) в каждом раунде
+        timeoutMoveSec:
+          type: integer
+          minimum: 1
+          description: Таймаут на ход игрока (сек.)
+        timeoutRoundSec:
+          type: integer
+          minimum: 1
+          description: Таймаут всего раунда (сек.)
+      required: [ numRounds, resourcePerRound ]
+
+    Session:
+      description: Игровая сессия с текущим состоянием.
+      allOf:
+        - $ref: '#/components/schemas/SessionConfig'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Идентификатор сессии
+            state:
+              $ref: '#/components/schemas/SessionState'
+            createdAt:
+              type: string
+              format: date-time
+              description: Дата создания
+            adminId:
+              type: string
+              format: uuid
+              description: Администратор‑создатель
+            teams:
+              type: array
+              items:
+                $ref: '#/components/schemas/Team'
+              description: Сформированные команды (если применимо)
+          required: [ id, state, createdAt ]
+
+    Offer:
+      type: object
+      description: Предложение пропонента.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор предложения
+        roundId:
+          type: string
+          format: uuid
+          description: Раунд, к которому относится предложение
+        proposerId:
+          type: string
+          format: uuid
+          description: Пропонент
+        responderId:
+          type: string
+          format: uuid
+          description: Респондент
+        amount:
+          type: integer
+          description: Предлагаемая сумма
+        createdAt:
+          type: string
+          format: date-time
+          description: Время создания
+      required: [ id, roundId, proposerId, responderId, amount ]
+
+    Decision:
+      type: object
+      description: Решение респондента.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор
+        offerId:
+          type: string
+          format: uuid
+          description: Ссылка на предложение
+        accepted:
+          type: boolean
+          description: true — принято, false — отклонено
+        decidedAt:
+          type: string
+          format: date-time
+          description: Время решения
+      required: [ id, offerId, accepted ]
+
+    Event:
+      type: object
+      description: Событие для для экспорта CSV и AsyncAPI
+      properties:
+        id:
+          type: integer
+          description: Порядковый номер события
+        sessionId:
+          type: string
+          format: uuid
+          description: Идентификатор сессии
+        happenedAt:
+          type: string
+          format: date-time
+          description: Время события
+        type:
+          type: string
+          description: Тип события (например 'OFFER_CREATED')
+        payload:
+          type: object
+          description: Произвольное содержимое события
+
+    NPCStrategy:
+      type: object
+      description: Параметры стратегии NPC.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор стратегии
+        name:
+          type: string
+          description: Название
+        description:
+          type: string
+          description: Описание логики
+        ranges:
+          type: array
+          description: >
+            Массив правил принятия решения. Каждый объект описывает
+            диапазон [from; to) и вероятность prob. Диапазоны должны быть
+            непересекающимися.
+          items:
+            type: object
+            properties:
+              from:
+                type: integer
+                description: Начало отрезка (включительно), должно быть >0 и < to
+                minimum: 1
+              to:
+                type: integer
+                description: Конец отрезка (не включительно), должно быть > from и <100
+                maximum: 100
+              prob:
+                type: number
+                description: Вероятность принятия решения при значении в этом интервале (0 ≤ prob ≤ 1)
+                minimum: 0
+                maximum: 1
+            required:
+              - from
+              - to
+              - prob
+        required:
+          - name
+          - ranges
+
+paths:
+  /auth/quick-login:
+    post:
+      tags: [ Auth ]
+      summary: Быстрая авторизация по нику
+      description: |
+        Обеспечивает вход без пароля. Клиент отправляет желаемый 'nickname', получает
+        JWT‑токен для последующих запросов. Роль по умолчанию – **PLAYER**,
+        но можно запросить **OBSERVER** или **ADMIN**. Попытка создать **NPC** таким запросом вернет 403.
+      operationId: quickLogin
+      x-allowed-roles: [ PLAYER, OBSERVER ]
+      requestBody:
+        description: Ник пользователя и (опционально) роль.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                  description: Анонимный ник
+                role:
+                  $ref: '#/components/schemas/Role'
+              required: [ nickname ]
+              example: { nickname: Alice42, role: PLAYER }
+      responses:
+        "200":
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT‑токен
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /sessions:
+    post:
+      tags: [ Session ]
+      summary: Создать новую игровую сессию
+      description: |
+        Доступно только **ADMIN**. На вход передаётся конфигурация сессии.
+        Возвращает объект сессии в статусе **CREATED**. После создания
+        администратор должен вызвать 'POST /sessions/{id}' с action=START.
+      operationId: createSession
+      x-allowed-roles: [ ADMIN ]
+      security: [ { bearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionConfig'
+      responses:
+        "201":
+          description: Сессия создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+    get:
+      tags: [ Session ]
+      summary: Список доступных сессий
+      description: |
+        Доступно всем авторизованным ролям. Отдаёт сессии в состояниях
+        **CREATED**, **RUNNING** или **FINISHED**.
+      operationId: listSessions
+      x-allowed-roles: [ ADMIN, PLAYER, OBSERVER ]
+      security: [ { bearerAuth: [ ] } ]
+      responses:
+        "200":
+          description: Список сессий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /sessions/{sessionId}:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+    get:
+      tags: [ Session ]
+      summary: Получить данные сессии
+      description: |
+        Отдаёт полную информацию о сессии, включая команды и текущий статус.
+        Роли: **ADMIN** – видит всё, **PLAYER/OBSERVER** – видят только общие поля.
+      operationId: getSession
+      x-allowed-roles: [ ADMIN, PLAYER, OBSERVER ]
+      security: [ { bearerAuth: [ ] } ]
+      responses:
+        "200":
+          description: Детальная информация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [ Session ]
+      summary: Старт / остановка / завершение сессии
+      description: |
+        **ADMIN** может перевести сессию в RUNNING (START), ABORTED (ABORT)
+        либо FINISHED (FINISH). Нельзя стартовать уже запущенную сессию и
+        нельзя финишировать не‑запущенную. В таких случаях вернётся 409.
+      operationId: controlSession
+      x-allowed-roles: [ ADMIN ]
+      security: [ { bearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [ START, ABORT, FINISH ]
+                  description: Действие над сессией
+              required: [ action ]
+      responses:
+        "204":
+          description: Операция успешна, тело пустое
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /sessions/{sessionId}/join:
+    post:
+      tags: [ Session ]
+      summary: Присоединиться к сессии
+      description: |
+        **PLAYER** или **OBSERVER** подключается к сессии в статусе RUNNING/CREATED.
+        Если передан 'teamId', сервер пытается добавить игрока в указанную команду.
+        Возврат 409, если сессия уже завершена или команда переполнена.
+      operationId: joinSession
+      x-allowed-roles: [ PLAYER, OBSERVER ]
+      security: [ { bearerAuth: [ ] } ]
+      requestBody:
+        description: Выбор команды (опционально)
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teamId:
+                  type: string
+                  format: uuid
+                  description: Идентификатор команды
+      responses:
+        "204":
+          description: Успешно присоединились
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /sessions/{sessionId}/offers:
+    post:
+      tags: [ Gameplay ]
+      summary: Создать предложение
+      description: |
+        Доступно **PLAYER**‑пропоненту в текущем раунде. Сумма должна быть
+        неотрицательной и ≤ ресурс раунда. После создания сервер разошлёт
+        событие 'OFFER_CREATED' всем подписчикам.
+      operationId: createOffer
+      x-allowed-roles: [ PLAYER ]
+      security: [ { bearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  minimum: 0
+                  description: Предлагаемая сумма
+              required: [ amount ]
+      responses:
+        "201":
+          description: Предложение создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /offers/{offerId}/decision:
+    post:
+      tags: [ Gameplay ]
+      summary: Ответить на предложение
+      description: |
+        **PLAYER**‑респондент принимает или отклоняет предложение.
+        После ответа генерируется событие 'DECISION_MADE'. Повторный ответ
+        вернёт 409. Нельзя отвечать на предложения из других сессий.
+      operationId: decideOffer
+      x-allowed-roles: [ PLAYER ]
+      security: [ { bearerAuth: [ ] } ]
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accepted:
+                  type: boolean
+                  description: true — принять, false — отклонить
+              required: [ accepted ]
+      responses:
+        "201":
+          description: Решение сохранено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /sessions/{sessionId}/events:
+    get:
+      tags: [ Events ]
+      summary: Получить все события сессии
+      description: |
+        Возвращает все события указанной сессии. При необходимости можно
+        отфильтровать по типу события с помощью query-параметра `type`.
+        Допустимые значения: `DECISION_MADE`, `OFFER_CREATED`.  
+        Роли: любые авторизованные.
+      operationId: pollEvents
+      x-allowed-roles: [ ADMIN, PLAYER, OBSERVER ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: sessionId
+          in: path
+          description: Идентификатор сессии
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Тип события для фильтрации
+          required: false
+          schema:
+            type: string
+            enum:
+              - DECISION_MADE
+              - OFFER_CREATED
+      responses:
+        "200":
+          description: Массив событий (может быть пустым)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+  /statistics/{sessionId}/export:
+    get:
+      tags: [ Statistics ]
+      summary: Экспорт статистики CSV
+      description: |
+        **ADMIN** может выгрузить сырые ('RAW') или агрегированные ('AGGREGATED')
+        данные по сессии. Экспорт может быть ресурсоёмким — при больших объёмах
+        сервер может вернуть 503, предложив повторить позже.
+      operationId: exportStatistics
+      x-allowed-roles: [ ADMIN ]
+      security: [ { bearerAuth: [ ] } ]
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+        - name: type
+          in: query
+          description: Тип выгрузки
+          schema:
+            type: string
+            enum: [ RAW, AGGREGATED ]
+            default: RAW
+      responses:
+        "200":
+          description: CSV‑файл результатов
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+  /npc-strategies:
+    get:
+      tags: [ NPC ]
+      summary: Получить список NPC-стратегий
+      description: |
+        Доступно **ADMIN** и **PLAYER/OBSERVER** (только чтение). Игрокам
+        возвращаются только стратегии, используемые в текущих сессиях.
+      operationId: listStrategies
+      x-allowed-roles: [ ADMIN, PLAYER, OBSERVER ]
+      security: [ { bearerAuth: [ ] } ]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NPCStrategy'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [ NPC ]
+      summary: Создать / обновить NPC-стратегию
+      description: |
+        Только **ADMIN**. При повторной отправке с тем же id стратегия
+        перезаписывается. Если стратегия использована в активной сессии —
+        изменение недоступно (409).
+      operationId: upsertStrategy
+      x-allowed-roles: [ ADMIN ]
+      security: [ { bearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NPCStrategy'
+      responses:
+        "200":
+          description: Стратегия создана / обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NPCStrategy'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+        $ref: '#/components/responses/ServerError'
