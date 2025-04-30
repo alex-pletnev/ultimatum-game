@@ -2,40 +2,36 @@ package edu.itmo.ultimatum_game.model
 
 import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
 @Entity
-@Table(name = "users")
-data class User(
+@Table(name = "offer")
+data class Offer(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
+    @field:ManyToOne(fetch = FetchType.LAZY)
+    @field:JoinColumn(name = "session_id", nullable = false)
+    val session: Session? = null,
+
+    @field:ManyToOne(optional = false)
+    @field:JoinColumn(name = "round_id", nullable = false)
+    var round: Round? = null,
+
+    @field:ManyToOne(optional = false)
+    @field:JoinColumn(name = "proposer_id", nullable = false)
+    var proposer: User? = null,
+    @field:ManyToOne
+    @field:JoinColumn(name = "responder_id", nullable = true)
+    var responder: User? = null,
+
     @field:Column(nullable = false)
-    val nickname: String,
-    @field:Column(nullable = false)
-    @field:Enumerated(EnumType.STRING)
-    val role: Role,
+    val offerValue: Int,
+
     @field:Column(nullable = false, updatable = false)
     val createdAt: Date = Date(),
-) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
-        mutableListOf(SimpleGrantedAuthority(role.name))
 
-    override fun getPassword(): String = "" //пароли не используются
-
-    override fun getUsername(): String = id.toString()
-
-    override fun isAccountNonExpired(): Boolean = true
-
-    override fun isAccountNonLocked(): Boolean = true
-
-    override fun isCredentialsNonExpired(): Boolean = true
-
-    override fun isEnabled(): Boolean = true
-
+    ) {
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false
@@ -44,7 +40,7 @@ data class User(
         val thisEffectiveClass =
             if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
         if (thisEffectiveClass != oEffectiveClass) return false
-        other as User
+        other as Offer
 
         return id != null && id == other.id
     }
@@ -54,7 +50,8 @@ data class User(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(  id = $id   ,   nickname = $nickname   ,   role = $role   ,   createdAt = $createdAt )"
+        return this::class.simpleName + "(  id = $id   ,   round = $round   ,   proposer = $proposer   ,   responder = $responder   ,   offerValue = $offerValue )"
     }
+
 
 }
