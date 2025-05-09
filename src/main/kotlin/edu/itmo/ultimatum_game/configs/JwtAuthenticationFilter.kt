@@ -1,4 +1,4 @@
-package edu.itmo.ultimatum_game.security
+package edu.itmo.ultimatum_game.configs
 
 import edu.itmo.ultimatum_game.services.JwtService
 import edu.itmo.ultimatum_game.services.UserService
@@ -6,7 +6,9 @@ import edu.itmo.ultimatum_game.util.logger
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
@@ -42,21 +44,32 @@ class JwtAuthenticationFilter(
 
         if (username.isNotBlank() && SecurityContextHolder.getContext().authentication == null) {
             log.info("Попытка аутентификации пользователя с id=$username по токену")
-            val userDetail = userService.getUserDetailService().invoke(UUID.fromString(username))
+            try {
 
-            if (jwtService.isTokenValid(jwt, userDetail)) {
-                log.info("Токен валиден для пользователя id=$username")
-                val context = SecurityContextHolder.createEmptyContext()
 
-                val authToken = UsernamePasswordAuthenticationToken(
-                    userDetail,
-                    null,
-                    userDetail.authorities
-                )
-                authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                context.authentication = authToken
-                SecurityContextHolder.setContext(context)
-            } else log.warn("Невалидный токен для пользователя id=$username")
+                val userDetail = userService.getUserDetailService().invoke(UUID.fromString(username))
+                if (jwtService.isTokenValid(jwt, userDetail)) {
+                    log.info("Токен валиден для пользователя id=$username (${userDetail.role}) ")
+                    val context = SecurityContextHolder.createEmptyContext()
+
+
+                    val authorities = userDetail.authorities
+                        .map { "ROLE_${it}" }
+                        .map { SimpleGrantedAuthority(it) }
+                    val authToken = UsernamePasswordAuthenticationToken(
+                        userDetail,
+                        null,
+                        authorities
+                    )
+                    authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                    context.authentication = authToken
+                    SecurityContextHolder.setContext(context)
+
+
+                } else log.warn("Невалидный токен для пользователя id=$username")
+            } catch (e: Exception) {
+                throw AccessDeniedException("В доступе отказано", e)
+            }
         } else {
             if (username.isBlank()) log.warn("Не удалось извлечь username из токена")
             if (SecurityContextHolder.getContext().authentication != null) log.debug("Пользователь уже аутентифицирован, пропускаем фильтр")

@@ -5,14 +5,14 @@ import org.hibernate.proxy.HibernateProxy
 import java.util.*
 
 @Entity
-data class Decision(
+class Decision(
     @field:Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID? = null,
+    var id: UUID? = null,
 
     @field:ManyToOne(fetch = FetchType.LAZY)
     @field:JoinColumn(name = "session_id", nullable = false)
-    val session: Session? = null,
+    var session: Session? = null,
 
     @field:ManyToOne(optional = false)
     @field:JoinColumn(name = "round_id", nullable = false)
@@ -20,7 +20,7 @@ data class Decision(
 
     @field:ManyToOne(optional = false)
     @field:JoinColumn(name = "responder_id", nullable = false)
-    val responder: User? = null,
+    var responder: User? = null,
 
     @field:OneToOne(
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH],
@@ -28,13 +28,13 @@ data class Decision(
         orphanRemoval = true
     )
     @field:JoinColumn(nullable = false)
-    val offer: Offer? = null,
+    var offer: Offer? = null,
 
     @field:Column(nullable = false)
-    val decision: Boolean,
+    var decision: Boolean,
 
     @field:Column(nullable = false, updatable = false)
-    val createdAt: Date = Date(),
+    var createdAt: Date = Date(),
 ) {
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true

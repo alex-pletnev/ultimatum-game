@@ -11,9 +11,9 @@ data class Round(
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
     val id: UUID? = null,
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "session_id", nullable = false)
-    val session: Session? = null,
+    var session: Session? = null,
     val roundNumber: Int,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

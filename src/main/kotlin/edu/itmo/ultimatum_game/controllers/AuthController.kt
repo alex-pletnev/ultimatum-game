@@ -1,7 +1,9 @@
 package edu.itmo.ultimatum_game.controllers
 
 import edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequest
+import edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequestDto
 import edu.itmo.ultimatum_game.dto.requests.CreateUserRequest
+import edu.itmo.ultimatum_game.dto.requests.toDomain
 import edu.itmo.ultimatum_game.dto.responses.JwtAuthenticationResponse
 import edu.itmo.ultimatum_game.services.AuthService
 import edu.itmo.ultimatum_game.util.logger
@@ -33,8 +35,9 @@ class AuthController(
 
     @PostMapping("/quick-login")
     @PermitAll
-    fun quickLogin(@RequestBody @Valid authenticateUserRequest: AuthenticateUserRequest): JwtAuthenticationResponse {
-        logger.info("Запрос быстрого входа: id=${authenticateUserRequest.id}")
+    fun quickLogin(@RequestBody @Valid authenticateUserRequestDto: AuthenticateUserRequestDto): JwtAuthenticationResponse {
+        logger.info("Запрос быстрого входа: id=${authenticateUserRequestDto.id}")
+        val authenticateUserRequest = authenticateUserRequestDto.toDomain()
         val jwtToken = authService.quickLogin(authenticateUserRequest)
         logger.info("Токен выдан после входа для id=${authenticateUserRequest.id}")
         return jwtToken

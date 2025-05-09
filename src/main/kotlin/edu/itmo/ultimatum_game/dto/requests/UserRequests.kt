@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game.dto.requests
 
 import edu.itmo.ultimatum_game.model.Role
+import edu.itmo.ultimatum_game.util.toUuidOrThrow
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.util.*
@@ -12,7 +13,14 @@ data class CreateUserRequest(
     val role: Role = Role.PLAYER
 )
 
-data class AuthenticateUserRequest(
-    @field:NotBlank(message = "id не может быть пустым")
-    val id: UUID?,
+data class AuthenticateUserRequestDto(
+    @field:NotBlank(message = "id обязателен и не может быть пустым")
+    val id: String? = "",
 )
+
+fun AuthenticateUserRequestDto.toDomain(): AuthenticateUserRequest = AuthenticateUserRequest(id.toUuidOrThrow())
+
+data class AuthenticateUserRequest(
+    val id: UUID,
+)
+

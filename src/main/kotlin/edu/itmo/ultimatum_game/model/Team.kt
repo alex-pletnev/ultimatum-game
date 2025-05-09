@@ -12,12 +12,11 @@ data class Team(
     @field:Column(nullable = false)
     val name: String,
     @ManyToMany(cascade = [CascadeType.MERGE])
-    val members: MutableList<User>,
-
+    val members: MutableSet<User> = mutableSetOf(),
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "session_id", nullable = false)
+    var session: Session? = null,
     ) {
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    var session: Session? = null
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true

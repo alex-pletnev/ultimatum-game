@@ -6,13 +6,13 @@ import java.util.*
 
 @Entity
 @Table(name = "offer")
-data class Offer(
+class Offer(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID? = null,
+    var id: UUID? = null,
     @field:ManyToOne(fetch = FetchType.LAZY)
     @field:JoinColumn(name = "session_id", nullable = false)
-    val session: Session? = null,
+    var session: Session? = null,
 
     @field:ManyToOne(optional = false)
     @field:JoinColumn(name = "round_id", nullable = false)
@@ -26,10 +26,10 @@ data class Offer(
     var responder: User? = null,
 
     @field:Column(nullable = false)
-    val offerValue: Int,
+    var offerValue: Int,
 
     @field:Column(nullable = false, updatable = false)
-    val createdAt: Date = Date(),
+    var createdAt: Date = Date(),
 
     ) {
     final override fun equals(other: Any?): Boolean {

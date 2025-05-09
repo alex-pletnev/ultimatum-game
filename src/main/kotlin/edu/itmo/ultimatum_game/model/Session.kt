@@ -6,33 +6,47 @@ import java.util.*
 
 @Entity
 @Table(name = "session")
-data class Session(
+class Session(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID? = null,
+    var id: UUID? = null,
     @field:Column(nullable = false)
-    val displayName: String,
+    var displayName: String = "",
     @field:Enumerated(EnumType.STRING)
     @field:Column(nullable = false)
     var state: SessionState = SessionState.CREATED,
     @field:Column(nullable = false)
-    val createdAt: Date = Date(),
+    var createdAt: Date = Date(),
     @field:ManyToOne(optional = false)
     var admin: User? = null,
+    var openToConnect: Boolean = true,
+    @OneToOne
+    @JoinColumn(name = "current_round_id")
+    var currentRound: Round? = null,
+
+
+    @OneToMany(
+        mappedBy = "session",
+        cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],
+        orphanRemoval = true
+    )
+    var rounds: MutableList<Round> = mutableListOf(),
 
     @field:Embedded
-    val config: SessionConfig,
+    var config: SessionConfig? = null,
+
     @field:OneToMany(
         mappedBy = "session",
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],
         orphanRemoval = true
     )
-
-    var teams: MutableList<Team> = mutableListOf(),
+    var teams: MutableSet<Team> = mutableSetOf(),
 
     @field:ManyToMany(cascade = [CascadeType.MERGE])
-    val members: MutableList<User>,
+    var members: MutableSet<User> = mutableSetOf(),
 
+    @field:ManyToMany(cascade = [CascadeType.MERGE])
+    var observers: MutableSet<User> = mutableSetOf(),
     ) {
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -54,5 +68,4 @@ data class Session(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   displayName = $displayName   ,   state = $state   ,   createdAt = $createdAt   ,   admin = $admin   ,   config = $config )"
     }
-
 }

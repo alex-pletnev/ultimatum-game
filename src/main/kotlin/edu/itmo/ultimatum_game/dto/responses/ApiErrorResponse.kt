@@ -1,5 +1,6 @@
 package edu.itmo.ultimatum_game.dto.responses
 
+import java.io.Serializable
 import java.util.*
 
 data class ApiErrorResponse(
@@ -8,4 +9,4 @@ data class ApiErrorResponse(
     val error: String,
     val message: String,
     val path: String,
-)
+) : Serializable
