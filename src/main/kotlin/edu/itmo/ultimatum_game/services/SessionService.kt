@@ -5,15 +5,13 @@ import edu.itmo.ultimatum_game.dto.responses.SessionResponse
 import edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatum_game.exceptions.IdNotFoundException
 import edu.itmo.ultimatum_game.exceptions.SessionJoinRejectedException
-import edu.itmo.ultimatum_game.model.Round
-import edu.itmo.ultimatum_game.model.Session
-import edu.itmo.ultimatum_game.model.SessionType
-import edu.itmo.ultimatum_game.model.Team
+import edu.itmo.ultimatum_game.model.*
 import edu.itmo.ultimatum_game.repositories.SessionRepository
 import edu.itmo.ultimatum_game.repositories.TeamRepository
 import edu.itmo.ultimatum_game.util.SessionMapper
 import edu.itmo.ultimatum_game.util.SessionWithTeamsAndMembersMapper
 import edu.itmo.ultimatum_game.util.logger
+import jakarta.servlet.http.HttpSession
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -28,7 +26,8 @@ class SessionService(
     private val teamRepository: TeamRepository,
     private val sessionMapper: SessionMapper,
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
-    private val userService: UserService
+    private val userService: UserService,
+    private val httpSession: HttpSession
 ) {
 
     private val logger = logger()
@@ -51,6 +50,21 @@ class SessionService(
     }
 
 
+    @Transactional
+    fun setSessionState(sessionId: UUID, newSessionState: SessionState) {
+        val session = getSessionEntity(sessionId)
+        session.state = newSessionState
+        sessionRepository.save(session)
+    }
+
+    @Transactional
+    fun setCurrentRound(sessionId: UUID, newRound: Round) {
+        val session = getSessionEntity(sessionId)
+        session.currentRound = newRound
+        sessionRepository.save(session)
+
+    }
+
     fun getSession(sessionId: UUID): SessionResponse {
         val session = sessionRepository.findById(sessionId)
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
@@ -59,7 +73,6 @@ class SessionService(
         return dto
     }
 
-    //TODO сделать protected
     fun getSessionEntity(sessionId: UUID): Session {
         val session = sessionRepository.findById(sessionId)
         .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
@@ -74,6 +87,7 @@ class SessionService(
         return dto
     }
 
+
     fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {
         val pageable = createPageable(page, pageSize)
         val sessions: Page<Session> =
@@ -84,6 +98,17 @@ class SessionService(
         return response
     }
 
+    fun isUserAreSessionAdmin(userId: UUID, sessionId: UUID): Boolean {
+        return getSessionEntity(sessionId).admin?.id == userId
+    }
+
+    fun isUserAreSessionMember(userId: UUID, sessionId: UUID): Boolean {
+        return getSessionEntity(sessionId).members.find { it.id == userId } != null
+    }
+
+    fun isUserAreSessionObserver(userId: UUID, sessionId: UUID): Boolean {
+        return getSessionEntity(sessionId).members.find { it.id == userId } != null
+    }
 
     @Transactional
     fun joinSession(sessionId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {

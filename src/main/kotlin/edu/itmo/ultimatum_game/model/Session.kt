@@ -30,7 +30,7 @@ class Session(
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],
         orphanRemoval = true
     )
-    var rounds: MutableList<Round> = mutableListOf(),
+    var rounds: MutableSet<Round> = mutableSetOf(),
 
     @field:Embedded
     var config: SessionConfig? = null,

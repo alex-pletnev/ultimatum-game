@@ -5,7 +5,7 @@ import edu.itmo.ultimatum_game.util.logger
 import org.springframework.stereotype.Service
 
 @Service
-class GameplayService(
+class PlayerGameplayService(
     eventPublisher: EventPublisherService,
     sessionRepository: SessionRepository,
 
@@ -13,6 +13,9 @@ class GameplayService(
 
     private val logger = logger()
 
-    
+
+    fun sendOffer(){TODO()}
+
+    fun makeDecision(){TODO()}
 
 }

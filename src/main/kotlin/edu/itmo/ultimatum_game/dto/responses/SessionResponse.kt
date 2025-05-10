@@ -14,7 +14,7 @@ data class SessionResponse(
     val createdAt: Date,
     val admin: UserResponse,
     val openToConnect: Boolean,
-    val rounds: MutableList<RoundPrewResponse>,
+    val rounds: MutableSet<RoundPrewResponse>,
     val config: SessionConfigResponse,
     val teams: MutableSet<TeamPrewResponse>,
     val currentRound: RoundPrewResponse? = null,

@@ -1,5 +1,6 @@
 package edu.itmo.ultimatum_game.configs
 
+import edu.itmo.ultimatum_game.exceptions.InvalidJwtException
 import edu.itmo.ultimatum_game.services.JwtService
 import edu.itmo.ultimatum_game.services.UserService
 import edu.itmo.ultimatum_game.util.logger
@@ -12,6 +13,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -77,13 +79,16 @@ class JwtStompChannelInterceptor(
                 logger.info("STOMP CONNECT аутентифицирован: id=$username, role(s)=$authorities")
             } else {
                 logger.warn("Невалидный токен для пользователя id=$username")
+                throw InvalidJwtException("Невалидный jwt, попробуйте с повторить логин")
             }
 
         } else {
-            if (username.isBlank()) logger.warn("Не удалось извлечь username из токена")
+            if (username.isBlank()) {
+                logger.warn("Не удалось извлечь username из токена")
+                throw InvalidJwtException("Невалидный jwt (не удалось извлечь пользователя), попробуйте с повторить логин")
+            }
             if (SecurityContextHolder.getContext().authentication == null || SecurityContextHolder.getContext().authentication is AnonymousAuthenticationToken)
-                logger.debug("Пользователь уже аутентифицирован, пропускаем фильтр"
-            )
+                logger.debug("Пользователь уже аутентифицирован, пропускаем фильтр")
         }
         return message
     }

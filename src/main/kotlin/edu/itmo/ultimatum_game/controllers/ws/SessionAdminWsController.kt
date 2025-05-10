@@ -28,11 +28,15 @@ class SessionAdminWsController(
     ) {
         logger.info("получена запрос на session/${sessionId}/round.start от $principal")
 
+
         //TODO now it's tmp
-        val uuid = sessionId.toUuidOrThrow()
-        val session = sessionService.getSessionEntity(uuid)
-        session.currentRound = session.rounds[0]
-        eventPublisherService.publishRoundStatus(uuid, session.currentRound!!)
+//        val uuid = sessionId.toUuidOrThrow()
+//        val session = sessionService.getSessionEntity(uuid)
+//        session.currentRound = session.rounds[0]
+//        eventPublisherService.publishRoundStatus(uuid, session.currentRound!!)
+
+
+
 
     }
 

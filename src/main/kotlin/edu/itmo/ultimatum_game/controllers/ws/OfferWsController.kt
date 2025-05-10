@@ -1,7 +1,7 @@
 package edu.itmo.ultimatum_game.controllers.ws
 
 import edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd
-import edu.itmo.ultimatum_game.services.GameplayService
+import edu.itmo.ultimatum_game.services.PlayerGameplayService
 import edu.itmo.ultimatum_game.util.logger
 import edu.itmo.ultimatum_game.util.toUuidOrThrow
 import jakarta.validation.Valid
@@ -14,7 +14,7 @@ import java.util.*
 
 @Controller
 class OfferWsController(
-    private val gameplayService: GameplayService,
+    private val gameplayService: PlayerGameplayService,
 ) {
 
     private val logger = logger()
