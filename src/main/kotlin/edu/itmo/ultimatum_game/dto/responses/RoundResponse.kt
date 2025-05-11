@@ -13,4 +13,5 @@ data class RoundResponse(
     val roundPhase: RoundPhase,
     val offers: MutableList<OfferPrewResponse>,
     val decisions: MutableList<DecisionPrewResponse>,
+    val session: SessionPrewResponse,
 ) : Serializable

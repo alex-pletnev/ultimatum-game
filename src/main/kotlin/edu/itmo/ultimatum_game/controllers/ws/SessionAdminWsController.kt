@@ -1,7 +1,6 @@
 package edu.itmo.ultimatum_game.controllers.ws
 
-import edu.itmo.ultimatum_game.services.EventPublisherService
-import edu.itmo.ultimatum_game.services.SessionService
+import edu.itmo.ultimatum_game.services.AdminGameplayService
 import edu.itmo.ultimatum_game.util.logger
 import edu.itmo.ultimatum_game.util.toUuidOrThrow
 import jakarta.transaction.Transactional
@@ -13,31 +12,60 @@ import java.security.Principal
 
 @Controller
 class SessionAdminWsController(
-    private val eventPublisherService: EventPublisherService,
-    private val sessionService: SessionService
+    private val adminGameplayService: AdminGameplayService
 ) {
 
     private val logger = logger()
 
     @PreAuthorize("hasRole('ADMIN')")
-    @MessageMapping("session/{sessionId}/round.start")
+    @MessageMapping("session/{sessionId}/start")
     @Transactional
     fun startSession(
         @DestinationVariable sessionId: String,
         principal: Principal
     ) {
-        logger.info("получена запрос на session/${sessionId}/round.start от $principal")
-
-
-        //TODO now it's tmp
-//        val uuid = sessionId.toUuidOrThrow()
-//        val session = sessionService.getSessionEntity(uuid)
-//        session.currentRound = session.rounds[0]
-//        eventPublisherService.publishRoundStatus(uuid, session.currentRound!!)
-
-
-
-
+        logger.info("получена запрос на session/${sessionId}/start от $principal")
+        val sessionUuid = sessionId.toUuidOrThrow()
+        adminGameplayService.startSession(sessionUuid)
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @MessageMapping("session/{sessionId}/close")
+    @Transactional
+    fun closeSession(
+        @DestinationVariable sessionId: String,
+        principal: Principal
+    ) {
+        logger.info("получена запрос на session/{sessionId}/close от $principal")
+        val sessionUuid = sessionId.toUuidOrThrow()
+        adminGameplayService.closeSession(sessionUuid)
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @MessageMapping("session/{sessionId}/open")
+    @Transactional
+    fun openSession(
+        @DestinationVariable sessionId: String,
+        principal: Principal
+    ) {
+        logger.info("получена запрос на session/{sessionId}/open от $principal")
+        val sessionUuid = sessionId.toUuidOrThrow()
+        adminGameplayService.openSession(sessionUuid)
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @MessageMapping("session/{sessionId}/round.start")
+    @Transactional
+    fun startNextRound(
+        @DestinationVariable sessionId: String,
+        principal: Principal
+    ) {
+        logger.info("получена запрос на session/{sessionId}/round.start от $principal")
+        val sessionUuid = sessionId.toUuidOrThrow()
+        adminGameplayService.startNextRound(sessionUuid)
+    }
+
+
+
 
 }

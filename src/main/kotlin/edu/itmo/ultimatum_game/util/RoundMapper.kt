@@ -6,7 +6,7 @@ import org.mapstruct.*
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-    uses = [OfferPrewMapper::class, DecisionPrewMapper::class]
+    uses = [OfferPrewMapper::class, DecisionPrewMapper::class, SessionPrewMapper::class]
 )
 abstract class RoundMapper {
     @AfterMapping

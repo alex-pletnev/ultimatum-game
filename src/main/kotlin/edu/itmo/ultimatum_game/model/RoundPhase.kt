@@ -4,14 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator
 
 enum class RoundPhase {
     CREATED,
-    OFFER_FORMS_SENT,
     WAIT_OFFERS,
     ALL_OFFERS_RECEIVED,
 
     //shuffle
 
     OFFERS_SENT,
-    WAIT_DECISIONS,
     ALL_DECISIONS_RECEIVED,
     FINISHED;
 

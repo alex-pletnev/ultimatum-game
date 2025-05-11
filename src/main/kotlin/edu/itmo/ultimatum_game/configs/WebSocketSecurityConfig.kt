@@ -21,8 +21,11 @@ class WebSocketSecurityConfig {
         // ---------- команды (SEND) ----------
         messages
             .simpDestMatchers("/app/session/*/offer.create").hasRole("PLAYER")
-            .simpDestMatchers("/app/offer/*/decision").hasRole("PLAYER")
-            .simpDestMatchers("/app/session/*/round.finish").hasRole("ADMIN")
+            .simpDestMatchers("/app/offer/*/make.decision").hasRole("PLAYER")
+
+            .simpDestMatchers("/app/session/*/start").hasRole("ADMIN")
+            .simpDestMatchers("/app/session/*/close").hasRole("ADMIN")
+            .simpDestMatchers("/app/session/*/open").hasRole("ADMIN")
             .simpDestMatchers("/app/session/*/round.start").hasRole("ADMIN")
 
         // ---------- подписки (SUBSCRIBE) ----------
@@ -35,6 +38,9 @@ class WebSocketSecurityConfig {
         messages
             .simpSubscribeDestMatchers("/topic/session/*/roundStatus")
             .hasAnyRole("PLAYER", "OBSERVER", "ADMIN")
+        messages
+            .simpSubscribeDestMatchers("/topic/session/*/player/*/offer")
+            .hasRole("PLAYER")
 
         messages
             .simpTypeMatchers(CONNECT, HEARTBEAT, UNSUBSCRIBE, DISCONNECT)

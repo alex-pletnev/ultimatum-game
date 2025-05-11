@@ -7,10 +7,10 @@ import java.util.*
  * DTO for {@link edu.itmo.ultimatum_game.model.Decision}
  */
 data class DecisionMadeResponse(
-    val id: UUID? = null,
-    val round: RoundPrewResponse? = null,
-    val responder: UserResponse? = null,
-    val offer: OfferCreatedResponse? = null,
-    val decision: Boolean? = null,
-    val createdAt: Date = Date()
+    val id: UUID,
+    val round: RoundPrewResponse,
+    val responder: UserResponse,
+    val offer: OfferCreatedResponse,
+    val decision: Boolean,
+    val createdAt: Date,
 ) : Serializable

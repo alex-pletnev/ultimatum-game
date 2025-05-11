@@ -14,7 +14,10 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig(private val jwtStompChannelInterceptor: JwtStompChannelInterceptor) :
+class WebSocketConfig(
+    private val jwtStompChannelInterceptor: JwtStompChannelInterceptor,
+    private val playSessionStompChannelInterceptor: PlaySessionStompChannelInterceptor
+) :
     WebSocketMessageBrokerConfigurer {
 
         private val logger = logger()
@@ -49,6 +52,6 @@ class WebSocketConfig(private val jwtStompChannelInterceptor: JwtStompChannelInt
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
-        registration.interceptors(jwtStompChannelInterceptor)
+        registration.interceptors(jwtStompChannelInterceptor, playSessionStompChannelInterceptor)
     }
 }
