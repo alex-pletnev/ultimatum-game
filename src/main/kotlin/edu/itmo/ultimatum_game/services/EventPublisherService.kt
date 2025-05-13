@@ -3,20 +3,20 @@ package edu.itmo.ultimatum_game.services
 import edu.itmo.ultimatum_game.model.Decision
 import edu.itmo.ultimatum_game.model.Offer
 import edu.itmo.ultimatum_game.model.Round
-import edu.itmo.ultimatum_game.util.DecisionMapper
-import edu.itmo.ultimatum_game.util.OfferMapper
-import edu.itmo.ultimatum_game.util.RoundMapper
-import edu.itmo.ultimatum_game.util.logger
+import edu.itmo.ultimatum_game.model.Session
+import edu.itmo.ultimatum_game.util.*
+import org.springframework.context.annotation.Lazy
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class EventPublisherService(
-    private val messagingTemplate: SimpMessagingTemplate,
+    @Lazy private val messagingTemplate: SimpMessagingTemplate,
     private val offerMapper: OfferMapper,
     private val decisionMapper: DecisionMapper,
     private val roundMapper: RoundMapper,
+    private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper
 ) {
 
     private val logger = logger()
@@ -66,7 +66,19 @@ class EventPublisherService(
         } else {
             error("sessionId и round не может быть null на этом этапе")
         }
+    }
 
+    fun publishSessionStatus(sessionId: UUID?, session: Session?) {
+        if (session != null && sessionId != null) {
+            logger.info("Entity сесии для публикации {}", session)
+            val dto = sessionWithTeamsAndMembersMapper.toDto(session)
+            logger.info("Dto сессии для публикации {}", dto)
+            val destination = "/topic/session/${sessionId}/sessionStatus"
+            logger.info("Публикация события SessionStatus в $destination для раунда сессии #${dto.displayName} (id=${dto.id})")
+            messagingTemplate.convertAndSend(destination, dto)
+        } else {
+            error("sessionId и round не может быть null на этом этапе")
+        }
     }
 
 }

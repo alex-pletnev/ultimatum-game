@@ -23,17 +23,16 @@ import java.util.*
 @Service
 class SessionService(
     private val sessionRepository: SessionRepository,
-    private val teamRepository: TeamRepository,
     private val sessionMapper: SessionMapper,
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
     private val userService: UserService,
-    private val httpSession: HttpSession
+    private val eventPublisherService: EventPublisherService
 ) {
 
     private val logger = logger()
 
     @Transactional
-    fun createSession(createSessionRequest: CreateSessionRequest): SessionResponse {
+    fun createSession(createSessionRequest: CreateSessionRequest): SessionWithTeamsAndMembersResponse {
         logger.info("Создание новой сессии из запроса {}", createSessionRequest)
         var newSession = sessionMapper.toEntity(createSessionRequest)
         logger.debug("Новая сессия после маппинга {}", newSession)
@@ -45,7 +44,7 @@ class SessionService(
         logger.debug("Новая сессия после initTeams {}", newSession)
         newSession = sessionRepository.save(newSession)
         logger.debug("Новая сессия после save {}", newSession)
-        val dto = sessionMapper.toDto(newSession)
+        val dto = sessionWithTeamsAndMembersMapper.toDto(newSession)
         return dto
     }
 
@@ -89,10 +88,20 @@ class SessionService(
 
 
     fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {
-        val pageable = createPageable(page, pageSize)
+//        val pageable = createPageable(page, pageSize)
         val sessions: Page<Session> =
-            if (s.isBlank()) sessionRepository.findAll(pageable)
-            else sessionRepository.searchByNameTrgm(s, "%$s%", pageable)
+            if (s.isBlank()) sessionRepository.findAll(
+                PageRequest.of(
+                    page,
+                    pageSize,
+                    Sort.by("createdAt").descending()
+                )
+            )
+            else sessionRepository.searchByNameTrgm(
+                s,
+                "%$s%",
+                PageRequest.of(page, pageSize, Sort.by("created_at").descending())
+            )
         val response = sessions.map { sessionMapper.toDto(it) }
         logger.info("По запросу '$s' найдено ${response.size} сессий")
         return response
@@ -137,6 +146,7 @@ class SessionService(
             session.observers.remove(user)
             sessionRepository.save(session)
         }
+        eventPublisherService.publishSessionStatus(sessionId, session)
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
         return dto
     }
@@ -155,16 +165,13 @@ class SessionService(
         }
 
         sessionRepository.save(session)
+        eventPublisherService.publishSessionStatus(sessionId, session)
         return sessionWithTeamsAndMembersMapper.toDto(session)
     }
 
 
     // --- util
 
-
-    private fun createPageable(page: Int, pageSize: Int): Pageable {
-        return PageRequest.of(page, pageSize, Sort.by("created_at").descending())
-    }
 
     private fun createRounds(newSession: Session) {
         val cfg = newSession.config

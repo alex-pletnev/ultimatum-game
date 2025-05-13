@@ -6,9 +6,6 @@ enum class RoundPhase {
     CREATED,
     WAIT_OFFERS,
     ALL_OFFERS_RECEIVED,
-
-    //shuffle
-
     OFFERS_SENT,
     ALL_DECISIONS_RECEIVED,
     FINISHED;

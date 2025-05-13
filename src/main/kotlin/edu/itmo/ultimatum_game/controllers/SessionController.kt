@@ -27,7 +27,7 @@ class SessionController(
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createSession(@RequestBody @Valid createSessionRequest: CreateSessionRequest): SessionResponse {
+    fun createSession(@RequestBody @Valid createSessionRequest: CreateSessionRequest): SessionWithTeamsAndMembersResponse {
         logger.info("Получен запрос на создание сессии: $createSessionRequest")
         val response = sessionService.createSession(createSessionRequest)
         logger.info("Создана сессия $response")
@@ -64,7 +64,7 @@ class SessionController(
         @RequestParam(required = false, defaultValue = "30")
         pageSize: Int,
     ): Page<SessionResponse> {
-        logger.info("Получен запрос на получение сессий")
+        logger.info("Получен запрос на получение сессий s=$s, page=$page, pageSize=$pageSize")
         val response = sessionService.getAllSessions(page, pageSize, s)
         return response
     }

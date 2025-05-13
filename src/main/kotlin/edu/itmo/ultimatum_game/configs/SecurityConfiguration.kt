@@ -38,6 +38,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 it.requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/v3/api/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/session").hasAnyRole("ADMIN")
                     .requestMatchers("/ws/**").permitAll()
                     .requestMatchers("/csrf/**").permitAll()

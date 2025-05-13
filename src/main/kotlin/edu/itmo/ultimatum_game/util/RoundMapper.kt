@@ -23,6 +23,4 @@ abstract class RoundMapper {
 
     abstract fun toDto(round: Round): RoundResponse
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    abstract fun partialUpdate(roundResponse: RoundResponse, @MappingTarget round: Round): Round
 }

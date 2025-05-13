@@ -33,7 +33,7 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} запущена и сохранена со статусом {}", session.id, session.state)
 
-        eventPublisherService.publishRoundStatus(session.id, session.currentRound)
+        eventPublisherService.publishSessionStatus(session.id, session)
         logger.info("Опубликован RoundStatus для сессии {}", session.id)
     }
 
@@ -47,7 +47,7 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} закрыта для новых подключений", session.id)
 
-        eventPublisherService.publishRoundStatus(session.id, session.currentRound)
+        eventPublisherService.publishSessionStatus(session.id, session)
         logger.info("Опубликован RoundStatus для сессии {} после закрытия", session.id)
     }
 
@@ -61,7 +61,7 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} открыта для новых подключений", session.id)
 
-        eventPublisherService.publishRoundStatus(session.id, session.currentRound)
+        eventPublisherService.publishSessionStatus(session.id, session)
         logger.info("Опубликован RoundStatus для сессии {} после открытия", session.id)
     }
 

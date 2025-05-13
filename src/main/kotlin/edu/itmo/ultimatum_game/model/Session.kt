@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game.model
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Fetch
 import org.hibernate.proxy.HibernateProxy
 import java.util.*
 
@@ -42,7 +43,7 @@ class Session(
     )
     var teams: MutableSet<Team> = mutableSetOf(),
 
-    @field:ManyToMany(cascade = [CascadeType.MERGE])
+    @field:ManyToMany(cascade = [CascadeType.MERGE], fetch = FetchType.EAGER)
     var members: MutableSet<User> = mutableSetOf(),
 
     @field:ManyToMany(cascade = [CascadeType.MERGE])

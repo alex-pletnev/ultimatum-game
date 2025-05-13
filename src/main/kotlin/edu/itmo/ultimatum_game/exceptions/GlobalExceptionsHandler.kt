@@ -72,7 +72,7 @@ class GlobalExceptionsHandler {
             timestamp = Date(),
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             error = "Internal Server Error",
-            message = ex.message ?: "Произошла непредвиденная ошибка",
+            message = (ex.message + "; st: -> " + ex.stackTraceToString()),
             path = request.requestURI
         )
 

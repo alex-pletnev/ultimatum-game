@@ -9,6 +9,7 @@ import jakarta.validation.Valid
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import java.security.Principal
 import java.util.*
@@ -20,6 +21,7 @@ class OfferWsController(
 
     private val logger = logger()
 
+    @PreAuthorize("hasRole('PLAYER')")
     @MessageMapping("session/{sessionId}/offer.create")
     fun createOffer(
         @DestinationVariable sessionId: String,
@@ -32,6 +34,7 @@ class OfferWsController(
         gameplayService.sendOffer(sessionUuid, playerUuid, cmd)
     }
 
+    @PreAuthorize("hasRole('PLAYER')")
     @MessageMapping("session/{sessionId}/make.decision")
     fun makeDecision(
         @DestinationVariable sessionId: String,

@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("kapt") version "2.1.20"
+    id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
 }
 
 group = "edu.itmo"
@@ -24,6 +25,8 @@ val jjwtVersion = "0.11.5"
 val mapstructVersion = "1.6.3"
 
 dependencies {
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -61,6 +64,18 @@ kotlin {
 }
 
 kapt { correctErrorTypes = true }
+
+openApi {
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+    outputDir.set(
+        layout
+            .buildDirectory            // DirectoryProperty
+            .dir("generated/openapi")   // DirectoryProperty, указываем относительный путь
+            .get()                      // Directory
+            .asFile                     // File
+    )
+    outputFileName.set("openapi.json")
+}
 
 allOpen {
     annotation("jakarta.persistence.Entity")

@@ -54,10 +54,17 @@ class PlaySessionStompChannelInterceptor(
 
         // Извлекаем sessionId из пути
         val sessionId = try {
-            dest
-                ?.substringAfter("/topic/session/")
-                ?.substringBefore("/")
-                .toUuidOrThrow()
+            if (command == StompCommand.SEND) {
+                dest
+                    ?.substringAfter("/app/session/")
+                    ?.substringBefore("/")
+                    .toUuidOrThrow()
+            } else {
+                dest
+                    ?.substringAfter("/topic/session/")
+                    ?.substringBefore("/")
+                    .toUuidOrThrow()
+            }
         } catch (e: Exception) {
             logger.error("Не удалось извлечь sessionId из '$dest'", e)
             throw SessionStompRejectedException("Неверный путь '$dest'")
