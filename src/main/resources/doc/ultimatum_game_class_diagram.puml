@@ -1,0 +1,16 @@
+@startuml UltimatumGameBackendUpdated
+
+title Ultimatum Game – Backend (Class Diagram, updated structure)
+
+skinparam class {
+    BackgroundColor Snow
+    BorderColor Black
+    ArrowColor Black
+}
+
+edu.itmo.ultimatum_game.controllers ..> edu.itmo.ultimatum_game.services
+edu.itmo.ultimatum_game.controllers.ws ..> edu.itmo.ultimatum_game.services
+edu.itmo.ultimatum_game.services ..> edu.itmo.ultimatum_game.repositories
+edu.itmo.ultimatum_game.services ..> edu.itmo.ultimatum_game.model
+edu.itmo.ultimatum_game.repositories ..> edu.itmo.ultimatum_game.model
+@enduml

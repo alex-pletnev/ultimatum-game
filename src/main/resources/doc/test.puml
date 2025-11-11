@@ -1,0 +1,183 @@
+@startuml
+' ----------------------------------------
+'   Настройки чтобы не резало пакеты по точке
+' ----------------------------------------
+set separator none
+
+skinparam class {
+    BackgroundColor Snow
+    BorderColor Black
+    ArrowColor Black
+}
+title Ultimatum Game – Backend (Class Diagram v3)
+
+actor "Client\n(Web / Mobile)" as Client
+database "PostgreSQL" as Postgres
+
+' ----------------------------------------------------------------
+' 1) Domain model: вместо enum — class <<enumeration>>
+' ----------------------------------------------------------------
+package edu.itmo.ultimatum_game.model {
+
+  class Role <<enumeration>> {
+    ADMIN
+    PLAYER
+    OBSERVER
+    NPC
+  }
+
+  class SessionState <<enumeration>> {
+    CREATED
+    RUNNING
+    FINISHED
+    ABORTED
+  }
+
+  class RoundPhase <<enumeration>> {
+    WAITING_FOR_OFFERS
+    WAITING_FOR_DECISIONS
+    FINISHED
+  }
+
+  class SessionConfig <<ValueObject>> {
+    +numRounds : Int
+    +resourcePerRound : Int
+    +timeoutMoveSec : Int
+    +timeoutRoundSec : Int
+  }
+
+  class Session <<Entity>> {
+    +id : UUID
+    +state : SessionState
+    +createdAt : Instant
+    +admin : User
+    +config : SessionConfig
+  }
+
+  class Team <<Entity>> {
+    +id : UUID
+    +name : String
+    +score : Int
+  }
+
+  class User <<Entity>> {
+    +id : UUID
+    +nickname : String
+    +role : Role
+    +totalGain : Int
+  }
+
+  class Round <<Entity>> {
+    +id : UUID
+    +number : Int
+    +phase : RoundPhase
+    +session : Session
+  }
+
+  class Offer <<Entity>> {
+    +id : UUID
+    +amount : Int
+    +proposer : User
+    +responder : User
+    +round : Round
+    +createdAt : Instant
+  }
+
+  class Decision <<Entity>> {
+    +id : UUID
+    +accepted : Boolean
+    +offer : Offer
+    +decidedAt : Instant
+  }
+
+  Session "1" *-- "*" Team
+  Team     "1" *-- "*" User
+  Session  "1" *-- "*" Round
+  Round    "1" o-- "*" Offer
+  Offer    "1" *-- "0..1" Decision
+}
+
+' ----------------------------------------------------------------
+' 2) Репозитории → PostgreSQL
+' ----------------------------------------------------------------
+package edu.itmo.ultimatum_game.repositories {
+  interface UserRepository     <<Repository>>
+  interface TeamRepository     <<Repository>>
+  interface SessionRepository  <<Repository>>
+  interface RoundRepository    <<Repository>>
+  interface OfferRepository    <<Repository>>
+  interface DecisionRepository <<Repository>>
+}
+UserRepository     --> Postgres
+TeamRepository     --> Postgres
+SessionRepository  --> Postgres
+RoundRepository    --> Postgres
+OfferRepository    --> Postgres
+DecisionRepository --> Postgres
+
+' ----------------------------------------------------------------
+' 3) Сервисы
+' ----------------------------------------------------------------
+package edu.itmo.ultimatum_game.services {
+  class AuthService
+  class SessionService
+  class AdminGameplayService
+  class PlayerGameplayService
+  class CoreGameplayService
+  class UserService
+  class EventPublisherService
+  class JwtService
+  class SecurityService
+}
+AuthService           ..> UserRepository
+UserService           ..> UserRepository
+SessionService        ..> SessionRepository
+SessionService        ..> TeamRepository
+SessionService        ..> RoundRepository
+AdminGameplayService  ..> OfferRepository
+AdminGameplayService  ..> DecisionRepository
+PlayerGameplayService ..> OfferRepository
+PlayerGameplayService ..> DecisionRepository
+CoreGameplayService   ..> RoundRepository
+CoreGameplayService   ..> OfferRepository
+CoreGameplayService   ..> DecisionRepository
+
+' ----------------------------------------------------------------
+' 4) REST API
+' ----------------------------------------------------------------
+package edu.itmo.ultimatum_game.controllers {
+  class AuthController    <<Controller>>
+  class CsrfController    <<Controller>>
+  class SessionController <<Controller>>
+  class UserController    <<Controller>>
+}
+AuthController    ..> AuthService
+CsrfController    ..> SecurityService
+SessionController ..> SessionService
+UserController    ..> UserService
+
+Client --> AuthController    : HTTP/JSON
+Client --> CsrfController    : HTTP/JSON
+Client --> SessionController : HTTP/JSON
+Client --> UserController    : HTTP/JSON
+
+' ----------------------------------------------------------------
+' 5) WebSocket / STOMP
+' ----------------------------------------------------------------
+package edu.itmo.ultimatum_game.controllers.ws {
+  class OfferWsController        <<MessageController>>
+  class SessionAdminWsController <<MessageController>>
+}
+OfferWsController        ..> PlayerGameplayService
+SessionAdminWsController ..> AdminGameplayService
+
+Client -[#darkgreen,dashed]> OfferWsController        : STOMP
+Client -[#darkgreen,dashed]> SessionAdminWsController : STOMP
+
+' ----------------------------------------------------------------
+' 6) Security / JWT
+' ----------------------------------------------------------------
+AuthService     ..> JwtService
+SecurityService ..> JwtService
+
+@enduml

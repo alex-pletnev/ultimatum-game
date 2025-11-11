@@ -11,7 +11,7 @@ class FreeForAllStrategy : ShuffleStrategy {
 
     override fun shuffleOffers(session: Session) {
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
-        val responders = copyOf(session.members)
+        val responders = copyOf(session.members).toMutableSet()
         if (responders.size != round.offers.size) {
             throw IllegalStateException("Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)")
         }

@@ -34,8 +34,11 @@ class SecurityConfiguration(
                     // настраиваем, как обрабатывать запросы за токеном
                     .csrfTokenRequestHandler(XorCsrfTokenRequestAttributeHandler())
             }
-            .cors { }
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
+
+                it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                 it.requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/v3/api/**").permitAll()

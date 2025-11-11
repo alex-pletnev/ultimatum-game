@@ -82,7 +82,7 @@ class JwtService(
         logger.info("Генерация JWT токена для username=${userDetails.username}")
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.username)
             .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)))
+            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact()
     }
 

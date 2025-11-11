@@ -33,6 +33,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-messaging")
     implementation("org.springframework.security:spring-security-config:6.1.0")
 
+    implementation("org.apache.commons:commons-csv:1.11.0")
 
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")

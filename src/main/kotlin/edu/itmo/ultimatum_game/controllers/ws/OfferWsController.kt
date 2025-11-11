@@ -21,7 +21,7 @@ class OfferWsController(
 
     private val logger = logger()
 
-    @PreAuthorize("hasRole('PLAYER')")
+    @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN')")
     @MessageMapping("session/{sessionId}/offer.create")
     fun createOffer(
         @DestinationVariable sessionId: String,
@@ -34,7 +34,7 @@ class OfferWsController(
         gameplayService.sendOffer(sessionUuid, playerUuid, cmd)
     }
 
-    @PreAuthorize("hasRole('PLAYER')")
+    @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN')")
     @MessageMapping("session/{sessionId}/make.decision")
     fun makeDecision(
         @DestinationVariable sessionId: String,

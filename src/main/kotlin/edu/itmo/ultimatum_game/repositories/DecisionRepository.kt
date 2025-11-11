@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface DecisionRepository : CrudRepository<Decision, UUID>
+interface DecisionRepository : CrudRepository<Decision, UUID> {
+
+    fun findBySessionId(sessionId: UUID): List<Decision>
+}

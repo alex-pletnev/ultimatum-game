@@ -20,8 +20,8 @@ class WebSocketSecurityConfig {
     ): AuthorizationManager<Message<*>> {
         // ---------- команды (SEND) ----------
         messages
-            .simpDestMatchers("/app/session/*/offer.create").hasRole("PLAYER")
-            .simpDestMatchers("/app/offer/*/make.decision").hasRole("PLAYER")
+            .simpDestMatchers("/app/session/*/offer.create").hasAnyRole("PLAYER", "ADMIN")
+            .simpDestMatchers("/app/session/*/make.decision").hasAnyRole("PLAYER", "ADMIN")
 
             .simpDestMatchers("/app/session/*/start").hasRole("ADMIN")
             .simpDestMatchers("/app/session/*/close").hasRole("ADMIN")
@@ -43,7 +43,7 @@ class WebSocketSecurityConfig {
             .hasAnyRole("PLAYER", "OBSERVER", "ADMIN")
         messages
             .simpSubscribeDestMatchers("/topic/session/*/player/*/offer")
-            .hasRole("PLAYER")
+            .hasAnyRole("PLAYER", "ADMIN")
 
         messages
             .simpTypeMatchers(CONNECT, HEARTBEAT, UNSUBSCRIBE, DISCONNECT)

@@ -7,6 +7,8 @@ import edu.itmo.ultimatum_game.exceptions.IdNotFoundException
 import edu.itmo.ultimatum_game.model.Decision
 import edu.itmo.ultimatum_game.model.Offer
 import edu.itmo.ultimatum_game.model.RoundPhase
+import edu.itmo.ultimatum_game.repositories.DecisionRepository
+import edu.itmo.ultimatum_game.repositories.OfferRepository
 import edu.itmo.ultimatum_game.repositories.RoundRepository
 import edu.itmo.ultimatum_game.repositories.SessionRepository
 import edu.itmo.ultimatum_game.util.logger
@@ -21,6 +23,8 @@ class PlayerGameplayService(
     private val sessionRepository: SessionRepository,
     private val sessionService: SessionService,
     private val roundRepository: RoundRepository,
+    private val offerRepository: OfferRepository,
+    private val decisionRepository: DecisionRepository,
     private val userService: UserService,
     private val gameplayService: CoreGameplayService
 ) {
@@ -46,15 +50,17 @@ class PlayerGameplayService(
             throw DuplicateIdException("Вы уже отправили offer для этого раунда")
         }
 
-        val offer = Offer(
+        val offer = offerRepository.save(
+            Offer(
             session = session,
             round = round,
             proposer = user,
             offerValue = offerValue,
+            )
         )
         round.offers += offer
         roundRepository.save(round)
-        logger.info("Создан оффер {} для сессии {}", offer.id, session.id)
+        logger.info("Создан оффер {} для сессии {}", offer, session.id)
 
         eventPublisher.publishOfferCreated(sessionId, offer)
         logger.info("Опубликовано событие OfferCreated для сессии {} оффера {}", sessionId, offer.id)
@@ -105,12 +111,13 @@ class PlayerGameplayService(
             }
         logger.debug("Найден оффер {} для принятия решения", offer.id)
 
-        val decision = Decision(
+        val decision = decisionRepository.save(
+            Decision(
             session = session,
             round = round,
             responder = user,
             offer = offer,
-            decision = decisionValue,
+            decision = decisionValue)
         )
         round.decisions += decision
         roundRepository.save(round)
@@ -131,5 +138,4 @@ class PlayerGameplayService(
             logger.info("Опубликован RoundStatus для сессии {} после получения всех решений", sessionId)
         }
     }
-
 }

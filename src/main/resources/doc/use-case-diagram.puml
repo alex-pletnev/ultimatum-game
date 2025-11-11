@@ -1,12 +1,8 @@
-@startuml UltimatumGameUseCases
-' ==========================================
-' Use-Case Diagram – Ultimatum Game backend
-' ==========================================
+@startuml UltimatumGameUseCasesWide
 
+scale 1920 width
 left to right direction
-' ----------------------------------------
-'  Color scheme for actors’ actions
-' ----------------------------------------
+
 skinparam actor {
   BackgroundColor #F5F5F5
   BorderColor Black
@@ -16,81 +12,64 @@ skinparam usecase {
   BorderColor Black
 }
 
-
-'-------------------------------------------
-' Actors
-'-------------------------------------------
+' Акторы
 actor Admin    as A
 actor Player   as P
 actor Observer as O
 actor NPC      as N
 
-'-------------------------------------------
-' System boundary
-'-------------------------------------------
-rectangle "Система «Ultimatum Game»" {
-
-  ' ---------- Аутентификация ----------
-  usecase UC_Login         as "(Быстрый вход / авторизация)"
-
-  ' ---------- Управление сессиями ----------
-  package "Управление сессиями" {
-    usecase UC_ListSessions   as "(Просмотреть список сессий)"
-    usecase UC_CreateSession  as "(Создать игровую сессию)"
-    usecase UC_ControlSession as "(Управлять сессией\nSTART / FINISH / ABORT)"
-    usecase UC_JoinSession    as "(Присоединиться к сессии)"
-  }
-
-  ' ---------- Геймплей ----------
-  package "Геймплей" {
-    usecase UC_CreateOffer    as "(Сделать предложение)"
-    usecase UC_DecideOffer    as "(Ответить на предложение)"
-    usecase UC_ReceiveRealtime as "(Получать события\nв реальном времени)"
-  }
-
-  ' ---------- Аналитика / NPC ----------
-  package "Аналитика и NPC" {
-    usecase UC_ExportStats as "(Экспорт статистики CSV)"
-    usecase UC_ManageNPC   as "(Управлять стратегиями NPC)"
-    usecase UC_NPCDecision as "(Автоматически принять\nрешение по стратегии)"
-  }
+' Аутентификация
+rectangle "Аутентификация" {
+  usecase UC_Login as "(Быстрый вход / авторизация)" #A0A0A0
 }
 
-'-------------------------------------------
-' Relationships
-'-------------------------------------------
+' Сессии
+rectangle "Сессии" {
+  usecase UC_ListSessions   as "(Просмотреть сессии)"        #A0A0A0
+  usecase UC_CreateSession  as "(Создать сессию)"            #FF9999
+  usecase UC_ControlSession as "(Управлять сессией)"         #FF9999
+  usecase UC_JoinSession    as "(Присоединиться)"            #99FF99
+}
 
-' Аутентификация
-A --> UC_Login #FF9999
-P --> UC_Login #99FF99
-O --> UC_Login #786B00
+' Геймплей
+rectangle "Геймплей" {
+  usecase UC_CreateOffer     as "(Сделать предложение)"      #99FF99
+  usecase UC_DecideOffer     as "(Ответить на предложение)"  #99FF99
+  usecase UC_ReceiveRealtime as "(События в реальном времени)" #A0A0A0
+}
 
-' Просмотр и выбор сессии
-A --> UC_ListSessions #FF9999
-P --> UC_ListSessions #99FF99
-O --> UC_ListSessions #786B00
+' Аналитика и NPC
+rectangle "Аналитика / NPC" {
+  usecase UC_ExportStats as "(Экспорт статистики CSV)"       #FF9999
+  usecase UC_ManageNPC   as "(Настройка NPC стратегий)"       #FF9999
+  usecase UC_NPCDecision as "(NPC принимает решение)"         #FFFF66
+}
 
-' Админские операции
-A --> UC_CreateSession #FF9999
-A --> UC_ControlSession #FF9999
-A --> UC_ExportStats #FF9999
-A --> UC_ManageNPC #FF9999
+' Связи акторов
+A --> UC_Login
+P --> UC_Login
+O --> UC_Login
 
-' Участие игрока
-P --> UC_JoinSession #99FF99
-P --> UC_CreateOffer #99FF99
-P --> UC_DecideOffer #99FF99
-P --> UC_ReceiveRealtime #99FF99
+A --> UC_ListSessions
+P --> UC_ListSessions
+O --> UC_ListSessions
 
-' Наблюдатель
-O --> UC_JoinSession #786B00
-O --> UC_ReceiveRealtime #786B00
+A --> UC_CreateSession
+A --> UC_ControlSession
+A --> UC_ExportStats
+A --> UC_ManageNPC
 
-' Админ тоже может подписаться на WS-события при мониторинге
-A --> UC_ReceiveRealtime #FF9999
+P --> UC_JoinSession
+O --> UC_JoinSession
 
-' NPC-активность
-N --> UC_NPCDecision #000000
+P --> UC_CreateOffer
+P --> UC_DecideOffer
+P --> UC_ReceiveRealtime
+
+O --> UC_ReceiveRealtime
+A --> UC_ReceiveRealtime
+
+N --> UC_NPCDecision
 UC_NPCDecision .down.> UC_DecideOffer : <<include>>
 
 @enduml

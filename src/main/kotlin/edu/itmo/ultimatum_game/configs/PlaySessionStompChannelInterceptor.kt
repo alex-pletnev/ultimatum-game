@@ -89,11 +89,13 @@ class PlaySessionStompChannelInterceptor(
         // Проверяем права
         return when (command) {
             StompCommand.SEND -> {
-                if (sessionService.isUserAreSessionAdmin(userId, sessionId)) {
-                    logger.info("SEND разрешён: пользователь $userId — админ сессии $sessionId")
+                if (sessionService.isUserAreSessionAdmin(userId, sessionId)
+                    || sessionService.isUserAreSessionMember(userId, sessionId)
+                ) {
+                    logger.info("SEND разрешён: пользователь $userId — админ или игрок сессии $sessionId")
                     message
                 } else {
-                    logger.warn("SEND отклонён: пользователь $userId не админ сессии $sessionId")
+                    logger.warn("SEND отклонён: пользователь $userId не админ или игрок сессии $sessionId")
                     throw SessionStompRejectedException("Вы не являетесь админом сессии $sessionId")
                 }
             }

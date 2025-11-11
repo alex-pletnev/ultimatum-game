@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game.services
 
 import edu.itmo.ultimatum_game.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatum_game.dto.responses.RoundResponse
 import edu.itmo.ultimatum_game.dto.responses.SessionResponse
 import edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatum_game.exceptions.IdNotFoundException
@@ -8,6 +9,7 @@ import edu.itmo.ultimatum_game.exceptions.SessionJoinRejectedException
 import edu.itmo.ultimatum_game.model.*
 import edu.itmo.ultimatum_game.repositories.SessionRepository
 import edu.itmo.ultimatum_game.repositories.TeamRepository
+import edu.itmo.ultimatum_game.util.RoundMapper
 import edu.itmo.ultimatum_game.util.SessionMapper
 import edu.itmo.ultimatum_game.util.SessionWithTeamsAndMembersMapper
 import edu.itmo.ultimatum_game.util.logger
@@ -25,6 +27,7 @@ class SessionService(
     private val sessionRepository: SessionRepository,
     private val sessionMapper: SessionMapper,
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
+    private val roundMapper: RoundMapper,
     private val userService: UserService,
     private val eventPublisherService: EventPublisherService
 ) {
@@ -83,6 +86,15 @@ class SessionService(
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         logger.debug("Найдена сессия {}", session)
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
+        return dto
+    }
+
+    fun getCurrentRound(sessionId: UUID): RoundResponse {
+        val session = sessionRepository.findById(sessionId)
+            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
+        logger.debug("Найдена сессия {}", session)
+        val round = session.currentRound?: throw IdNotFoundException("Текущий раунд null сессия ${session.displayName} еще не началась")
+        val dto = roundMapper.toDto(round)
         return dto
     }
 

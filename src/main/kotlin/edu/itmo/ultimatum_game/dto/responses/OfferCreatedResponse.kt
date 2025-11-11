@@ -10,7 +10,7 @@ data class OfferCreatedResponse(
     val id: UUID,
     val round: RoundPrewResponse,
     val proposer: UserResponse,
-    val responder: UserResponse,
+    val responder: UserResponse?,
     val offerValue: Int,
     val createdAt: Date,
 ) : Serializable

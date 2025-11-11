@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game.controllers
 
 import edu.itmo.ultimatum_game.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatum_game.dto.responses.RoundResponse
 import edu.itmo.ultimatum_game.dto.responses.SessionResponse
 import edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatum_game.services.SessionService
@@ -52,6 +53,14 @@ class SessionController(
         return response
     }
 
+    @GetMapping("/{id}/current-round")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
+    fun getCurrentRound(@PathVariable id: String): RoundResponse {
+        logger.info("Получен запрос на получение сессии(с командами и игроками) с id: $id")
+        val response = sessionService.getCurrentRound(id.toUuidOrThrow())
+        logger.info("По  sessionId {} найден {}", id, response)
+        return response
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
@@ -90,6 +99,4 @@ class SessionController(
         val response = sessionService.joinSessionAsObserver(sessionUuid)
         return response
     }
-
-
 }
