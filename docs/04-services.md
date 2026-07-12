@@ -34,9 +34,6 @@
 | `getSessionWithTeamsAndMembers` | `(UUID) → SessionWithTeamsAndMembersResponse` | read-only |
 | `getCurrentRound` | `(UUID) → RoundResponse` | read-only; `IdNotFoundException` если нет активного раунда |
 | `getAllSessions` | `(page: Int, pageSize: Int, s: String) → Page<SessionResponse>` | pg_trgm search + pagination |
-| `isUserAreSessionAdmin` | `(userId: UUID, sessionId: UUID) → Boolean` | read-only |
-| `isUserAreSessionMember` | `(userId: UUID, sessionId: UUID) → Boolean` | read-only |
-| `isUserAreSessionObserver` | `(userId: UUID, sessionId: UUID) → Boolean` | read-only |
 | `joinSession` | `(sessionId: UUID, teamId: UUID?) → SessionWithTeamsAndMembersResponse` | `members.add`; для TEAM_BATTLE — `team.members.add`; publish `sessionStatus` |
 | `joinSessionAsObserver` | `(sessionId: UUID) → SessionWithTeamsAndMembersResponse` | `observers.add`; удаляет из `members` если был; publish `sessionStatus` |
 

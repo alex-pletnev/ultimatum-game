@@ -1,7 +1,7 @@
 ---
 id: T-011
 title: Удалить orphan-методы isUserAreSession* из SessionService
-status: pending
+status: done
 priority: low
 created: 2026-07-12
 updated: 2026-07-12
@@ -20,10 +20,10 @@ tags: [tech-debt, refactor]
 
 ## Acceptance criteria
 
-- [ ] Удалить `isUserAreSessionAdmin`, `isUserAreSessionMember`, `isUserAreSessionObserver` из `SessionService`.
-- [ ] Если удаление тянет удаление helper'ов в репозиториях — их тоже вычистить.
-- [ ] `./gradlew test` зелёный.
-- [ ] Если методы упомянуты в `docs/04-services.md` — синхронизировать.
+- [x] Удалить `isUserAreSessionAdmin`, `isUserAreSessionMember`, `isUserAreSessionObserver` из `SessionService`.
+- [x] Если удаление тянет удаление helper'ов в репозиториях — их тоже вычистить.
+- [x] `./gradlew test` зелёный.
+- [x] Если методы упомянуты в `docs/04-services.md` — синхронизировать.
 
 ## План
 
@@ -36,3 +36,4 @@ tags: [tech-debt, refactor]
 
 - 2026-07-12: заведена автоматически по итогам ретроспективы T-010. Методы стали orphan после удаления `PlaySessionStompChannelInterceptor`.
 - 2026-07-12: при написании тестов SessionService в T-012 обнаружено, что `isUserAreSessionObserver` реализован через `members.find`, а не `observers.find` — фактически дублирует `isUserAreSessionMember`. Добавлено в контекст.
+- 2026-07-12: `grep -rn isUserAreSession` подтвердил отсутствие вызовов в `src/main/`. Удалены три метода из `SessionService` (строки 122-133), удалён блок `membership helpers` из `SessionServiceTest` (5 тестов), синхронизирована таблица методов в `docs/04-services.md`. Helper'ов в репозиториях под удаление не оказалось. `gradle test` и `jacocoTestCoverageVerification` (порог 0.80) зелёные.

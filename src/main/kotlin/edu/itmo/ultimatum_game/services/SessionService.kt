@@ -119,18 +119,6 @@ class SessionService(
         return response
     }
 
-    fun isUserAreSessionAdmin(userId: UUID, sessionId: UUID): Boolean {
-        return getSessionEntity(sessionId).admin?.id == userId
-    }
-
-    fun isUserAreSessionMember(userId: UUID, sessionId: UUID): Boolean {
-        return getSessionEntity(sessionId).members.find { it.id == userId } != null
-    }
-
-    fun isUserAreSessionObserver(userId: UUID, sessionId: UUID): Boolean {
-        return getSessionEntity(sessionId).members.find { it.id == userId } != null
-    }
-
     @Transactional
     fun joinSession(sessionId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
         val user = userService.getCurrentUser()

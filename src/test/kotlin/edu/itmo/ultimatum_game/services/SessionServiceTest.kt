@@ -225,50 +225,6 @@ class SessionServiceTest {
         verify { sessionRepo.searchByNameTrgm("foo", "%foo%", any()) }
     }
 
-    // ---------- membership helpers ----------
-
-    @Test
-    fun `isUserAreSessionAdmin — true когда user совпадает с admin`() {
-        val admin = user(role = Role.ADMIN)
-        val s = session(admin = admin)
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
-        assertTrue(service.isUserAreSessionAdmin(admin.id!!, s.id!!))
-    }
-
-    @Test
-    fun `isUserAreSessionAdmin — false когда user не admin`() {
-        val other = user()
-        val s = session(admin = user(role = Role.ADMIN))
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
-        assertFalse(service.isUserAreSessionAdmin(other.id!!, s.id!!))
-    }
-
-    @Test
-    fun `isUserAreSessionMember — true если в members`() {
-        val u = user()
-        val s = session(members = mutableSetOf(u))
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
-        assertTrue(service.isUserAreSessionMember(u.id!!, s.id!!))
-    }
-
-    @Test
-    fun `isUserAreSessionMember — false если не в members`() {
-        val u = user()
-        val s = session(members = mutableSetOf())
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
-        assertFalse(service.isUserAreSessionMember(u.id!!, s.id!!))
-    }
-
-    @Test
-    fun `isUserAreSessionObserver — известный баг, смотрит в members а не в observers (см T-011)`() {
-        val u = user()
-        // Пользователь в observers, но не в members
-        val s = session(members = mutableSetOf(), observers = mutableSetOf(u))
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
-        // Ожидаем false из-за бага: метод фактически проверяет members
-        assertFalse(service.isUserAreSessionObserver(u.id!!, s.id!!), "баг зафиксирован в T-011")
-    }
-
     // ---------- joinSession ----------
 
     @Test
