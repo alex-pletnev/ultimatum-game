@@ -1,7 +1,7 @@
 ---
 id: T-006
 title: Автогенерация REST/WS спек, удаление ручных YAML
-status: pending
+status: in_progress
 priority: medium
 created: 2026-07-12
 updated: 2026-07-12
@@ -58,3 +58,4 @@ tags: [api, docs, meta, tech-debt]
 ## Лог
 
 - `2026-07-12`: задача заведена. Дизайн согласован (approach C — full auto-generation; snapshots коммитятся в git). WS-рефактор пойдёт отдельным таском после этого.
+- `2026-07-12`: старт реализации. Начал с `build.gradle.kts` — springwolf deps + фикс `openApi.apiDocsUrl` (был без контекст-пути `/api/v1`, из-за чего `generateOpenApiDocs` бил в 404) + перенастройка `outputDir` на `src/main/resources/doc/`.

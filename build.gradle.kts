@@ -23,9 +23,12 @@ repositories {
 
 val jjwtVersion = "0.11.5"
 val mapstructVersion = "1.6.3"
+val springwolfVersion = "1.11.0"
 
 dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("io.github.springwolf:springwolf-stomp:$springwolfVersion")
+    implementation("io.github.springwolf:springwolf-ui:$springwolfVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -67,13 +70,12 @@ kotlin {
 kapt { correctErrorTypes = true }
 
 openApi {
-    apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+    apiDocsUrl.set("http://localhost:8080/api/v1/v3/api-docs")
     outputDir.set(
         layout
-            .buildDirectory            // DirectoryProperty
-            .dir("generated/openapi")   // DirectoryProperty, указываем относительный путь
-            .get()                      // Directory
-            .asFile                     // File
+            .projectDirectory
+            .dir("src/main/resources/doc")
+            .asFile
     )
     outputFileName.set("openapi.json")
 }
