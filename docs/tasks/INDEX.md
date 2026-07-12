@@ -12,6 +12,7 @@
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
+| T-011 | Удалить orphan-методы isUserAreSession* из SessionService | pending | low | 2026-07-12 | [T-011](T-011-remove-orphan-session-membership-methods.md) |
 
 ## Закрытые задачи
 
