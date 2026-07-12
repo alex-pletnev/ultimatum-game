@@ -33,8 +33,8 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} запущена и сохранена со статусом {}", session.id, session.state)
 
-        eventPublisherService.publishSessionStatus(session.id, session)
-        logger.info("Опубликован RoundStatus для сессии {}", session.id)
+        eventPublisherService.publishSessionStatus(sessionId, session)
+        logger.info("Опубликован RoundStatus для сессии {}", sessionId)
     }
 
     @Transactional
@@ -47,8 +47,8 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} закрыта для новых подключений", session.id)
 
-        eventPublisherService.publishSessionStatus(session.id, session)
-        logger.info("Опубликован RoundStatus для сессии {} после закрытия", session.id)
+        eventPublisherService.publishSessionStatus(sessionId, session)
+        logger.info("Опубликован RoundStatus для сессии {} после закрытия", sessionId)
     }
 
     @Transactional
@@ -61,8 +61,8 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} открыта для новых подключений", session.id)
 
-        eventPublisherService.publishSessionStatus(session.id, session)
-        logger.info("Опубликован RoundStatus для сессии {} после открытия", session.id)
+        eventPublisherService.publishSessionStatus(sessionId, session)
+        logger.info("Опубликован RoundStatus для сессии {} после открытия", sessionId)
     }
 
     @Transactional
@@ -76,8 +76,11 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} прервана и закрыта для подключений", session.id)
 
-        eventPublisherService.publishRoundStatus(session.id, session.currentRound)
-        logger.info("Опубликован RoundStatus для сессии {} после прерывания", session.id)
+        val sessionId = requireNotNull(session.id) { "session.id is null after save" }
+        session.currentRound?.let { round ->
+            eventPublisherService.publishRoundStatus(sessionId, round)
+            logger.info("Опубликован RoundStatus для сессии {} после прерывания", sessionId)
+        } ?: logger.info("Abort сессии {} без активного раунда — RoundStatus не публикуется", sessionId)
     }
 
     @Transactional
@@ -101,8 +104,10 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} сохранена после перехода между раундами", session.id)
 
-        eventPublisherService.publishRoundStatus(session.id, session.currentRound)
-        logger.info("Опубликован RoundStatus для сессии {} после запуска нового раунда", session.id)
+        val sessionId = requireNotNull(session.id) { "session.id is null after save" }
+        // session.currentRound здесь: либо newRound (перешли), либо старый currentRound c phase=FINISHED (кончились раунды) — не null
+        eventPublisherService.publishRoundStatus(sessionId, session.currentRound!!)
+        logger.info("Опубликован RoundStatus для сессии {} после запуска нового раунда", sessionId)
     }
 
     fun abortCurrentRound() {

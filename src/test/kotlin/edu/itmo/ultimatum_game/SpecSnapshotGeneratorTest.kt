@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,9 +47,12 @@ class SpecSnapshotGeneratorTest {
             .response
             .contentAsString
 
-        val prettyJson = objectMapper
-            .writerWithDefaultPrettyPrinter()
-            .writeValueAsString(objectMapper.readTree(body))
+        // Стабильный порядок ключей — иначе каждый прогон даёт шумный diff в git.
+        // Читаем в plain Map/List (не JsonNode — ObjectNode не подчиняется ORDER_MAP_ENTRIES_BY_KEYS),
+        // тогда SerializationFeature при записи применяется рекурсивно.
+        val stableMapper = objectMapper.copy().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+        val raw: Any = stableMapper.readValue(body, Any::class.java)
+        val prettyJson = stableMapper.writerWithDefaultPrettyPrinter().writeValueAsString(raw)
 
         File(outputDir, filename).writeText(prettyJson + "\n")
     }

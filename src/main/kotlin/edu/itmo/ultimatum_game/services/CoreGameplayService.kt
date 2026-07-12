@@ -20,11 +20,15 @@ class CoreGameplayService(
 
         val round = session.currentRound ?: error("session.currentRound не должен быть null на данном этапе")
         logger.debug("Отправляю офферы игрокам для раунда {} сессии {}", round.roundNumber, session.id)
+        val sessionId = requireNotNull(session.id) { "session.id is null after shuffle — сессия должна быть persisted" }
         round.offers.forEach { offer ->
             val responderId = offer.responder?.id
-            logger.info("Публикую оффер {} игроку {} в раунде {} сессии {}", offer.id, responderId, round.roundNumber, session.id)
-
-            eventPublisherService.publishOfferToPlayer(session.id, responderId, offer)
+            if (responderId == null) {
+                logger.warn("Оффер {} без respondera — публикация пропущена (баг данных)", offer.id)
+                return@forEach
+            }
+            logger.info("Публикую оффер {} игроку {} в раунде {} сессии {}", offer.id, responderId, round.roundNumber, sessionId)
+            eventPublisherService.publishOfferToPlayer(sessionId, responderId, offer)
         }
 
         round.roundPhase = RoundPhase.OFFERS_SENT
