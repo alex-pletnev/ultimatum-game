@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("kapt") version "2.1.20"
+    jacoco
 }
 
 group = "edu.itmo"
@@ -51,6 +52,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.mockk:mockk:1.13.13")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("com.h2database:h2")
 
@@ -79,6 +81,7 @@ tasks.named<Test>("test") {
     useJUnitPlatform {
         excludeTags("snapshot")
     }
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.register<Test>("generateApiSnapshots") {
@@ -90,4 +93,61 @@ tasks.register<Test>("generateApiSnapshots") {
         includeTags("snapshot")
     }
     outputs.upToDateWhen { false }
+}
+
+// ----- JaCoCo (T-012): coverage бизнес-логики -----
+//
+// Scope: services/* + model.ShuffleStrategy (см. docs/tasks/T-012).
+// Инфра/data-слои исключены: configs, controllers, dto, util (mappers),
+// repositories, exceptions, JPA-модели.
+//
+// Порог поднимается до 0.80 в финале T-012. На этапе инфры — 0.0
+// (чтобы `check` не падал до появления тестов).
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+val coverageIncludes = listOf(
+    "edu/itmo/ultimatum_game/services/**",
+    "edu/itmo/ultimatum_game/model/ShuffleStrategy*",
+    "edu/itmo/ultimatum_game/model/FreeForAllStrategy*",
+    "edu/itmo/ultimatum_game/model/TeamBattleStrategy*"
+)
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) { include(coverageIncludes) }
+        })
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) { include(coverageIncludes) }
+        })
+    )
+    violationRules {
+        rule {
+            element = "BUNDLE"
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.00".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
