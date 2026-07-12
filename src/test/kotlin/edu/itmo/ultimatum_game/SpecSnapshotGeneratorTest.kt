@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -16,8 +17,10 @@ import java.io.File
  * (springdoc + springwolf). Артефакты коммитятся в git и служат источником правды
  * для внешних потребителей API + видимости drift в PR-diff.
  *
- * Запуск: ./gradlew generateApiSnapshots
+ * Отделён тегом "snapshot" — обычный `./gradlew test` его пропускает.
+ * Запуск: `./gradlew generateApiSnapshots`.
  */
+@Tag("snapshot")
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(username = "spec-gen", roles = ["ADMIN"])

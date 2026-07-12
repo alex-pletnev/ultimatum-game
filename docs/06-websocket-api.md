@@ -103,4 +103,4 @@ SUBSCRIBE /topic/session/{id}/player/{myUserId}/offer
 
 Спека: `src/main/resources/doc/asyncapi.json` (AsyncAPI 3.0, автогенерация из кода через springwolf-stomp).
 Локальный UI: `http://localhost:8080/api/v1/springwolf/asyncapi-ui.html`.
-Регенерация снапшота: `./gradlew test --tests "*.SpecSnapshotGeneratorTest"`.
+Регенерация снапшота: `./gradlew generateApiSnapshots`.

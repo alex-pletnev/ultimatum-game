@@ -75,6 +75,19 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks.named<Test>("test") {
+    useJUnitPlatform {
+        excludeTags("snapshot")
+    }
+}
+
+tasks.register<Test>("generateApiSnapshots") {
+    description = "Regenerates src/main/resources/doc/{openapi,asyncapi}.json from live Spring context"
+    group = "documentation"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    useJUnitPlatform {
+        includeTags("snapshot")
+    }
+    outputs.upToDateWhen { false }
 }

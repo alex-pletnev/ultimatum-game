@@ -22,6 +22,15 @@ class OpenApiConfig {
                 .description("REST API of Ultimatum Game. Generated from source annotations.")
         )
 
+    /**
+     * Springwolf-endpoints (/springwolf/docs, /springwolf/ui-config и т.п.) не относятся к
+     * продуктовому REST API — только внутренняя обвязка для AsyncAPI-спеки. Удаляем из openapi.
+     */
+    @Bean
+    fun filterInternalPaths(): OpenApiCustomizer = OpenApiCustomizer { openApi ->
+        openApi.paths?.keys?.removeIf { it.startsWith("/springwolf") }
+    }
+
     @Bean
     fun addDefaultErrorResponses(): OpenApiCustomizer = OpenApiCustomizer { openApi ->
         val errorSchemaRef = "#/components/schemas/${ApiErrorResponse::class.simpleName}"

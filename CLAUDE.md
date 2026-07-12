@@ -81,7 +81,7 @@ Skills вызываются автоматически в перечисленн
 | По ходу другой работы замечена проблема, не относящаяся к текущей задаче | `task-add` в Auto-mode | Завести таск с фильтром (см. ниже), одной строкой сообщить пользователю |
 | Задача переведена в `done` | `docs-sync` | Убедиться что все `related_docs` синхронизированы |
 | Массовое переименование/удаление в `src/` | `task-sync` | Проверить `related_code` во всех открытых задачах — могли поехать |
-| Edit в `controllers/**`, `dto/**` или `services/EventPublisherService.kt` | ручное действие | Перед commit'ом: `./gradlew test --tests "*.SpecSnapshotGeneratorTest"` → регенерирует `src/main/resources/doc/openapi.json` и `asyncapi.json` → включить их в тот же commit |
+| Edit в `controllers/**`, `dto/**` или `services/EventPublisherService.kt` | ручное действие | Перед commit'ом: `./gradlew generateApiSnapshots` → регенерирует `src/main/resources/doc/openapi.json` и `asyncapi.json` → включить их в тот же commit |
 | Пользователь спрашивает «что там в задачах / что мы делаем / чем занимались» | без skill | Прочитать `docs/tasks/INDEX.md`, ответить; не создавать новые задачи |
 
 ## Проактивное заведение задач (Auto-mode для `task-add`)

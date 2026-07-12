@@ -1,7 +1,7 @@
 ---
 id: T-007
 title: Полировка генератора API-снапшотов (custom task, exclude из test, чистка openapi)
-status: pending
+status: done
 priority: low
 created: 2026-07-12
 updated: 2026-07-12
@@ -41,3 +41,7 @@ tags: [tech-debt, meta, api]
 ## Лог
 
 - 2026-07-12: заведена автоматически по итогам T-006 (self-retrospective). Все три пункта — компромиссы, принятые ради закрытия основной задачи; растворятся без записи.
+- 2026-07-12: сделано. Все три пункта:
+  - `@Tag("snapshot")` на `SpecSnapshotGeneratorTest` + `test { useJUnitPlatform { excludeTags("snapshot") } }` — обычный `test` больше не грузит Spring-контекст ради снапшотов (7s вместо 13s+).
+  - `generateApiSnapshots` — теперь регистрируется стабильно. Разница с прошлой попыткой: `tasks.named<Test>("test") { ... }` вместо `tasks.withType<Test> { ... }` — видимо withType конфликтовал с последующей регистрацией нового Test. Плюс `useJUnitPlatform { includeTags("snapshot") }` для чёткой изоляции.
+  - Новый `OpenApiCustomizer.filterInternalPaths` вырезает `/springwolf/*` из openapi. Итог: 12 продуктовых путей (13 endpoints), 0 springwolf.
