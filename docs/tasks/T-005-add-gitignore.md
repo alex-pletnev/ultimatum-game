@@ -1,11 +1,12 @@
 ---
 id: T-005
 title: Добавить .gitignore для типовых артефактов и локальных конфигов
-status: pending
+status: done
 priority: medium
 created: 2026-07-12
 updated: 2026-07-12
-related_code: []
+related_code:
+  - .gitignore
 related_docs: []
 tags: [tech-debt]
 ---
@@ -33,3 +34,4 @@ tags: [tech-debt]
 ## Лог
 
 - 2026-07-12: заведена автоматически в ходе работы над T-004 (Auto-mode). Обнаружено при первом commit: `.claude/settings.local.json` — untracked, легко попал бы в staging.
+- 2026-07-12: добавлен `.gitignore` — стандартный набор (Gradle, Kotlin/JVM, IDEA/VSCode, macOS/Windows, .env, `.claude/settings.local.json`). Tracked-файлов под новые правила нет — миграции индекса не требуется. `git status` — чисто.
