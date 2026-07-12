@@ -41,7 +41,9 @@ class SecurityConfiguration(
 
                 it.requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/v3/api/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/webjars/**").permitAll()
+                    .requestMatchers("/springwolf/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/session").hasAnyRole("ADMIN")
                     .requestMatchers("/ws/**").permitAll()
                     .requestMatchers("/csrf/**").permitAll()

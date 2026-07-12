@@ -1,10 +1,17 @@
 package edu.itmo.ultimatum_game.services
 
+import edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse
+import edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse
+import edu.itmo.ultimatum_game.dto.responses.RoundResponse
+import edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatum_game.model.Decision
 import edu.itmo.ultimatum_game.model.Offer
 import edu.itmo.ultimatum_game.model.Round
 import edu.itmo.ultimatum_game.model.Session
 import edu.itmo.ultimatum_game.util.*
+import io.github.springwolf.bindings.stomp.annotations.StompAsyncOperationBinding
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation
+import io.github.springwolf.core.asyncapi.annotations.AsyncPublisher
 import org.springframework.context.annotation.Lazy
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
@@ -21,6 +28,14 @@ class EventPublisherService(
 
     private val logger = logger()
 
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/offerCreated",
+            description = "Публикуется на каждый новый оффер в раунде. Broadcast всем подписчикам сессии.",
+            payloadType = OfferCreatedResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
     fun publishOfferCreated(sessionId: UUID?, offer: Offer?) {
         if (sessionId != null && offer != null) {
             val dto = offerMapper.toDto(offer)
@@ -33,6 +48,14 @@ class EventPublisherService(
 
     }
 
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/player/{userId}/offer",
+            description = "Персональная доставка оффера конкретному респонденту (userId). Используется в режиме shuffle.",
+            payloadType = OfferCreatedResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
     fun publishOfferToPlayer(sessionId: UUID?, proposerId: UUID?, offer: Offer?) {
         if (sessionId != null && proposerId != null && offer != null) {
             val dto = offerMapper.toDto(offer)
@@ -44,6 +67,14 @@ class EventPublisherService(
         }
     }
 
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/decisionMade",
+            description = "Публикуется на каждое решение (accept/reject) респондента.",
+            payloadType = DecisionMadeResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
     fun publishDecisionMade(sessionId: UUID?, decision: Decision?) {
         if (sessionId != null && decision != null) {
             val dto = decisionMapper.toDto(decision)
@@ -55,6 +86,14 @@ class EventPublisherService(
         }
     }
 
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/roundStatus",
+            description = "Публикуется при каждой смене фазы раунда (RoundPhase).",
+            payloadType = RoundResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
     fun publishRoundStatus(sessionId: UUID?, round: Round?) {
         if (round != null && sessionId != null) {
             logger.info("Entity раунда для публикации {}", round)
@@ -68,6 +107,14 @@ class EventPublisherService(
         }
     }
 
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/sessionStatus",
+            description = "Публикуется на join / start / close / open / abort сессии.",
+            payloadType = SessionWithTeamsAndMembersResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
     fun publishSessionStatus(sessionId: UUID?, session: Session?) {
         if (session != null && sessionId != null) {
             logger.info("Entity сесии для публикации {}", session)

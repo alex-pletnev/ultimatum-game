@@ -1,7 +1,7 @@
 ---
 id: T-006
 title: Автогенерация REST/WS спек, удаление ручных YAML
-status: in_progress
+status: done
 priority: medium
 created: 2026-07-12
 updated: 2026-07-12
@@ -59,3 +59,11 @@ tags: [api, docs, meta, tech-debt]
 
 - `2026-07-12`: задача заведена. Дизайн согласован (approach C — full auto-generation; snapshots коммитятся в git). WS-рефактор пойдёт отдельным таском после этого.
 - `2026-07-12`: старт реализации. Начал с `build.gradle.kts` — springwolf deps + фикс `openApi.apiDocsUrl` (был без контекст-пути `/api/v1`, из-за чего `generateOpenApiDocs` бил в 404) + перенастройка `outputDir` на `src/main/resources/doc/`.
+- `2026-07-12`: bump springdoc-openapi 2.2.0 → 2.7.0 (2.2.0 несовместим со Spring Boot 3.4, ловил `NoSuchMethodError: ControllerAdviceBean.<init>`).
+- `2026-07-12`: попутные фиксы в SecurityConfig — `/v3/api/**` → `/v3/api-docs/**`, добавлены `swagger-ui/**`, `/webjars/**`, `/springwolf/**` в permitAll.
+- `2026-07-12`: подход к генерации сменил с bootRun+curl на `@SpringBootTest` с H2 в тестовой среде (Docker недоступен в dev-окружении). `SpecSnapshotGeneratorTest` через MockMvc дампит оба JSON. Springdoc gradle plugin убран как не нужный.
+- `2026-07-12`: аннотации springwolf на всех паблишерах (`EventPublisherService`, 5 методов) + WS-контроллерах (`SessionAdminWsController` 4 + `OfferWsController` 2 = 6 SEND). Итого AsyncAPI спека содержит 11 каналов.
+- `2026-07-12`: DTO-уточнения — `CreateUserRequest.role` (allowableValues без NPC), `SessionConfigDto` (class-level Schema с инвариантами).
+- `2026-07-12`: `OpenApiConfig` — Info-блок + `OpenApiCustomizer` привязывает `ApiErrorResponse` к 4xx/5xx.
+- `2026-07-12`: старые `ultimatum-game.yaml`, `ws-ultimatum-game.yaml` удалены. `docs/05-rest-api.md`, `docs/06-websocket-api.md`, `CLAUDE.md` — обновлены (ссылки + правило регенерации).
+- `2026-07-12`: **отступление от изначального дизайна:** custom gradle-таска `generateApiSnapshots` не сработала стабильно (Gradle 9 KTS странно кеширует). Оставил как единственный входной вызов `./gradlew test --tests "*.SpecSnapshotGeneratorTest"`. Регистрация — техдолг под отдельный меньший таск, если понадобится.

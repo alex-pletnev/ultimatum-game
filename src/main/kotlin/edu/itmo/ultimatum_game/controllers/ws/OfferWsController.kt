@@ -5,6 +5,9 @@ import edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd
 import edu.itmo.ultimatum_game.services.PlayerGameplayService
 import edu.itmo.ultimatum_game.util.logger
 import edu.itmo.ultimatum_game.util.toUuidOrThrow
+import io.github.springwolf.bindings.stomp.annotations.StompAsyncOperationBinding
+import io.github.springwolf.core.asyncapi.annotations.AsyncListener
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation
 import jakarta.validation.Valid
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -21,6 +24,14 @@ class OfferWsController(
 
     private val logger = logger()
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/offer.create",
+            description = "PLAYER/ADMIN: отправить оффер респонденту. Валидируется amount>=0.",
+            payloadType = CreateOfferCmd::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN')")
     @MessageMapping("session/{sessionId}/offer.create")
     fun createOffer(
@@ -34,6 +45,14 @@ class OfferWsController(
         gameplayService.sendOffer(sessionUuid, playerUuid, cmd)
     }
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/make.decision",
+            description = "PLAYER/ADMIN: решение респондента (accept/reject) по конкретному офферу.",
+            payloadType = MakeDecisionCmd::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN')")
     @MessageMapping("session/{sessionId}/make.decision")
     fun makeDecision(

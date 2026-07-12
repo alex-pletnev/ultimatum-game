@@ -1,0 +1,1019 @@
+{
+  "asyncapi" : "3.0.0",
+  "info" : {
+    "title" : "Ultimatum Game WS API",
+    "version" : "v1",
+    "description" : "STOMP over WebSocket API of Ultimatum Game. Generated from source annotations.",
+    "x-generator" : "springwolf"
+  },
+  "defaultContentType" : "application/json",
+  "servers" : {
+    "stomp" : {
+      "host" : "localhost:8080/api/v1/ws",
+      "protocol" : "stomp"
+    }
+  },
+  "channels" : {
+    "_app_session_{sessionId}_close" : {
+      "address" : "/app/session/{sessionId}/close",
+      "messages" : {
+        "java.lang.String" : {
+          "$ref" : "#/components/messages/java.lang.String"
+        }
+      }
+    },
+    "_app_session_{sessionId}_make.decision" : {
+      "address" : "/app/session/{sessionId}/make.decision",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd"
+        }
+      }
+    },
+    "_app_session_{sessionId}_offer.create" : {
+      "address" : "/app/session/{sessionId}/offer.create",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd"
+        }
+      }
+    },
+    "_app_session_{sessionId}_open" : {
+      "address" : "/app/session/{sessionId}/open",
+      "messages" : {
+        "java.lang.String" : {
+          "$ref" : "#/components/messages/java.lang.String"
+        }
+      }
+    },
+    "_app_session_{sessionId}_round.start" : {
+      "address" : "/app/session/{sessionId}/round.start",
+      "messages" : {
+        "java.lang.String" : {
+          "$ref" : "#/components/messages/java.lang.String"
+        }
+      }
+    },
+    "_app_session_{sessionId}_start" : {
+      "address" : "/app/session/{sessionId}/start",
+      "messages" : {
+        "java.lang.String" : {
+          "$ref" : "#/components/messages/java.lang.String"
+        }
+      }
+    },
+    "_topic_session_{sessionId}_decisionMade" : {
+      "address" : "/topic/session/{sessionId}/decisionMade",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse"
+        }
+      }
+    },
+    "_topic_session_{sessionId}_offerCreated" : {
+      "address" : "/topic/session/{sessionId}/offerCreated",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+        }
+      }
+    },
+    "_topic_session_{sessionId}_player_{userId}_offer" : {
+      "address" : "/topic/session/{sessionId}/player/{userId}/offer",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+        }
+      }
+    },
+    "_topic_session_{sessionId}_roundStatus" : {
+      "address" : "/topic/session/{sessionId}/roundStatus",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.responses.RoundResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.responses.RoundResponse"
+        }
+      }
+    },
+    "_topic_session_{sessionId}_sessionStatus" : {
+      "address" : "/topic/session/{sessionId}/sessionStatus",
+      "messages" : {
+        "edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "HeadersNotDocumented" : {
+        "title" : "HeadersNotDocumented",
+        "type" : "object",
+        "properties" : { },
+        "description" : "There can be headers, but they are not explicitly documented.",
+        "examples" : [ { } ]
+      },
+      "SpringStompDefaultHeaders" : {
+        "title" : "SpringStompDefaultHeaders",
+        "type" : "object",
+        "properties" : { },
+        "examples" : [ { } ]
+      },
+      "edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd" : {
+        "title" : "CreateOfferCmd",
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "examples" : [ {
+          "amount" : 0
+        } ]
+      },
+      "edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd" : {
+        "title" : "MakeDecisionCmd",
+        "type" : "object",
+        "properties" : {
+          "decision" : {
+            "type" : "boolean"
+          },
+          "offerId" : {
+            "type" : "string"
+          }
+        },
+        "examples" : [ {
+          "decision" : true,
+          "offerId" : "string"
+        } ],
+        "required" : [ "decision", "offerId" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse" : {
+        "title" : "DecisionMadeResponse",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "decision" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "offer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "round" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+          }
+        },
+        "examples" : [ {
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "decision" : true,
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offer" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "offerValue" : 0,
+            "proposer" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            },
+            "responder" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            },
+            "round" : {
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "roundNumber" : 0,
+              "roundPhase" : "CREATED"
+            }
+          },
+          "responder" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "round" : {
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "roundNumber" : 0,
+            "roundPhase" : "CREATED"
+          }
+        } ],
+        "required" : [ "createdAt", "decision", "id", "offer", "responder", "round" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.DecisionPrewResponse" : {
+        "title" : "DecisionPrewResponse",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "decision" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "offer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          }
+        },
+        "examples" : [ {
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "decision" : true,
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offer" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "offerValue" : 0,
+            "proposer" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            },
+            "responder" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            }
+          },
+          "responder" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          }
+        } ],
+        "required" : [ "createdAt" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse" : {
+        "title" : "OfferCreatedResponse",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "offerValue" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "proposer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "round" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+          }
+        },
+        "examples" : [ {
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offerValue" : 0,
+          "proposer" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "responder" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "round" : {
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "roundNumber" : 0,
+            "roundPhase" : "CREATED"
+          }
+        } ],
+        "required" : [ "createdAt", "id", "offerValue", "proposer", "round" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse" : {
+        "title" : "OfferPrewResponse",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "offerValue" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "proposer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          }
+        },
+        "examples" : [ {
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offerValue" : 0,
+          "proposer" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "responder" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          }
+        } ],
+        "required" : [ "createdAt" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse" : {
+        "title" : "RoundPrewResponse",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "roundNumber" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "roundPhase" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ]
+          }
+        },
+        "examples" : [ {
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "roundNumber" : 0,
+          "roundPhase" : "CREATED"
+        } ],
+        "required" : [ "id", "roundNumber", "roundPhase" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.RoundResponse" : {
+        "title" : "RoundResponse",
+        "type" : "object",
+        "properties" : {
+          "decisions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.DecisionPrewResponse"
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "offers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse"
+            }
+          },
+          "roundNumber" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "roundPhase" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ]
+          },
+          "session" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionPrewResponse"
+          }
+        },
+        "examples" : [ {
+          "decisions" : [ {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "decision" : true,
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "offer" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "offerValue" : 0,
+              "proposer" : {
+                "createdAt" : "2015-07-20T15:49:04-07:00",
+                "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "nickname" : "string",
+                "role" : "ADMIN"
+              },
+              "responder" : {
+                "createdAt" : "2015-07-20T15:49:04-07:00",
+                "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "nickname" : "string",
+                "role" : "ADMIN"
+              }
+            },
+            "responder" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            }
+          } ],
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offers" : [ {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "offerValue" : 0,
+            "proposer" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            },
+            "responder" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            }
+          } ],
+          "roundNumber" : 0,
+          "roundPhase" : "CREATED",
+          "session" : {
+            "admin" : {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            },
+            "config" : {
+              "numPlayers" : 0,
+              "numRounds" : 0,
+              "numTeams" : 0,
+              "roundSum" : 0,
+              "sessionType" : "FREE_FOR_ALL",
+              "timeoutMoveSec" : 0
+            },
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "displayName" : "string",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "openToConnect" : true,
+            "state" : "CREATED"
+          }
+        } ],
+        "required" : [ "decisions", "id", "offers", "roundNumber", "roundPhase", "session" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse" : {
+        "title" : "SessionConfigResponse",
+        "type" : "object",
+        "properties" : {
+          "numPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "numRounds" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "numTeams" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "roundSum" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sessionType" : {
+            "type" : "string",
+            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ]
+          },
+          "timeoutMoveSec" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "examples" : [ {
+          "numPlayers" : 0,
+          "numRounds" : 0,
+          "numTeams" : 0,
+          "roundSum" : 0,
+          "sessionType" : "FREE_FOR_ALL",
+          "timeoutMoveSec" : 0
+        } ],
+        "required" : [ "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.SessionPrewResponse" : {
+        "title" : "SessionPrewResponse",
+        "type" : "object",
+        "properties" : {
+          "admin" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "state" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ]
+          }
+        },
+        "examples" : [ {
+          "admin" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "config" : {
+            "numPlayers" : 0,
+            "numRounds" : 0,
+            "numTeams" : 0,
+            "roundSum" : 0,
+            "sessionType" : "FREE_FOR_ALL",
+            "timeoutMoveSec" : 0
+          },
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "displayName" : "string",
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "openToConnect" : true,
+          "state" : "CREATED"
+        } ],
+        "required" : [ "admin", "config", "createdAt", "displayName", "id", "openToConnect", "state" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse" : {
+        "title" : "SessionWithTeamsAndMembersResponse",
+        "type" : "object",
+        "properties" : {
+          "admin" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "currentRound" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "members" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            },
+            "uniqueItems" : true
+          },
+          "observers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            },
+            "uniqueItems" : true
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "state" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ]
+          },
+          "teams" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.TeamResponse"
+            },
+            "uniqueItems" : true
+          }
+        },
+        "examples" : [ {
+          "admin" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "config" : {
+            "numPlayers" : 0,
+            "numRounds" : 0,
+            "numTeams" : 0,
+            "roundSum" : 0,
+            "sessionType" : "FREE_FOR_ALL",
+            "timeoutMoveSec" : 0
+          },
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "currentRound" : {
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "roundNumber" : 0,
+            "roundPhase" : "CREATED"
+          },
+          "displayName" : "string",
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "members" : [ {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          } ],
+          "observers" : [ {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          } ],
+          "openToConnect" : true,
+          "state" : "CREATED",
+          "teams" : [ {
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "members" : [ {
+              "createdAt" : "2015-07-20T15:49:04-07:00",
+              "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "nickname" : "string",
+              "role" : "ADMIN"
+            } ],
+            "name" : "string"
+          } ]
+        } ],
+        "required" : [ "admin", "config", "createdAt", "displayName", "id", "members", "observers", "openToConnect", "state", "teams" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.TeamResponse" : {
+        "title" : "TeamResponse",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "members" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            },
+            "uniqueItems" : true
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "examples" : [ {
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "members" : [ {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          } ],
+          "name" : "string"
+        } ],
+        "required" : [ "id", "members", "name" ]
+      },
+      "edu.itmo.ultimatum_game.dto.responses.UserResponse" : {
+        "title" : "UserResponse",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "nickname" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string",
+            "enum" : [ "ADMIN", "PLAYER", "OBSERVER", "NPC" ]
+          }
+        },
+        "examples" : [ {
+          "createdAt" : "2015-07-20T15:49:04-07:00",
+          "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "nickname" : "string",
+          "role" : "ADMIN"
+        } ],
+        "required" : [ "createdAt", "id", "nickname", "role" ]
+      },
+      "java.lang.String" : {
+        "type" : "string",
+        "examples" : [ "\"string\"" ]
+      }
+    },
+    "messages" : {
+      "edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd",
+        "title" : "CreateOfferCmd",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd",
+        "title" : "MakeDecisionCmd",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse",
+        "title" : "DecisionMadeResponse",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse",
+        "title" : "OfferCreatedResponse",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "edu.itmo.ultimatum_game.dto.responses.RoundResponse" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundResponse"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.responses.RoundResponse",
+        "title" : "RoundResponse",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+          }
+        },
+        "name" : "edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse",
+        "title" : "SessionWithTeamsAndMembersResponse",
+        "bindings" : {
+          "stomp" : { }
+        }
+      },
+      "java.lang.String" : {
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload" : {
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema" : {
+            "type" : "string",
+            "examples" : [ "\"string\"" ]
+          }
+        },
+        "name" : "java.lang.String",
+        "title" : "string",
+        "bindings" : {
+          "stomp" : { }
+        }
+      }
+    }
+  },
+  "operations" : {
+    "_app_session_{sessionId}_close_receive_closeSession" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_close"
+      },
+      "title" : "_app_session_{sessionId}_close_receive",
+      "description" : "ADMIN: закрытие сессии (openToConnect=false + завершение). Пустой payload.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_close/messages/java.lang.String"
+      } ]
+    },
+    "_app_session_{sessionId}_make.decision_receive_makeDecision" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_make.decision"
+      },
+      "title" : "_app_session_{sessionId}_make.decision_receive",
+      "description" : "PLAYER/ADMIN: решение респондента (accept/reject) по конкретному офферу.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_make.decision/messages/edu.itmo.ultimatum_game.dto.requests.MakeDecisionCmd"
+      } ]
+    },
+    "_app_session_{sessionId}_offer.create_receive_createOffer" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_offer.create"
+      },
+      "title" : "_app_session_{sessionId}_offer.create_receive",
+      "description" : "PLAYER/ADMIN: отправить оффер респонденту. Валидируется amount>=0.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_offer.create/messages/edu.itmo.ultimatum_game.dto.requests.CreateOfferCmd"
+      } ]
+    },
+    "_app_session_{sessionId}_open_receive_openSession" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_open"
+      },
+      "title" : "_app_session_{sessionId}_open_receive",
+      "description" : "ADMIN: открыть сессию для подключений (openToConnect=true). Пустой payload.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_open/messages/java.lang.String"
+      } ]
+    },
+    "_app_session_{sessionId}_round.start_receive_startNextRound" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_round.start"
+      },
+      "title" : "_app_session_{sessionId}_round.start_receive",
+      "description" : "ADMIN: старт следующего раунда сессии. Пустой payload.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_round.start/messages/java.lang.String"
+      } ]
+    },
+    "_app_session_{sessionId}_start_receive_startSession" : {
+      "action" : "receive",
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_start"
+      },
+      "title" : "_app_session_{sessionId}_start_receive",
+      "description" : "ADMIN: старт сессии. Пустой payload.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_start/messages/java.lang.String"
+      } ]
+    },
+    "_topic_session_{sessionId}_decisionMade_send_publishDecisionMade" : {
+      "action" : "send",
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_decisionMade"
+      },
+      "title" : "_topic_session_{sessionId}_decisionMade_send",
+      "description" : "Публикуется на каждое решение (accept/reject) респондента.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_decisionMade/messages/edu.itmo.ultimatum_game.dto.responses.DecisionMadeResponse"
+      } ]
+    },
+    "_topic_session_{sessionId}_offerCreated_send_publishOfferCreated" : {
+      "action" : "send",
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_offerCreated"
+      },
+      "title" : "_topic_session_{sessionId}_offerCreated_send",
+      "description" : "Публикуется на каждый новый оффер в раунде. Broadcast всем подписчикам сессии.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_offerCreated/messages/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+      } ]
+    },
+    "_topic_session_{sessionId}_player_{userId}_offer_send_publishOfferToPlayer" : {
+      "action" : "send",
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_player_{userId}_offer"
+      },
+      "title" : "_topic_session_{sessionId}_player_{userId}_offer_send",
+      "description" : "Персональная доставка оффера конкретному респонденту (userId). Используется в режиме shuffle.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_player_{userId}_offer/messages/edu.itmo.ultimatum_game.dto.responses.OfferCreatedResponse"
+      } ]
+    },
+    "_topic_session_{sessionId}_roundStatus_send_publishRoundStatus" : {
+      "action" : "send",
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_roundStatus"
+      },
+      "title" : "_topic_session_{sessionId}_roundStatus_send",
+      "description" : "Публикуется при каждой смене фазы раунда (RoundPhase).",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_roundStatus/messages/edu.itmo.ultimatum_game.dto.responses.RoundResponse"
+      } ]
+    },
+    "_topic_session_{sessionId}_sessionStatus_send_publishSessionStatus" : {
+      "action" : "send",
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_sessionStatus"
+      },
+      "title" : "_topic_session_{sessionId}_sessionStatus_send",
+      "description" : "Публикуется на join / start / close / open / abort сессии.",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_sessionStatus/messages/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+      } ]
+    }
+  }
+}

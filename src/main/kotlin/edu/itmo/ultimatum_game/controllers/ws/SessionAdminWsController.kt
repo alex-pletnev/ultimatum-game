@@ -3,6 +3,9 @@ package edu.itmo.ultimatum_game.controllers.ws
 import edu.itmo.ultimatum_game.services.AdminGameplayService
 import edu.itmo.ultimatum_game.util.logger
 import edu.itmo.ultimatum_game.util.toUuidOrThrow
+import io.github.springwolf.bindings.stomp.annotations.StompAsyncOperationBinding
+import io.github.springwolf.core.asyncapi.annotations.AsyncListener
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation
 import jakarta.transaction.Transactional
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -17,6 +20,14 @@ class SessionAdminWsController(
 
     private val logger = logger()
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/start",
+            description = "ADMIN: старт сессии. Пустой payload.",
+            payloadType = String::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasRole('ADMIN')")
     @MessageMapping("session/{sessionId}/start")
     @Transactional
@@ -29,6 +40,14 @@ class SessionAdminWsController(
         adminGameplayService.startSession(sessionUuid)
     }
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/close",
+            description = "ADMIN: закрытие сессии (openToConnect=false + завершение). Пустой payload.",
+            payloadType = String::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasRole('ADMIN')")
     @MessageMapping("session/{sessionId}/close")
     @Transactional
@@ -41,6 +60,14 @@ class SessionAdminWsController(
         adminGameplayService.closeSession(sessionUuid)
     }
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/open",
+            description = "ADMIN: открыть сессию для подключений (openToConnect=true). Пустой payload.",
+            payloadType = String::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasRole('ADMIN')")
     @MessageMapping("session/{sessionId}/open")
     @Transactional
@@ -53,6 +80,14 @@ class SessionAdminWsController(
         adminGameplayService.openSession(sessionUuid)
     }
 
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/round.start",
+            description = "ADMIN: старт следующего раунда сессии. Пустой payload.",
+            payloadType = String::class
+        )
+    )
+    @StompAsyncOperationBinding
     @PreAuthorize("hasRole('ADMIN')")
     @MessageMapping("session/{sessionId}/round.start")
     @Transactional

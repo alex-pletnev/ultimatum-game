@@ -162,5 +162,6 @@ accepted, timestamp
 
 ## OpenAPI
 
-Полная спека: `src/main/resources/doc/ultimatum-game.yaml` (OpenAPI 3.1).
+Полная спека: `src/main/resources/doc/openapi.json` (OpenAPI 3.0, автогенерация из кода через springdoc).
 Локальный Swagger UI: `http://localhost:8080/api/v1/swagger-ui.html`.
+Регенерация снапшота: `./gradlew test --tests "*.SpecSnapshotGeneratorTest"`.

@@ -5,7 +5,6 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("kapt") version "2.1.20"
-    id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
 }
 
 group = "edu.itmo"
@@ -26,7 +25,7 @@ val mapstructVersion = "1.6.3"
 val springwolfVersion = "1.11.0"
 
 dependencies {
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
     implementation("io.github.springwolf:springwolf-stomp:$springwolfVersion")
     implementation("io.github.springwolf:springwolf-ui:$springwolfVersion")
 
@@ -53,6 +52,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-noarg")
@@ -68,17 +68,6 @@ kotlin {
 }
 
 kapt { correctErrorTypes = true }
-
-openApi {
-    apiDocsUrl.set("http://localhost:8080/api/v1/v3/api-docs")
-    outputDir.set(
-        layout
-            .projectDirectory
-            .dir("src/main/resources/doc")
-            .asFile
-    )
-    outputFileName.set("openapi.json")
-}
 
 allOpen {
     annotation("jakarta.persistence.Entity")

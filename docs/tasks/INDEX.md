@@ -12,13 +12,13 @@
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-005 | Добавить `.gitignore` | pending | medium | 2026-07-12 | [T-005](T-005-add-gitignore.md) |
-| T-006 | Автогенерация REST/WS спек, удаление ручных YAML | in_progress | medium | 2026-07-12 | [T-006](T-006-api-spec-autogeneration.md) |
 
 ## Закрытые задачи
 
 | ID | Название | Статус | Закрыто | Файл |
 |----|----------|--------|---------|------|
 | T-004 | Встроить автоматический commit + push в skills трекера | done | 2026-07-12 | [T-004](T-004-git-automation.md) |
+| T-006 | Автогенерация REST/WS спек, удаление ручных YAML | done | 2026-07-12 | [T-006](T-006-api-spec-autogeneration.md) |
 
 ## Легенда статусов
 

@@ -1,6 +1,7 @@
 package edu.itmo.ultimatum_game.dto.requests
 
 import edu.itmo.ultimatum_game.model.SessionType
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Positive
@@ -11,6 +12,7 @@ import java.io.Serializable
 /**
  * DTO for {@link edu.itmo.ultimatum_game.model.SessionConfig}
  */
+@Schema(description = "Конфигурация сессии. Кросс-инвариант: для FREE_FOR_ALL numTeams=0; для TEAM_BATTLE numTeams>=2. Числовые поля не должны быть null (валидируется на уровне сервиса).")
 data class SessionConfigDto(
     val sessionType: SessionType = SessionType.FREE_FOR_ALL,
     @field:Min(message = "Минимальное numRounds это 1", value = 1)
