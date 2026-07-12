@@ -11,6 +11,7 @@
 | T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
+| T-005 | Добавить `.gitignore` | pending | medium | 2026-07-12 | [T-005](T-005-add-gitignore.md) |
 
 ## Закрытые задачи
 
