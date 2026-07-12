@@ -101,8 +101,7 @@ tasks.register<Test>("generateApiSnapshots") {
 // Инфра/data-слои исключены: configs, controllers, dto, util (mappers),
 // repositories, exceptions, JPA-модели.
 //
-// Порог поднимается до 0.80 в финале T-012. На этапе инфры — 0.0
-// (чтобы `check` не падал до появления тестов).
+// Порог line coverage 0.80 — ломает `check` при просадке.
 
 jacoco {
     toolVersion = "0.8.12"
@@ -142,7 +141,7 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "0.00".toBigDecimal()
+                minimum = "0.80".toBigDecimal()
             }
         }
     }

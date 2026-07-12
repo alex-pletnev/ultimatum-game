@@ -68,9 +68,8 @@
 
 ## Тестовое покрытие
 
-- `UltimatumGameApplicationTests` — только `contextLoads`.
-- `FreeForAllTest` — юнит на стратегию.
-- Нет интеграционных тестов на: REST endpoints, WebSocket flow, JWT-auth, race conditions на «последний оффер / последнее решение».
+- Unit-тесты: покрытие бизнес-логики (`services/*` + `model.ShuffleStrategy`) ≥80% line, гейт `./gradlew check` через JaCoCo (T-012, порог зафиксирован в `build.gradle.kts`).
+- Нет интеграционных тестов на: REST endpoints, WebSocket flow, JWT-auth end-to-end, race conditions на «последний оффер / последнее решение». Это отдельный слой поверх юнит-тестов.
 
 ## Прочее
 

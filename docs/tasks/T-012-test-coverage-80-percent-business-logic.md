@@ -1,7 +1,7 @@
 ---
 id: T-012
 title: Поднять тестовое покрытие бизнес-логики до 80%+ (services + shuffle strategies)
-status: pending
+status: done
 priority: high
 created: 2026-07-12
 updated: 2026-07-12
@@ -117,3 +117,11 @@ tags: [test, backend, tech-debt, ci]
 ## Лог
 
 - 2026-07-12: заведена по прямому запросу пользователя после обсуждения бэклога. Приоритет `high` — тестовая база практически отсутствует, риск регрессии высок; T-012 закладывает фундамент для последующих рефакторингов и фичей.
+- 2026-07-12: инфра — JaCoCo 0.8.12 + MockK 1.13.13; `test` финализируется `jacocoTestReport`, `check` вызывает `jacocoTestCoverageVerification` (line ≥0.80). Baseline: 10.18%.
+- 2026-07-12: покрыты ShuffleStrategy (FreeForAll 100%, TeamBattle 95.7%) + SecurityService/UserService/AuthService/JwtService (по 100%) + EventPublisherService/StatsService/CsvService (по 100%). Итог: 46.4%.
+- 2026-07-12: покрыты AdminGameplayService (100%), CoreGameplayService (90.5%), PlayerGameplayService (100%). Итог: 77.3%.
+- 2026-07-12: покрыт SessionService (97.5%). **Итоговое покрытие 98.83% (505/511 lines)** — с солидным запасом сверх 80%-порога.
+- 2026-07-12: порог JaCoCo поднят до 0.80, `./gradlew check` зелёный. Docs (01-overview, 11-known-gaps) синхронизированы.
+- 2026-07-12: попутные находки, оформлены как follow-up:
+  - `SessionService.isUserAreSessionObserver` фактически проверяет `members`, а не `observers` — задокументировано в T-011.
+  - Потенциальный infinite loop в `FreeForAllStrategy` при плохом порядке шаффла — стабильно не воспроизводится (`random()`), тестом не покрыт; TODO для будущего разбора.

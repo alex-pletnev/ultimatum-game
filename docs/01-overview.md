@@ -81,6 +81,14 @@ export JWT_SIGNING_KEY=...
 
 При запуске `spring-boot-docker-compose` автоматически стартует PostgreSQL из `compose.yaml:1-10` (`postgres/postgres`, порт 5432).
 
+## Проверки
+
+```bash
+./gradlew test                # unit-тесты + JaCoCo html+xml report в build/reports/jacoco/test/
+./gradlew check               # test + jacocoTestCoverageVerification (line coverage ≥80% для services/* и model.ShuffleStrategy — T-012)
+./gradlew generateApiSnapshots # регенерация openapi.json + asyncapi.json в src/main/resources/doc/
+```
+
 ## Точки входа для агента
 
 | Задача | С чего начать |
