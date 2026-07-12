@@ -11,6 +11,8 @@
 | T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
+| T-007 | Полировка генератора API-снапшотов | pending | low | 2026-07-12 | [T-007](T-007-snapshot-generator-refinements.md) |
+| T-008 | EventPublisherService: убрать nullable + error() | pending | low | 2026-07-12 | [T-008](T-008-event-publisher-non-null-types.md) |
 
 ## Закрытые задачи
 
