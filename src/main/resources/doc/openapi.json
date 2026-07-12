@@ -156,22 +156,6 @@
         "title" : "ApiErrorResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.CsrfTokenResponse" : {
-        "properties" : {
-          "headerName" : {
-            "type" : "string"
-          },
-          "parameterName" : {
-            "type" : "string"
-          },
-          "token" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "headerName", "parameterName", "token" ],
-        "title" : "CsrfTokenResponse",
-        "type" : "object"
-      },
       "edu.itmo.ultimatum_game.dto.responses.DecisionPrewResponse" : {
         "properties" : {
           "createdAt" : {
@@ -599,21 +583,6 @@
         },
         "title" : "Page",
         "type" : "object"
-      },
-      "org.springframework.security.web.csrf.CsrfToken" : {
-        "properties" : {
-          "headerName" : {
-            "type" : "string"
-          },
-          "parameterName" : {
-            "type" : "string"
-          },
-          "token" : {
-            "type" : "string"
-          }
-        },
-        "title" : "CsrfToken",
-        "type" : "object"
       }
     }
   },
@@ -798,92 +767,6 @@
           }
         },
         "tags" : [ "auth-controller" ]
-      }
-    },
-    "/csrf" : {
-      "get" : {
-        "operationId" : "csrf",
-        "parameters" : [ {
-          "in" : "query",
-          "name" : "csrfToken",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/org.springframework.security.web.csrf.CsrfToken"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.CsrfTokenResponse"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "401" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Not Found"
-          },
-          "409" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Conflict"
-          },
-          "500" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "tags" : [ "csrf-controller" ]
       }
     },
     "/session" : {

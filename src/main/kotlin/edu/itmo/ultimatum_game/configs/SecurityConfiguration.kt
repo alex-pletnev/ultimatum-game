@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository
-import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -27,13 +25,7 @@ class SecurityConfiguration(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
-            .csrf {
-                it
-                    // настраиваем, где хранить токен
-                    .csrfTokenRepository(HttpSessionCsrfTokenRepository())
-                    // настраиваем, как обрабатывать запросы за токеном
-                    .csrfTokenRequestHandler(XorCsrfTokenRequestAttributeHandler())
-            }
+            .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
 
@@ -46,7 +38,6 @@ class SecurityConfiguration(
                     .requestMatchers("/springwolf/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/session").hasAnyRole("ADMIN")
                     .requestMatchers("/ws/**").permitAll()
-                    .requestMatchers("/csrf/**").permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

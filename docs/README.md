@@ -13,7 +13,7 @@
 | 05 | [rest-api.md](05-rest-api.md) | REST endpoints |
 | 06 | [websocket-api.md](06-websocket-api.md) | STOMP: SEND, topics, авторизация |
 | 07 | [dto-and-mappers.md](07-dto-and-mappers.md) | DTO с валидациями, MapStruct-мапперы |
-| 08 | [security.md](08-security.md) | Filter chain, JWT, CSRF, CORS, STOMP-интерцепторы |
+| 08 | [security.md](08-security.md) | JWT (RFC 6750 Bearer), CORS, STOMP-интерцептор |
 | 09 | [error-handling.md](09-error-handling.md) | Исключения → HTTP коды |
 | 10 | [configuration.md](10-configuration.md) | properties, env, compose, gradle |
 | 11 | [known-gaps.md](11-known-gaps.md) | Что не реализовано, TODO, security-concerns |

@@ -89,9 +89,6 @@ data class MakeDecisionCmd(
 ### JwtAuthenticationResponse — `dto/responses/JwtAuthenticationResponse.kt:5`
 `{ token: String }`
 
-### CsrfTokenResponse — `dto/responses/CsrfTokenResponse.kt:5`
-`{ token, headerName, parameterName: String }`
-
 ### UserResponse — `dto/responses/UserResponse.kt:10`
 `{ id: UUID, nickname: String, role: Role, createdAt: Date }`
 

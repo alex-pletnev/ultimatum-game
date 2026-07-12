@@ -44,7 +44,6 @@
 | `InvalidOfferException` | Некорректный оффер (заготовка, используется в контроллерах WS) |
 | `UserRoleNotAllowedException` | Попытка регистрации с `Role.NPC` (`AuthService.quickRegister`) |
 | `SessionJoinRejectedException` | Джойн запрещён (закрыто / переполнено / user == admin) (`SessionService.joinSession`, `joinSessionAsObserver`) |
-| `SessionStompRejectedException` | STOMP-сообщение отклонено интерцептором (`PlaySessionStompChannelInterceptor`) |
 
 ## Специальные обработчики
 
@@ -54,7 +53,7 @@
 
 ### STOMP-ошибки
 
-`InvalidJwtException` и `SessionStompRejectedException` не проходят через `GlobalExceptionsHandler` (тот работает только для HTTP MVC). Они логируются и приводят к STOMP `ERROR`-фрейму.
+`InvalidJwtException` не проходит через `GlobalExceptionsHandler` (тот работает только для HTTP MVC). Логируется и приводит к STOMP `ERROR`-фрейму.
 
 ## Валидация полей — краткая таблица
 

@@ -19,7 +19,7 @@
 1. Клиент делает HTTP upgrade: `GET /api/v1/ws`.
 2. Отправляет STOMP `CONNECT` фрейм с заголовком `Authorization: Bearer <JWT>`.
 3. `JwtStompChannelInterceptor` валидирует токен (см. `docs/08-security.md`).
-4. Дальнейшие `SEND` / `SUBSCRIBE` проверяются `PlaySessionStompChannelInterceptor` на членство в сессии + `WebSocketSecurityConfig` на роли.
+4. Дальнейшие `SEND` / `SUBSCRIBE` проверяются `WebSocketSecurityConfig` на роли (session-membership и персональные проверки отсутствуют — см. `docs/08-security.md`).
 
 ## Endpoints клиент → сервер (`SEND` → `/app/...`)
 
@@ -65,22 +65,15 @@
 | `/topic/session/*/roundStatus` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/offerCreated` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/decisionMade` | ADMIN, PLAYER, OBSERVER |
-| `/topic/session/*/player/*/offer` | ADMIN, PLAYER — плюс `userId` в пути **должен совпадать** с текущим пользователем (проверка в `PlaySessionStompChannelInterceptor`) |
+| `/topic/session/*/player/*/offer` | ADMIN, PLAYER — `userId` в пути **не проверяется** (anti-impersonation отсутствует by design, см. `docs/08-security.md`) |
 
-## Двойная авторизация STOMP
+## Авторизация STOMP
 
 1. **`JwtStompChannelInterceptor`** (`configs/JwtStompChannelInterceptor.kt`) — на `CONNECT`.
    - Валидирует JWT, устанавливает `Authentication` в `SecurityContextHolder` и в `accessor.user`.
    - Ошибки: `AuthenticationCredentialsNotFoundException`, `InvalidJwtException`.
 
-2. **`PlaySessionStompChannelInterceptor`** (`configs/PlaySessionStompChannelInterceptor.kt`) — на `SEND` / `SUBSCRIBE`.
-   - Извлекает `sessionId` из destination.
-   - Для `SEND`: требуется `isSessionAdmin(user, session) || isMember(user, session)`.
-   - Для `SUBSCRIBE`: требуется `isSessionAdmin || isMember || isObserver`.
-   - Дополнительно для `/topic/.../player/{userId}/offer`: `userId == currentUser.id`.
-   - Ошибка: `SessionStompRejectedException`.
-
-3. **`WebSocketSecurityConfig`** (`configs/WebSocketSecurityConfig.kt`) — ролевая матрица destinations через `MessageMatcherDelegatingAuthorizationManager`.
+2. **`WebSocketSecurityConfig`** (`configs/WebSocketSecurityConfig.kt`) — ролевая матрица destinations через `MessageMatcherDelegatingAuthorizationManager`. `SEND` / `SUBSCRIBE` проверяются только на роль.
 
 ## Типичный клиентский флоу
 

@@ -1,7 +1,7 @@
 ---
 id: T-010
 title: Упростить авторизацию до JWT-only (убрать CSRF и session-membership STOMP checks)
-status: pending
+status: done
 priority: high
 created: 2026-07-12
 updated: 2026-07-12
@@ -76,3 +76,4 @@ tags: [security, refactor, api]
 ## Лог
 
 - 2026-07-12: заведена по прямому запросу пользователя после обсуждения. Frontend блокируется CSRF и session-membership проверками; impersonation принят как допустимый риск.
+- 2026-07-12: выполнено. `SecurityConfiguration.csrf.disable()`; удалены `CsrfController`, `CsrfTokenResponse`, `PlaySessionStompChannelInterceptor`, `SessionStompRejectedException`; `WebSocketConfig` теперь ставит только `JwtStompChannelInterceptor`. `OpenApiConfig` 403-текст обновлён. Синхронизированы docs 05/06/07/08/09/11 + `docs/README.md`. `./gradlew test` зелёный. Снапшоты (openapi.json, asyncapi.json) регенерированы: `/csrf` и `CsrfTokenResponse` удалены из openapi; из asyncapi ушла `SpringStompDefaultHeaders` (T-009 недетерминизм совпал с генерацией).

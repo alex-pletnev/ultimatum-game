@@ -11,7 +11,6 @@
 | T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
-| T-010 | Упростить авторизацию до JWT-only (убрать CSRF + session STOMP checks) | pending | high | 2026-07-12 | [T-010](T-010-simplify-auth-jwt-only.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 
 ## Закрытые задачи
@@ -23,6 +22,7 @@
 | T-006 | Автогенерация REST/WS спек, удаление ручных YAML | done | 2026-07-12 | [T-006](T-006-api-spec-autogeneration.md) |
 | T-007 | Полировка генератора API-снапшотов | done | 2026-07-12 | [T-007](T-007-snapshot-generator-refinements.md) |
 | T-008 | EventPublisherService: убрать nullable + error() | done | 2026-07-12 | [T-008](T-008-event-publisher-non-null-types.md) |
+| T-010 | Упростить авторизацию до JWT-only (убрать CSRF + session STOMP checks) | done | 2026-07-12 | [T-010](T-010-simplify-auth-jwt-only.md) |
 
 ## Легенда статусов
 

@@ -56,7 +56,7 @@ class OpenApiConfig {
     private fun defaultDescription(code: String): String = when (code) {
         "400" -> "Bad Request — валидация тела / query / path"
         "401" -> "Unauthorized — отсутствует или невалидный JWT"
-        "403" -> "Forbidden — недостаточно прав или CSRF"
+        "403" -> "Forbidden — недостаточно прав"
         "404" -> "Not Found — ресурс не найден"
         "409" -> "Conflict — конфликт бизнес-состояния"
         "500" -> "Internal Server Error"

@@ -2,7 +2,7 @@
 
 **Base URL:** `/api/v1` (context path, см. `application.properties:2`).
 
-Все защищённые endpoints требуют заголовок `Authorization: Bearer <JWT>`. Mutating запросы требуют CSRF (см. `docs/08-security.md`).
+Все защищённые endpoints требуют заголовок `Authorization: Bearer <JWT>` (RFC 6750). Никакого CSRF-заголовка не требуется (см. `docs/08-security.md`).
 
 ## Сводная таблица
 
@@ -10,7 +10,6 @@
 |-------|------|------|------|
 | POST | `/auth/quick-register` | PermitAll | `AuthController.kt:26-34` |
 | POST | `/auth/quick-login` | PermitAll | `AuthController.kt:36-44` |
-| GET | `/csrf` | PermitAll | `CsrfController.kt:11-17` |
 | POST | `/session` | ADMIN | `SessionController.kt:28-36` |
 | GET | `/session` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:65-79` |
 | GET | `/session/{id}` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:38-45` |
@@ -45,16 +44,6 @@
 - **Ошибки:**
   - 400 `InvalidUuidFormatException`
   - 404 `IdNotFoundException`
-
----
-
-## CSRF
-
-### `GET /csrf`
-Возвращает CSRF-токен для последующих mutating запросов.
-
-- **Response 200:** `CsrfTokenResponse` `{ token, headerName, parameterName }`
-- Заголовок для отправки: `X-CSRF-TOKEN` (значение из `headerName`).
 
 ---
 
