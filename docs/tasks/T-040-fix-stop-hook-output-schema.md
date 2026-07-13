@@ -1,7 +1,7 @@
 ---
 id: T-040
 title: Починить Stop-hook — hookSpecificOutput не валиден для события Stop
-status: pending
+status: done
 priority: high
 created: 2026-07-13
 updated: 2026-07-13
@@ -51,3 +51,4 @@ The hook's output was:
 ## Лог
 
 - 2026-07-13: обнаружено при работе над T-039 (сообщение об ошибке hook validation в UI). Заведено как high — правило self-review-after-commit сейчас не enforced'ся через hook, только через CLAUDE.md.
+- 2026-07-13: закрыто. Схема Stop-hook output'а: только top-level `continue|suppressOutput|stopReason|decision|reason|systemMessage`. Заменил `printf '{"hookSpecificOutput":...}'` на `python3 -c 'json.dumps({"decision":"block","reason":"..."})'`. `decision:block` не даёт модели остановиться, `reason` идёт как инструкция → self-review запускается в той же итерации. Guard через `.claude/last-committed-head.txt` не даёт loop. `python3 -c` вместо `printf` — safer escape для commit-message'а с любыми символами. Правки в трёх копиях (project settings.json + harness settings-hooks JSON + template markdown), sha в state обновлена (48bea5f…). Verification в this session: fix применён, следующий Stop должен пройти валидацию.
