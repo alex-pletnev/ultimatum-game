@@ -42,7 +42,7 @@ class StatsServiceTest {
         val s = session()
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns emptyList()
-        every { decisionRepo.findBySessionId(s.id!!) } returns emptyList()
+        every { decisionRepo.findAllBySessionIdWithRelations(s.id!!) } returns emptyList()
 
         val stats = service.getSessionStats(s.id!!)
 
@@ -60,7 +60,7 @@ class StatsServiceTest {
         val o = offer(proposer = a, responder = b, round = r)
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(o)
-        every { decisionRepo.findBySessionId(s.id!!) } returns emptyList()
+        every { decisionRepo.findAllBySessionIdWithRelations(s.id!!) } returns emptyList()
 
         val stats = service.getSessionStats(s.id!!)
 
@@ -87,7 +87,7 @@ class StatsServiceTest {
 
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(o)
-        every { decisionRepo.findBySessionId(s.id!!) } returns emptyList()
+        every { decisionRepo.findAllBySessionIdWithRelations(s.id!!) } returns emptyList()
 
         val stats = service.getSessionStats(s.id!!)
         val row = stats.offers[0]
@@ -112,7 +112,7 @@ class StatsServiceTest {
         )
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(o)
-        every { decisionRepo.findBySessionId(s.id!!) } returns listOf(d)
+        every { decisionRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(d)
 
         val stats = service.getSessionStats(s.id!!)
         assertEquals(true, stats.offers[0].accepted)
@@ -135,7 +135,7 @@ class StatsServiceTest {
 
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(o3, o1, o2)
-        every { decisionRepo.findBySessionId(s.id!!) } returns emptyList()
+        every { decisionRepo.findAllBySessionIdWithRelations(s.id!!) } returns emptyList()
 
         val stats = service.getSessionStats(s.id!!)
         assertEquals(listOf(1, 2, 3), stats.offers.map { it.roundNumber })

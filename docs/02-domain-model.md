@@ -193,7 +193,7 @@ enum class SessionType(val shuffleStrategy: ShuffleStrategy) {
 | `TeamRepository` (`:4-6`) | `CrudRepository<Team, UUID>` | нет |
 | `RoundRepository` (`:4-6`) | `CrudRepository<Round, UUID>` | нет |
 | `OfferRepository` (`:11-24`) | `CrudRepository<Offer, UUID>` | `findAllBySessionIdWithRelations(sessionId)` — JPQL fetch join proposer/responder/round |
-| `DecisionRepository` (`:9-11`) | `CrudRepository<Decision, UUID>` | `findBySessionId(sessionId)` |
+| `DecisionRepository` (`:9-25`) | `CrudRepository<Decision, UUID>` | `findAllBySessionIdWithRelations(sessionId)` — JPQL fetch join offer/responder/round |
 
 ### SessionRepository.searchByNameTrgm
 
@@ -254,7 +254,7 @@ CREATE INDEX idx_session_name_trgm
 | `Round.session` | LAZY | избегаем цикла |
 | `Offer.*`, `Decision.*` | LAZY | нагружаем через явный fetch join |
 
-Известное узкое место: `DecisionRepository.findBySessionId` — без fetch join. При работе с большими сессиями рассмотреть fetch join (`docs/11-known-gaps.md`).
+`DecisionRepository.findAllBySessionIdWithRelations` — fetch join по всем 3 связям (`DecisionRepository:14-24`), N+1 при `StatsService.getSessionStats` устранён (T-002).
 
 ## См. также
 

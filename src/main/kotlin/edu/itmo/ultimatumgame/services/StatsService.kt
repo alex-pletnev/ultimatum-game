@@ -31,7 +31,7 @@ class StatsService(
             .orElseThrow { EntityNotFoundException("Session $sessionId not found") }
 
         val offers = offerRepository.findAllBySessionIdWithRelations(sessionId)
-        val decisions = decisionRepository.findBySessionId(sessionId)
+        val decisions = decisionRepository.findAllBySessionIdWithRelations(sessionId)
         val decisionByOffer = decisions.associateBy { it.offer!!.id }
 
         val teamBattle = session.config?.sessionType == SessionType.TEAM_BATTLE

@@ -9,7 +9,6 @@
 | ID | Название | Статус | Приоритет | Обновлено | Файл |
 |----|----------|--------|-----------|-----------|------|
 | T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
-| T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
@@ -35,6 +34,7 @@
 | T-019 | Правило для агента — не считать многоминутное ожидание нормой, эскалировать при аномалии | done | 2026-07-13 | [T-019](T-019-agent-command-duration-heuristics.md) |
 | T-021 | Skills для само-улучшения агента — wheel-check, mid-retro, self-review + правила в CLAUDE.md | done | 2026-07-13 | [T-021](T-021-agent-self-improvement-skills.md) |
 | T-022 | Расширить setup-agent-harness — включить wheel-check/mid-retro/self-review в bootstrap | done | 2026-07-13 | [T-022](T-022-setup-harness-add-self-improvement-skills.md) |
+| T-002 | Fetch join для `DecisionRepository.findBySessionId` | done | 2026-07-13 | [T-002](T-002-decision-fetch-join.md) |
 | T-020 | Починить detekt-findings в тестах вместо @file:Suppress | done | 2026-07-13 | [T-020](T-020-fix-test-detekt-suppresses.md) |
 | T-023 | Интеграция superpowers-skills в наши skills — обкатка в этом проекте | done | 2026-07-13 | [T-023](T-023-superpowers-integration-in-project.md) |
 

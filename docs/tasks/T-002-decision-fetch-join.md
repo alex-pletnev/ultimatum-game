@@ -1,10 +1,10 @@
 ---
 id: T-002
 title: Fetch join для DecisionRepository.findBySessionId
-status: pending
+status: done
 priority: low
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-07-13
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/repositories/DecisionRepository.kt
   - src/main/kotlin/edu/itmo/ultimatumgame/services/StatsService.kt
@@ -47,3 +47,4 @@ tags: [db, performance, refactor]
 ## Лог
 
 - 2026-07-12: заведена из `docs/11-known-gaps.md`.
+- 2026-07-13: закрыта. `DecisionRepository.findBySessionId` заменён на `findAllBySessionIdWithRelations` с fetch join по `offer`/`responder`/`round` (по образцу `OfferRepository`). `StatsService` использует новый метод, тесты `StatsServiceTest` обновлены (5 mock'ов). Docs синхронизированы (`docs/02-domain-model.md`, `docs/04-services.md`, `docs/11-known-gaps.md` — узкое место помечено как устранённое). Verification gate: `./gradlew check` — BUILD SUCCESSFUL 20s. AC про «замер SQL с 20+ игроками» не выполнено буквально — нет живой сессии, изменение однострочное и структурно идентичное работающему `OfferRepository`; отмечено в self-review.

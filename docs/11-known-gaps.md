@@ -30,9 +30,8 @@
 ### `ddl-auto=update`
 - Автомиграция удобна для dev, но опасна для prod (не удаляет колонки, ловит edge-cases при переименованиях). Для prod — Flyway/Liquibase.
 
-### Потенциальный N+1
-- `DecisionRepository.findBySessionId` — без fetch join. При больших сессиях (много игроков × раундов) приведёт к N+1 при обращении к `decision.offer`, `decision.responder`, `decision.round`.
-- Рассмотреть fetch join по аналогии с `OfferRepository.findAllBySessionIdWithRelations`.
+### ~~Потенциальный N+1~~ — устранено (T-002)
+- `DecisionRepository.findAllBySessionIdWithRelations` теперь с fetch join по `offer`/`responder`/`round` (по аналогии с `OfferRepository`).
 
 ### FK-индексы
 - Явно определён только GIN-индекс `idx_session_name_trgm`. Остальные индексы на FK создаются Hibernate по дефолту, но конкретно проверить в проде стоит.

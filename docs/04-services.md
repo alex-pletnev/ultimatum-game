@@ -234,7 +234,7 @@ OfferWsController.makeDecision
 StatisticController.exportCsv
   ├─ StatsService.getSessionStats
   │   └─ OfferRepository.findAllBySessionIdWithRelations
-  │   └─ DecisionRepository.findBySessionId
+  │   └─ DecisionRepository.findAllBySessionIdWithRelations
   └─ CsvService.toCsv
 ```
 
