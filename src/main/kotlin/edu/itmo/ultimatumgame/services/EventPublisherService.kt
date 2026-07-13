@@ -4,6 +4,7 @@ package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse
 import edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse
+import edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionScoreDto
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
@@ -95,6 +96,22 @@ class EventPublisherService(
             "Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})"
         )
         messagingTemplate.convertAndSend(destination, dto)
+    }
+
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/offersShuffled",
+            description = "Публикуется broadcast'ом после того как shuffle-стратегия назначила responder'ов офферам раунда (T-051). Payload — список (offerId, proposerId, responderId).",
+            payloadType = OffersShuffledResponse::class
+        )
+    )
+    @StompAsyncOperationBinding
+    fun publishOffersShuffled(sessionId: UUID, payload: OffersShuffledResponse) {
+        val destination = "/topic/session/$sessionId/offersShuffled"
+        logger.info(
+            "Публикация события OffersShuffled в $destination для сессии $sessionId (assignments=${payload.assignments.size})"
+        )
+        messagingTemplate.convertAndSend(destination, payload)
     }
 
     @AsyncPublisher(

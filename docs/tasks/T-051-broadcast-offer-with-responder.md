@@ -1,7 +1,7 @@
 ---
 id: T-051
 title: Broadcast '/topic/offerCreated' должен содержать responder после shuffle
-status: pending
+status: done
 priority: high
 created: 2026-07-13
 updated: 2026-07-13
@@ -40,3 +40,4 @@ tags: [feature, api, ws, frontend-blocker]
 ## Лог
 
 - 2026-07-13: заведено из frontend-readiness audit'а. Blocker'ом для UX — без этого фронт не может визуализировать pairing до персональной нотификации.
+- 2026-07-13: закрыто. Выбран вариант «новое событие» (не ломает существующий /topic/offerCreated). DTO — `OffersShuffledResponse { roundNumber, assignments: List<{offerId, proposerId, responderId}> }`. `EventPublisherService.publishOffersShuffled` + `CoreGameplayService.broadcastShuffleAssignments` — публикуется в `/topic/session/{id}/offersShuffled` после `dispatchOffers`. `WebSocketSecurityConfig` разрешает подписку ADMIN/PLAYER/OBSERVER. TDD: RED (compile error — метода нет) → GREEN. Docs 03/06 + `asyncapi.json` синхронизированы.

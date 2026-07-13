@@ -65,6 +65,14 @@
         }
       }
     },
+    "_topic_session_{sessionId}_offersShuffled" : {
+      "address" : "/topic/session/{sessionId}/offersShuffled",
+      "messages" : {
+        "edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse"
+        }
+      }
+    },
     "_topic_session_{sessionId}_player_{userId}_offer" : {
       "address" : "/topic/session/{sessionId}/player/{userId}/offer",
       "messages" : {
@@ -164,6 +172,22 @@
         },
         "title" : "OfferCreatedResponse"
       },
+      "edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse" : {
+        "bindings" : {
+          "stomp" : { }
+        },
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "name" : "edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse",
+        "payload" : {
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse"
+          },
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
+        },
+        "title" : "OffersShuffledResponse"
+      },
       "edu.itmo.ultimatumgame.dto.responses.RoundResponse" : {
         "bindings" : {
           "stomp" : { }
@@ -236,6 +260,12 @@
         "examples" : [ { } ],
         "properties" : { },
         "title" : "HeadersNotDocumented",
+        "type" : "object"
+      },
+      "SpringStompDefaultHeaders" : {
+        "examples" : [ { } ],
+        "properties" : { },
+        "title" : "SpringStompDefaultHeaders",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.requests.CreateOfferCmd" : {
@@ -385,6 +415,30 @@
         "title" : "DecisionPrewResponse",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.responses.OfferAssignment" : {
+        "examples" : [ {
+          "offerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "proposerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "responderId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        } ],
+        "properties" : {
+          "offerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "proposerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "responderId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "offerId", "proposerId", "responderId" ],
+        "title" : "OfferAssignment",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse" : {
         "examples" : [ {
           "createdAt" : "2015-07-20T15:49:04-07:00",
@@ -475,6 +529,31 @@
         },
         "required" : [ "createdAt" ],
         "title" : "OfferPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse" : {
+        "examples" : [ {
+          "assignments" : [ {
+            "offerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "proposerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "responderId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          } ],
+          "roundNumber" : 0
+        } ],
+        "properties" : {
+          "assignments" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferAssignment"
+            },
+            "type" : "array"
+          },
+          "roundNumber" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "assignments", "roundNumber" ],
+        "title" : "OffersShuffledResponse",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.responses.PlayerScoreDto" : {
@@ -1082,6 +1161,20 @@
         "$ref" : "#/channels/_topic_session_{sessionId}_offerCreated/messages/edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse"
       } ],
       "title" : "_topic_session_{sessionId}_offerCreated_send"
+    },
+    "_topic_session_{sessionId}_offersShuffled_send_publishOffersShuffled" : {
+      "action" : "send",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_offersShuffled"
+      },
+      "description" : "Публикуется broadcast'ом после того как shuffle-стратегия назначила responder'ов офферам раунда (T-051). Payload — список (offerId, proposerId, responderId).",
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_offersShuffled/messages/edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse"
+      } ],
+      "title" : "_topic_session_{sessionId}_offersShuffled_send"
     },
     "_topic_session_{sessionId}_player_{userId}_offer_send_publishOfferToPlayer" : {
       "action" : "send",

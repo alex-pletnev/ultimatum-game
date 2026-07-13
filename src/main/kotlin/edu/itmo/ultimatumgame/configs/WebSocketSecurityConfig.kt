@@ -45,6 +45,9 @@ class WebSocketSecurityConfig {
             .simpSubscribeDestMatchers("/topic/session/*/scoreUpdated")
             .hasAnyRole("PLAYER", "OBSERVER", "ADMIN")
         messages
+            .simpSubscribeDestMatchers("/topic/session/*/offersShuffled")
+            .hasAnyRole("PLAYER", "OBSERVER", "ADMIN")
+        messages
             .simpSubscribeDestMatchers("/topic/session/*/player/*/offer")
             .hasAnyRole("PLAYER", "ADMIN")
 

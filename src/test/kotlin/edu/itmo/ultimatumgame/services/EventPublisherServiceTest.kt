@@ -110,4 +110,23 @@ class EventPublisherServiceTest {
 
         verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/scoreUpdated", score) }
     }
+
+    @Test
+    fun `publishOffersShuffled шлёт OffersShuffledResponse в topic session_offersShuffled`() {
+        val sessionId = UUID.randomUUID()
+        val payload = edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse(
+            roundNumber = 1,
+            assignments = listOf(
+                edu.itmo.ultimatumgame.dto.responses.OfferAssignment(
+                    offerId = UUID.randomUUID(),
+                    proposerId = UUID.randomUUID(),
+                    responderId = UUID.randomUUID(),
+                )
+            )
+        )
+
+        service.publishOffersShuffled(sessionId, payload)
+
+        verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/offersShuffled", payload) }
+    }
 }

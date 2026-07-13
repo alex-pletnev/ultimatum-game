@@ -57,6 +57,7 @@
 | `/topic/session/{sessionId}/decisionMade` | `DecisionMadeResponse` / `DecisionPrewResponse` | каждое решение |
 | `/topic/session/{sessionId}/player/{userId}/offer` | `OfferCreatedResponse` / `OfferPrewResponse` | shuffle: персональная доставка оффера respondent'у (`{userId}` = ID респондента) |
 | `/topic/session/{sessionId}/scoreUpdated` | `SessionScoreDto` | после закрытия раунда (ALL_DECISIONS_RECEIVED); per-player и per-team суммы + roundSum |
+| `/topic/session/{sessionId}/offersShuffled` | `OffersShuffledResponse` | после `initWaitDecisionsPhase` (переход ALL_OFFERS_RECEIVED → OFFERS_SENT); mapping offerId → (proposerId, responderId) для визуализации pairing (T-051) |
 
 Роли на подписку (см. `configs/WebSocketSecurityConfig.kt`):
 
@@ -67,6 +68,7 @@
 | `/topic/session/*/offerCreated` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/decisionMade` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/scoreUpdated` | ADMIN, PLAYER, OBSERVER |
+| `/topic/session/*/offersShuffled` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/player/*/offer` | ADMIN, PLAYER — `userId` в пути **не проверяется** (anti-impersonation отсутствует by design, см. `docs/08-security.md`) |
 
 ## Авторизация STOMP

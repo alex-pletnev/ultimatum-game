@@ -35,6 +35,15 @@ class CoreGameplayServiceTest {
         // после шафла у каждого оффера есть responder
         assertEquals(2, r.offers.mapNotNull { it.responder }.size)
         verify(exactly = 2) { eventPublisher.publishOfferToPlayer(s.id!!, any(), any<Offer>()) }
+        // broadcast с shuffle-mapping для UX-визуализации на фронте (T-051)
+        verify {
+            eventPublisher.publishOffersShuffled(
+                s.id!!,
+                match<edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse> {
+                    it.assignments.size == 2 && it.roundNumber == r.roundNumber
+                }
+            )
+        }
     }
 
     @Test

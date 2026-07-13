@@ -2,6 +2,8 @@
 
 package edu.itmo.ultimatumgame.services
 
+import edu.itmo.ultimatumgame.dto.responses.OfferAssignment
+import edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.util.DomainEventLogger
@@ -33,6 +35,7 @@ class CoreGameplayService(
                 ?: error("session.currentRound не должен быть null на данном этапе")
             withRoundMdc(round.id!!) {
                 dispatchOffers(session, sessionId, round)
+                broadcastShuffleAssignments(sessionId, round)
                 round.roundPhase = RoundPhase.OFFERS_SENT
                 logger.info(
                     "Установлена фаза раунда {}: {} для сессии {}",
@@ -42,6 +45,27 @@ class CoreGameplayService(
                 )
             }
         }
+    }
+
+    private fun broadcastShuffleAssignments(
+        sessionId: java.util.UUID,
+        round: edu.itmo.ultimatumgame.model.Round,
+    ) {
+        val assignments = round.offers.mapNotNull { offer ->
+            val responderId = offer.responder?.id ?: return@mapNotNull null
+            OfferAssignment(
+                offerId = offer.id!!,
+                proposerId = offer.proposer!!.id!!,
+                responderId = responderId,
+            )
+        }
+        eventPublisherService.publishOffersShuffled(
+            sessionId,
+            OffersShuffledResponse(
+                roundNumber = round.roundNumber,
+                assignments = assignments,
+            )
+        )
     }
 
     private fun dispatchOffers(
