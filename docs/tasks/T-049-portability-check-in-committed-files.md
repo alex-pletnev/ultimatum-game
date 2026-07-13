@@ -1,7 +1,7 @@
 ---
 id: T-049
 title: Portability check — абсолютные пути и machine-specific настройки не коммитятся в общие файлы
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -35,3 +35,4 @@ tags: [meta, harness, skills]
 ## Лог
 
 - 2026-07-13: заведено из self-review T-046 (commit d3e94c0). Категория E. Priority low — паттерн повторяющийся, но не критичный (баг был бы отловлен CI/другим разработчиком до релиза).
+- 2026-07-13: закрыто. `.claude/skills/self-review.md` категория B — добавлен grep-check для абсолютных путей. `CLAUDE.md` секция «Что не делать» — эксплицитное правило. Порт в harness (commit df88ff7). Sha state обновлена.

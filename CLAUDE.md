@@ -263,6 +263,7 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 - Не менять конфигурацию сборки (build.gradle, package.json, Cargo.toml и т.д.) без запроса.
 - Не удалять существующие задачи — только `status: cancelled`.
 - Не устанавливать/обновлять зависимости без запроса.
+- **Не коммитить абсолютные пути и machine-specific настройки** (JDK путь, docker.host, локальные IP, hostname'ы, `/Users/*`, `/opt/*`, `C:\*`). Такие вещи → user-scope конфиг (`~/.gradle/gradle.properties`, `.envrc`, env var). Проверка перед commit'ом: `git diff --cached | grep -E '(/opt/\|/Users/\|/home/\|C:\\\\|127\.0\.0\.1\|~/)'` — совпадение = red flag.
 - Не force-пушить.
 - Не пушить в другие ветки/remote.
 

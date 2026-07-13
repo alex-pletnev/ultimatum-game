@@ -38,6 +38,7 @@ description: Use PROACTIVELY сразу после `task-done` (см. Auto-mode)
    - DEBUG-логи / отладочный вывод, которые надо было убрать.
    - Мёртвые импорты / приватные функции без вызовов.
    - Устаревшие комментарии, ссылающиеся на удалённое поведение.
+   - **Portability red-flags:** абсолютные пути (`/opt/`, `/Users/`, `C:\`, `~/`), machine-specific settings (JDK путь, docker.host, локальные IP-адреса, hostname'ы), hardcoded ports, user-name'ы в путях. Проверка одной командой: `git diff --cached | grep -E '(/opt/|/Users/|/home/|C:\\\\|localhost:[0-9]|127\.0\.0\.1|~/)'`. Такие вещи должны лежать в user-scope конфиге (например, `~/.gradle/gradle.properties`, `.envrc`, env var), а не в commit'нутом файле.
 
    **C. Подавления.** Все ли suppress-конструкции (комменты линтера, `@Suppress`, `# noqa`, `// eslint-disable`, `@Ignore`, `assumeTrue(false)`, etc.) в этом commit'е — оправданы? Или я обошёл проблему вместо фикса? Если обошёл — follow-up обязателен.
 
