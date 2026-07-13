@@ -104,6 +104,14 @@
 
 Payload — соответствующий DTO (см. `docs/07-dto-and-mappers.md`).
 
+**Внимание** (T-017): собственно доменные события пишутся не здесь, а в вызывающих сервисах через `DomainEventLogger.emit(...)`. `EventPublisherService` отвечает только за фан-аут WS-сообщений. Разделение: WS-payload идёт по своему каналу для UI, а `DomainEvent` — по логам и Micrometer-counter'ам для мониторинга. См. `docs/12-observability.md`.
+
+---
+
+## DomainEventLogger
+
+`util/DomainEventLogger.kt` (T-017). Единственный «жёсткий» канал для доменных событий: одна запись в структурированный лог + Micrometer counter. См. полный контракт и список событий — `docs/12-observability.md`.
+
 ---
 
 ## AuthService

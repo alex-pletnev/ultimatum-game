@@ -6,6 +6,7 @@ import edu.itmo.ultimatumgame.dto.requests.CreateUserRequest
 import edu.itmo.ultimatumgame.exceptions.UserRoleNotAllowedException
 import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.User
+import edu.itmo.ultimatumgame.util.DomainEventLogger
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -18,7 +19,8 @@ class AuthServiceTest {
 
     private val jwtService = mockk<JwtService>()
     private val userService = mockk<UserService>()
-    private val service = AuthService(jwtService, userService)
+    private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
+    private val service = AuthService(jwtService, userService, domainEventLogger)
 
     // Держим ссылку на текущего "пользователя" для эмуляции getUserDetailService
     private var loginTarget: User? = null

@@ -6,6 +6,7 @@ import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.model.Offer
 import edu.itmo.ultimatumgame.model.RoundPhase
+import edu.itmo.ultimatumgame.util.DomainEventLogger
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
@@ -15,7 +16,8 @@ import kotlin.test.assertEquals
 class CoreGameplayServiceTest {
 
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
-    private val service = CoreGameplayService(eventPublisher)
+    private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
+    private val service = CoreGameplayService(eventPublisher, domainEventLogger)
 
     @Test
     fun `initWaitDecisionsPhase — шафл через стратегию, публикация офферов респондентам, фаза OFFERS_SENT`() {

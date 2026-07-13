@@ -1,3 +1,5 @@
+@file:Suppress("VarCouldBeVal")
+
 package edu.itmo.ultimatumgame
 
 import com.fasterxml.jackson.databind.ObjectMapper

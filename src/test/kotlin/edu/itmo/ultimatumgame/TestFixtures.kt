@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package edu.itmo.ultimatumgame
 
 import edu.itmo.ultimatumgame.model.Decision

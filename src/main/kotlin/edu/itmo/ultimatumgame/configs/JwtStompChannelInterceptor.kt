@@ -1,11 +1,13 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength", "ReturnCount")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "ReturnCount", "LongMethod")
 
 package edu.itmo.ultimatumgame.configs
 
 import edu.itmo.ultimatumgame.exceptions.InvalidJwtException
+import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.services.JwtService
 import edu.itmo.ultimatumgame.services.UserService
 import edu.itmo.ultimatumgame.util.logger
+import org.slf4j.MDC
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.stomp.StompCommand
@@ -20,6 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.util.UUID
 
+private const val MDC_USER_ID = "userId"
+private const val MDC_ROLE = "role"
+
 @Component
 class JwtStompChannelInterceptor(
     private val jwtService: JwtService,
@@ -31,6 +36,10 @@ class JwtStompChannelInterceptor(
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*>? {
         val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)
             ?: return message
+
+        // На каждом сообщении STOMP-сессии восстанавливаем MDC из уже
+        // аутентифицированного user (accessor.user выставлен при CONNECT).
+        populateMdcFromPrincipal(accessor.user as? UsernamePasswordAuthenticationToken)
 
         logger.info(
             "в JwtStompChannelInterceptor.preSend пришла команда: {} от {} / {}",
@@ -77,6 +86,7 @@ class JwtStompChannelInterceptor(
                 accessor.user = authToken
                 context.authentication = authToken
                 SecurityContextHolder.setContext(context)
+                populateMdcFromPrincipal(authToken)
                 logger.info("STOMP CONNECT аутентифицирован: id=$username, role(s)=$authorities")
             } else {
                 logger.warn("Невалидный токен для пользователя id=$username")
@@ -94,5 +104,22 @@ class JwtStompChannelInterceptor(
             }
         }
         return message
+    }
+
+    override fun afterSendCompletion(
+        message: Message<*>,
+        channel: MessageChannel,
+        sent: Boolean,
+        ex: Exception?,
+    ) {
+        MDC.remove(MDC_USER_ID)
+        MDC.remove(MDC_ROLE)
+    }
+
+    private fun populateMdcFromPrincipal(auth: UsernamePasswordAuthenticationToken?) {
+        val user = auth?.principal as? User ?: return
+        val id = user.id ?: return
+        MDC.put(MDC_USER_ID, id.toString())
+        MDC.put(MDC_ROLE, user.role.name)
     }
 }

@@ -8,16 +8,19 @@
 |------|----------|-------------|
 | `spring.application.name` | `ultimatum-game` | имя в metrics/logs |
 | `server.servlet.context-path` | `/api/v1` | префикс всех endpoints |
-| `management.endpoints.web.exposure.include` | `*` | expose всех actuator endpoints |
+| `management.endpoints.web.exposure.include` | `health,info,prometheus` | actuator сужен до health-check и Prometheus scrape (T-017) |
+| `spring.profiles.active` | `dev` | по умолчанию dev; в prod — `SPRING_PROFILES_ACTIVE=prod` |
 | `token.signing.key` | `${JWT_SIGNING_KEY}` | **обязательный env**, base64 |
 | `spring.jpa.hibernate.ddl-auto` | `update` | автомиграция схемы |
-| `spring.jpa.show-sql` | `true` | dev-логирование SQL |
+| `spring.jpa.show-sql` | `true` | dev-логирование SQL (отключается в prod-профиле) |
 | `spring.jpa.properties.hibernate.format_sql` | `true` | pretty-print SQL |
-| `logging.level.org.springframework.security` | `DEBUG` | |
-| `logging.level.org.springframework.web` | `DEBUG` | |
-| `logging.level.edu.itmo.ultimatumgame` | `DEBUG` | |
-| `logging.level.org.springframework.web.socket.messaging.StompSubProtocolHandler` | `TRACE` | |
-| `logging.level.org.springframework.messaging.simp.stomp` | `TRACE` | |
+| `logging.level.root` | `INFO` | общий root-level |
+
+**Профильные overrides** (T-017):
+- `application-dev.properties` — `edu.itmo.ultimatumgame=DEBUG`, `spring.web=DEBUG`.
+- `application-prod.properties` — `edu.itmo.ultimatumgame=INFO`, `spring.security=INFO`, `show-sql=false`.
+
+**Формат логов** (T-017): `src/main/resources/logback-spring.xml` — plaintext для `!prod`, JSON (`LogstashEncoder`) для `prod`. Подробнее: `docs/12-observability.md`.
 
 Настройки datasource не прописаны — их подставляет `spring-boot-docker-compose` (см. ниже) через service connection.
 

@@ -1,4 +1,4 @@
-@file:Suppress("LongParameterList")
+@file:Suppress("LongParameterList", "LongMethod", "UnsafeCallOnNullableType", "UnnecessaryNotNullOperator")
 
 package edu.itmo.ultimatumgame.services
 
@@ -13,8 +13,13 @@ import edu.itmo.ultimatumgame.repositories.DecisionRepository
 import edu.itmo.ultimatumgame.repositories.OfferRepository
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DecisionMade
+import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.OfferSubmitted
+import edu.itmo.ultimatumgame.util.RoundClosed
 import edu.itmo.ultimatumgame.util.logger
 import edu.itmo.ultimatumgame.util.toUuidOrThrow
+import edu.itmo.ultimatumgame.util.withSessionMdc
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -28,13 +33,14 @@ class PlayerGameplayService(
     private val offerRepository: OfferRepository,
     private val decisionRepository: DecisionRepository,
     private val userService: UserService,
-    private val gameplayService: CoreGameplayService
+    private val gameplayService: CoreGameplayService,
+    private val domainEventLogger: DomainEventLogger,
 ) {
 
     private val logger = logger()
 
     @Transactional
-    fun sendOffer(sessionId: UUID, playerId: UUID, createOfferCmd: CreateOfferCmd) {
+    fun sendOffer(sessionId: UUID, playerId: UUID, createOfferCmd: CreateOfferCmd) = withSessionMdc(sessionId) {
         val offerValue = createOfferCmd.amount ?: error("createOfferCmd должен иметь значение на этот момент")
         logger.info("Вызван метод sendOffer с sessionId={} playerId={} amount={}", sessionId, playerId, offerValue)
 
@@ -67,6 +73,16 @@ class PlayerGameplayService(
         eventPublisher.publishOfferCreated(sessionId, offer)
         logger.info("Опубликовано событие OfferCreated для сессии {} оффера {}", sessionId, offer.id)
 
+        domainEventLogger.emit(
+            OfferSubmitted(
+                sessionId = sessionId,
+                roundId = round.id!!,
+                offerId = offer.id!!,
+                proposerId = user.id!!,
+                amount = offerValue,
+            )
+        )
+
         if (round.offers.size == session.members.size) {
             logger.debug("Все офферы получены для раунда {} сессии {}", round.roundNumber, session.id)
             round.roundPhase = RoundPhase.ALL_OFFERS_RECEIVED
@@ -84,7 +100,7 @@ class PlayerGameplayService(
     }
 
     @Transactional
-    fun makeDecision(sessionId: UUID, playerId: UUID, makeDecisionCmd: MakeDecisionCmd) {
+    fun makeDecision(sessionId: UUID, playerId: UUID, makeDecisionCmd: MakeDecisionCmd) = withSessionMdc(sessionId) {
         val decisionValue = makeDecisionCmd.decision
         val offerId = makeDecisionCmd.offerId.toUuidOrThrow()
         logger.info(
@@ -132,6 +148,17 @@ class PlayerGameplayService(
         eventPublisher.publishDecisionMade(sessionId, decision)
         logger.info("Опубликовано событие DecisionMade для сессии {} решения {}", sessionId, decision.id)
 
+        domainEventLogger.emit(
+            DecisionMade(
+                sessionId = sessionId,
+                roundId = round.id!!,
+                offerId = offer.id!!,
+                responderId = user.id!!,
+                accepted = decisionValue,
+                amount = offer.offerValue,
+            )
+        )
+
         if (round.decisions.size == session.members.size) {
             logger.debug("Все решения получены для раунда {} сессии {}", round.roundNumber, session.id)
             round.roundPhase = RoundPhase.ALL_DECISIONS_RECEIVED
@@ -142,6 +169,10 @@ class PlayerGameplayService(
 
             eventPublisher.publishRoundStatus(sessionId, round)
             logger.info("Опубликован RoundStatus для сессии {} после получения всех решений", sessionId)
+
+            domainEventLogger.emit(
+                RoundClosed(sessionId = sessionId, roundId = round.id!!, roundNumber = round.roundNumber)
+            )
         }
     }
 }

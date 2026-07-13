@@ -16,6 +16,7 @@ import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionMapper
 import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper
@@ -43,6 +44,7 @@ class SessionServiceTest {
     private val roundMapper = mockk<RoundMapper>()
     private val userService = mockk<UserService>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
+    private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
     private val service = SessionService(
         sessionRepo,
         sessionMapper,
@@ -50,6 +52,7 @@ class SessionServiceTest {
         roundMapper,
         userService,
         eventPublisher,
+        domainEventLogger,
     )
 
     // ---------- createSession ----------

@@ -17,6 +17,7 @@
 | 09 | [error-handling.md](09-error-handling.md) | Исключения → HTTP коды |
 | 10 | [configuration.md](10-configuration.md) | properties, env, compose, gradle |
 | 11 | [known-gaps.md](11-known-gaps.md) | Что не реализовано, TODO, security-concerns |
+| 12 | [observability.md](12-observability.md) | Логи (JSON/MDC), доменные события, Prometheus-метрики |
 
 ## Как читать
 

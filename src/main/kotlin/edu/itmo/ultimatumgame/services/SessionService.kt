@@ -1,4 +1,11 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength", "TooManyFunctions", "ThrowsCount")
+@file:Suppress(
+    "MaxLineLength",
+    "MaximumLineLength",
+    "TooManyFunctions",
+    "ThrowsCount",
+    "LongParameterList",
+    "UnsafeCallOnNullableType",
+)
 
 package edu.itmo.ultimatumgame.services
 
@@ -14,7 +21,10 @@ import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.Team
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.PlayerJoined
 import edu.itmo.ultimatumgame.util.RoundMapper
+import edu.itmo.ultimatumgame.util.SessionCreated
 import edu.itmo.ultimatumgame.util.SessionMapper
 import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper
 import edu.itmo.ultimatumgame.util.logger
@@ -32,7 +42,8 @@ class SessionService(
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
     private val roundMapper: RoundMapper,
     private val userService: UserService,
-    private val eventPublisherService: EventPublisherService
+    private val eventPublisherService: EventPublisherService,
+    private val domainEventLogger: DomainEventLogger,
 ) {
 
     private val logger = logger()
@@ -50,6 +61,13 @@ class SessionService(
         logger.debug("Новая сессия после initTeams {}", newSession)
         newSession = sessionRepository.save(newSession)
         logger.debug("Новая сессия после save {}", newSession)
+        domainEventLogger.emit(
+            SessionCreated(
+                sessionId = newSession.id!!,
+                adminId = newSession.admin!!.id!!,
+                sessionType = newSession.config!!.sessionType,
+            )
+        )
         val dto = sessionWithTeamsAndMembersMapper.toDto(newSession)
         return dto
     }
@@ -158,6 +176,7 @@ class SessionService(
             sessionRepository.save(session)
         }
         eventPublisherService.publishSessionStatus(sessionId, session)
+        domainEventLogger.emit(PlayerJoined(sessionId = sessionId, userId = user.id!!, role = user.role))
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
         return dto
     }
@@ -181,6 +200,7 @@ class SessionService(
 
         sessionRepository.save(session)
         eventPublisherService.publishSessionStatus(sessionId, session)
+        domainEventLogger.emit(PlayerJoined(sessionId = sessionId, userId = observer.id!!, role = observer.role))
         return sessionWithTeamsAndMembersMapper.toDto(session)
     }
 

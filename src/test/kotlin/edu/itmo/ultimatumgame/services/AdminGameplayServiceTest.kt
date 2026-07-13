@@ -6,6 +6,7 @@ import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DomainEventLogger
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -20,7 +21,8 @@ class AdminGameplayServiceTest {
     private val sessionService = mockk<SessionService>()
     private val sessionRepository = mockk<SessionRepository>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
-    private val service = AdminGameplayService(sessionService, sessionRepository, eventPublisher)
+    private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
+    private val service = AdminGameplayService(sessionService, sessionRepository, eventPublisher, domainEventLogger)
 
     private fun stubSaveIdentity() {
         every { sessionRepository.save(any<Session>()) } answers { firstArg() }

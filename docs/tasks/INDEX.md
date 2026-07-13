@@ -13,6 +13,9 @@
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
+| T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
+| T-019 | Правило для агента — не считать многоминутное ожидание нормой, эскалировать при аномалии | pending | medium | 2026-07-13 | [T-019](T-019-agent-command-duration-heuristics.md) |
+| T-020 | Починить detekt-findings в тестах вместо @file:Suppress | pending | low | 2026-07-13 | [T-020](T-020-fix-test-detekt-suppresses.md) |
 
 ## Закрытые задачи
 
@@ -29,6 +32,7 @@
 | T-013 | Восстановить gradle-wrapper (gradle/wrapper/*) | done | 2026-07-13 | [T-013](T-013-restore-gradle-wrapper.md) |
 | T-014 | Настроить detekt (плагин + formatting + baseline) под Kotlin-стандарты | done | 2026-07-13 | [T-014](T-014-setup-detekt-baseline.md) |
 | T-015 | Выхлопать detekt baseline — починить все зафиксированные findings | done | 2026-07-13 | [T-015](T-015-detekt-clear-baseline.md) |
+| T-017 | Стандарт логирования и observability — JSON, MDC, доменные события, Prometheus | done | 2026-07-13 | [T-017](T-017-observability-standard.md) |
 
 ## Легенда статусов
 

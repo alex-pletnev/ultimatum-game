@@ -5,7 +5,14 @@ package edu.itmo.ultimatumgame.services
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.RoundClosed
+import edu.itmo.ultimatumgame.util.RoundStarted
+import edu.itmo.ultimatumgame.util.SessionAborted
+import edu.itmo.ultimatumgame.util.SessionClosed
+import edu.itmo.ultimatumgame.util.SessionStarted
 import edu.itmo.ultimatumgame.util.logger
+import edu.itmo.ultimatumgame.util.withSessionMdc
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -14,13 +21,14 @@ import java.util.UUID
 class AdminGameplayService(
     private val sessionService: SessionService,
     private val sessionRepository: SessionRepository,
-    private val eventPublisherService: EventPublisherService
+    private val eventPublisherService: EventPublisherService,
+    private val domainEventLogger: DomainEventLogger,
 ) {
 
     private val logger = logger()
 
     @Transactional
-    fun startSession(sessionId: UUID) {
+    fun startSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод startSession c sessionId={}", sessionId)
         val session = sessionService.getSessionEntity(sessionId)
         logger.debug("Получена сущность сессии {} с состоянием {}", session.id, session.state)
@@ -37,10 +45,16 @@ class AdminGameplayService(
 
         eventPublisherService.publishSessionStatus(sessionId, session)
         logger.info("Опубликован RoundStatus для сессии {}", sessionId)
+        domainEventLogger.emit(SessionStarted(sessionId = sessionId, playerCount = session.members.size))
+        session.currentRound?.let { round ->
+            domainEventLogger.emit(
+                RoundStarted(sessionId = sessionId, roundId = round.id!!, roundNumber = round.roundNumber)
+            )
+        }
     }
 
     @Transactional
-    fun closeSession(sessionId: UUID) {
+    fun closeSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод closeSession c sessionId={}", sessionId)
         val session = sessionService.getSessionEntity(sessionId)
         logger.debug("Закрытие сессии {} для подключений", session.id)
@@ -54,7 +68,7 @@ class AdminGameplayService(
     }
 
     @Transactional
-    fun openSession(sessionId: UUID) {
+    fun openSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод openSession c sessionId={}", sessionId)
         val session = sessionService.getSessionEntity(sessionId)
         logger.debug("Открытие сессии {} для подключений", session.id)
@@ -68,7 +82,7 @@ class AdminGameplayService(
     }
 
     @Transactional
-    fun abortSession(sessionId: UUID) {
+    fun abortSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод abortSession c sessionId={}", sessionId)
         val session = sessionService.getSessionEntity(sessionId)
         logger.debug("Прерывание сессии {}", session.id)
@@ -82,16 +96,19 @@ class AdminGameplayService(
             eventPublisherService.publishRoundStatus(sessionId, round)
             logger.info("Опубликован RoundStatus для сессии {} после прерывания", sessionId)
         } ?: logger.info("Abort сессии {} без активного раунда — RoundStatus не публикуется", sessionId)
+        domainEventLogger.emit(SessionAborted(sessionId = sessionId))
     }
 
     @Transactional
-    fun startNextRound(sessionId: UUID) {
+    fun startNextRound(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод startNextRound c sessionId={}", sessionId)
         val session = sessionService.getSessionEntity(sessionId)
         val currentRound = session.currentRound ?: error("Текущий раунд не должен быть null на данном этапе")
         logger.debug("Завершение раунда {} для сессии {}", currentRound.roundNumber, session.id)
 
         currentRound.roundPhase = RoundPhase.FINISHED
+        val closedRoundId = currentRound.id!!
+        val closedRoundNumber = currentRound.roundNumber
         val nextRoundNumber = currentRound.roundNumber + 1
         val newRound = session.rounds.find { it.roundNumber == nextRoundNumber }
         if (newRound == null) {
@@ -108,6 +125,17 @@ class AdminGameplayService(
         // session.currentRound здесь: либо newRound (перешли), либо старый currentRound c phase=FINISHED (кончились раунды) — не null
         eventPublisherService.publishRoundStatus(sessionId, session.currentRound!!)
         logger.info("Опубликован RoundStatus для сессии {} после запуска нового раунда", sessionId)
+
+        domainEventLogger.emit(
+            RoundClosed(sessionId = sessionId, roundId = closedRoundId, roundNumber = closedRoundNumber)
+        )
+        if (newRound != null) {
+            domainEventLogger.emit(
+                RoundStarted(sessionId = sessionId, roundId = newRound.id!!, roundNumber = newRound.roundNumber)
+            )
+        } else {
+            domainEventLogger.emit(SessionClosed(sessionId = sessionId))
+        }
     }
 
     fun abortCurrentRound() {

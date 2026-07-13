@@ -1,3 +1,5 @@
+@file:Suppress("NoSemicolons")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.offer

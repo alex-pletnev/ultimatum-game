@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "MaximumLineLength")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.offer
@@ -17,6 +19,7 @@ import edu.itmo.ultimatumgame.repositories.DecisionRepository
 import edu.itmo.ultimatumgame.repositories.OfferRepository
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.DomainEventLogger
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -35,6 +38,7 @@ class PlayerGameplayServiceTest {
     private val decisionRepo = mockk<DecisionRepository>()
     private val userService = mockk<UserService>()
     private val coreGameplay = mockk<CoreGameplayService>(relaxUnitFun = true)
+    private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
 
     private val service = PlayerGameplayService(
         eventPublisher,
@@ -44,7 +48,8 @@ class PlayerGameplayServiceTest {
         offerRepo,
         decisionRepo,
         userService,
-        coreGameplay
+        coreGameplay,
+        domainEventLogger,
     )
 
     private fun stubOfferSaveIdentity() {

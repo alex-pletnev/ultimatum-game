@@ -8,6 +8,7 @@ import edu.itmo.ultimatumgame.util.logger
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -16,6 +17,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.UUID
+
+private const val MDC_USER_ID = "userId"
+private const val MDC_ROLE = "role"
 
 const val HEADER_AUTHORIZATION = "Authorization"
 const val BEARER_PREFIX = "Bearer "
@@ -61,6 +65,8 @@ class JwtAuthenticationFilter(
                     authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                     context.authentication = authToken
                     SecurityContextHolder.setContext(context)
+                    MDC.put(MDC_USER_ID, username)
+                    MDC.put(MDC_ROLE, userDetail.role.name)
                 } else {
                     log.warn("Невалидный токен для пользователя id=$username")
                 }
@@ -75,6 +81,11 @@ class JwtAuthenticationFilter(
                 )
             }
         }
-        filterChain.doFilter(request, response)
+        try {
+            filterChain.doFilter(request, response)
+        } finally {
+            MDC.remove(MDC_USER_ID)
+            MDC.remove(MDC_ROLE)
+        }
     }
 }
