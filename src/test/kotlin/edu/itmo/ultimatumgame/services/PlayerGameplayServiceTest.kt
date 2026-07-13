@@ -159,6 +159,44 @@ class PlayerGameplayServiceTest {
         }
     }
 
+    @Test
+    fun `sendOffer — IllegalArgumentException если offerValue больше roundSum (canonical UG invariant)`() {
+        val a = user()
+        val r = round()
+        val s = session(
+            members = mutableSetOf(a),
+            currentRound = r,
+            config = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(roundSum = 100),
+        )
+        every { userService.getUserById(a.id!!) } returns a
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+
+        assertThrows<IllegalArgumentException> {
+            service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = 101))
+        }
+    }
+
+    @Test
+    fun `sendOffer — offerValue равный roundSum допустим (граница включена, canonical accept-all)`() {
+        val a = user()
+        val b = user()
+        val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
+        val s = session(
+            members = mutableSetOf(a, b),
+            currentRound = r,
+            config = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(roundSum = 100),
+        )
+        every { userService.getUserById(a.id!!) } returns a
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+        stubOfferSaveIdentity()
+        stubRoundSave()
+
+        service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = 100))
+
+        assertEquals(1, r.offers.size)
+        assertEquals(100, r.offers[0].offerValue)
+    }
+
     // ----- makeDecision -----
 
     @Test

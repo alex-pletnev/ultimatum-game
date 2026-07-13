@@ -111,6 +111,37 @@ FINISHED
 | последнее decision | `publishRoundStatus(round)` + `publishScoreUpdated(sessionScoreDto)` | `/topic/session/{id}/roundStatus` + `/topic/session/{id}/scoreUpdated` |
 | `startNextRound` | `publishRoundStatus(round)` | `/topic/session/{id}/roundStatus` |
 
+## Canonical Ultimatum Game vs наша адаптация
+
+Каноническая UG (Wikipedia): 2 игрока, single-shot, роли proposer/responder, фиксированная сумма, ultimatum accept/reject. Наш проект — многопользовательская вариация. Отличия зафиксированы явно.
+
+| Параметр | Canonical UG | Наша реализация | Комментарий |
+|----------|--------------|-----------------|-------------|
+| Игроков в сессии | 2 | N (задаётся `SessionConfig.numPlayers`) | Адаптация под лабораторные эксперименты |
+| Роли | proposer / responder (фиксированы) | Каждый игрок оффер отправляет и решение принимает; pairing через shuffle-стратегии (`FreeForAllStrategy`, `TeamBattleStrategy`) | В одном раунде игрок может быть proposer'ом одного оффера и responder'ом другого |
+| Раундов | 1 (single-shot) | N (`SessionConfig.numRounds`) | Iterated-версия под experimental protocol |
+| Сумма | Фиксированная | `SessionConfig.roundSum`, immutable per session | ✓ Соответствует канону |
+| Правило accept | proposer keeps `sum − offer`, responder gets `offer` | То же: `(roundSum − offer.amount, offer.amount)` — см. `StatsService.computeScores` | ✓ Соответствует канону (T-003) |
+| Правило reject | Оба получают 0 | То же: `(0, 0)` | ✓ Соответствует канону |
+| Диапазон offer'а | `0 ≤ offer ≤ sum` (неявно, split денег) | `0 ≤ offerValue ≤ roundSum` — проверяется в `PlayerGameplayService.sendOffer` (T-045); нижняя граница — `@PositiveOrZero` на DTO, верхняя — `require(...)` | ✓ Соответствует канону; **до T-045 верхняя граница не валидировалась** |
+| Multi-player варианты | «Competitive UG» (n proposer'ов), «Pirate game» | Не реализовано; наш N-player — независимые пары proposer↔responder через shuffle | Не претендуем на «competitive» вариант |
+| Команды (TEAM_BATTLE) | Не canonical | Каждый игрок делает индивидуальный оффер; scoring агрегируется по командам (`SessionScoreDto.teams`) | Наша extension |
+
+### Осознанные адаптации
+
+- **Multi-round**: для сбора статистики стратегий поведения — стандартная научная практика iterated UG.
+- **N-player shuffle**: экономия участников, каждый раунд — новая пара; статистика по индивидууму сохраняется.
+- **TEAM_BATTLE**: групповые эффекты не покрыты каноническим UG, но популярный extension в экспериментальной экономике.
+
+### Тесты, подтверждающие соответствие
+
+- `StatsServiceTest.accept — proposer получает roundSum минус offer, responder получает offer` — правило accept.
+- `StatsServiceTest.reject — обе стороны получают 0` — правило reject.
+- `StatsServiceTest.no decision yet — score = 0, не начисляется` — оффер без решения не создаёт payoff.
+- `PlayerGameplayServiceTest.sendOffer — IllegalArgumentException если offerValue больше roundSum` — верхняя граница.
+- `PlayerGameplayServiceTest.sendOffer — offerValue равный roundSum допустим` — граница включена.
+- `FreeForAllTest`, `TeamBattleStrategyTest` — invariants shuffle-стратегий (`responder != proposer`, `responder ∈ members`, для TEAM_BATTLE — из другой команды).
+
 ## Ограничения / TODO
 
 - `AdminGameplayService.abortCurrentRound()` — заглушка (`services/AdminGameplayService.kt`).

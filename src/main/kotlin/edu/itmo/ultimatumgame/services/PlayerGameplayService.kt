@@ -51,6 +51,12 @@ class PlayerGameplayService(
         val session = sessionService.getSessionEntity(sessionId)
         logger.debug("Получена сессия {} с состоянием {}", session.id, session.state)
 
+        val roundSum = session.config?.roundSum
+            ?: error("session.config.roundSum должен быть задан к этому моменту")
+        require(offerValue in 0..roundSum) {
+            "offerValue должен быть в диапазоне [0, $roundSum], получено $offerValue"
+        }
+
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
         logger.debug("Текущий раунд {} для сессии {}", round.roundNumber, session.id)
 

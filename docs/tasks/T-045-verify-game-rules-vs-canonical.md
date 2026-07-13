@@ -1,7 +1,7 @@
 ---
 id: T-045
 title: Сверить реализованные правила gameplay с канонической Ultimatum Game (Википедия) + многопользовательские адаптации
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -46,3 +46,4 @@ tags: [test, verification, gameplay]
 ## Лог
 
 - 2026-07-13: заведено по идее пользователя во время обсуждения T-003 («проверить что gameplay работает корректно, сверить с Wikipedia»). Priority medium. Логически идёт после T-003 (scoring должен быть на месте, чтобы тестировать правила подсчёта).
+- 2026-07-13: сверено с Wikipedia (EN + RU). Canonical UG: 2 игрока, single-shot, proposer/responder, roundSum split, accept → (sum − offer, offer), reject → (0, 0). Наша адаптация: N игроков (shuffle-стратегии), N раундов, TEAM_BATTLE-агрегация. Все правила совпадают с каноном. **Найден баг**: `offerValue > roundSum` не валидировался, давал `proposerScore < 0` в T-003 scoring; починено — `require(offerValue in 0..roundSum)` в `PlayerGameplayService.sendOffer`. Написаны провальные TDD-тесты (RED увиден до fix'а) на upper-bound violation + boundary case. Сравнительная таблица + тесты-подтверждения добавлены в `docs/03-state-machines.md`. Existing suite покрывает shuffle invariants (`FreeForAllTest`, `TeamBattleStrategyTest`), scoring правила (`StatsServiceTest`), state-machine переходы (`PlayerGameplayServiceTest`, `AdminGameplayServiceTest`) — competitive UG и pirate game не реализуются осознанно.
