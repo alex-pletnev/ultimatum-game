@@ -550,6 +550,25 @@
         "title" : "OffersShuffledResponse",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.responses.PendingAction" : {
+        "examples" : [ {
+          "offerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "type" : "SEND_OFFER"
+        } ],
+        "properties" : {
+          "offerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [ "SEND_OFFER", "MAKE_DECISION" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "type" ],
+        "title" : "PendingAction",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.responses.PlayerScoreDto" : {
         "examples" : [ {
           "nickname" : "string",
@@ -637,6 +656,11 @@
             }
           } ],
           "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "myPendingActions" : [ {
+            "offerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "type" : "SEND_OFFER"
+          } ],
+          "myRole" : "PROPOSER",
           "offers" : [ {
             "createdAt" : "2015-07-20T15:49:04-07:00",
             "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -689,6 +713,16 @@
             "format" : "uuid",
             "type" : "string"
           },
+          "myPendingActions" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.PendingAction"
+            },
+            "type" : "array"
+          },
+          "myRole" : {
+            "enum" : [ "PROPOSER", "RESPONDER", "BOTH", "NONE" ],
+            "type" : "string"
+          },
           "offers" : {
             "items" : {
               "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
@@ -707,7 +741,7 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse"
           }
         },
-        "required" : [ "decisions", "id", "offers", "roundNumber", "roundPhase", "session" ],
+        "required" : [ "decisions", "id", "myPendingActions", "myRole", "offers", "roundNumber", "roundPhase", "session" ],
         "title" : "RoundResponse",
         "type" : "object"
       },

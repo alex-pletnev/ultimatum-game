@@ -215,6 +215,21 @@
         "title" : "OfferPrewResponse",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.responses.PendingAction" : {
+        "properties" : {
+          "offerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [ "SEND_OFFER", "MAKE_DECISION" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "type" ],
+        "title" : "PendingAction",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse" : {
         "properties" : {
           "id" : {
@@ -246,6 +261,16 @@
             "format" : "uuid",
             "type" : "string"
           },
+          "myPendingActions" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.PendingAction"
+            },
+            "type" : "array"
+          },
+          "myRole" : {
+            "enum" : [ "PROPOSER", "RESPONDER", "BOTH", "NONE" ],
+            "type" : "string"
+          },
           "offers" : {
             "items" : {
               "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
@@ -264,7 +289,7 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse"
           }
         },
-        "required" : [ "decisions", "id", "offers", "roundNumber", "roundPhase", "session" ],
+        "required" : [ "decisions", "id", "myPendingActions", "myRole", "offers", "roundNumber", "roundPhase", "session" ],
         "title" : "RoundResponse",
         "type" : "object"
       },

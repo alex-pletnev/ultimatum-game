@@ -10,16 +10,21 @@
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatumgame.dto.responses.MyRole
+import edu.itmo.ultimatumgame.dto.responses.PendingAction
+import edu.itmo.ultimatumgame.dto.responses.PendingActionType
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
 import edu.itmo.ultimatumgame.model.Round
+import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.Team
+import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
@@ -44,6 +49,7 @@ class SessionService(
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
     private val roundMapper: RoundMapper,
     private val userService: UserService,
+    private val securityService: SecurityService,
     private val eventPublisherService: EventPublisherService,
     private val domainEventLogger: DomainEventLogger,
 ) {
@@ -116,7 +122,7 @@ class SessionService(
         logger.debug("Найдена сессия {}", session)
         val round = session.currentRound ?: throw IdNotFoundException("Текущий раунд null сессия ${session.displayName} еще не началась")
         val dto = roundMapper.toDto(round)
-        return dto
+        return enrichWithHints(dto, round, session.members)
     }
 
     fun getRounds(sessionId: UUID): List<RoundResponse> {
@@ -127,7 +133,63 @@ class SessionService(
         logger.debug("getRounds — найдена сессия {}, раундов: {}", sessionId, rounds.size)
         return rounds
             .sortedBy { it.roundNumber }
-            .map { roundMapper.toDto(it) }
+            .map { round ->
+                val members = round.session?.members.orEmpty()
+                enrichWithHints(roundMapper.toDto(round), round, members)
+            }
+    }
+
+    private fun enrichWithHints(
+        dto: RoundResponse,
+        round: Round,
+        members: Set<User>,
+    ): RoundResponse {
+        val userId = runCatching { securityService.getCurrentUserId() }.getOrNull() ?: return dto
+        val role = computeMyRole(round, userId)
+        val actions = computeMyPendingActions(round, userId, members)
+        return dto.copy(myRole = role, myPendingActions = actions)
+    }
+
+    private fun computeMyRole(round: Round, userId: UUID): MyRole {
+        val asProposer = round.offers.any { it.proposer?.id == userId }
+        val asResponder = round.offers.any { it.responder?.id == userId }
+        return when {
+            asProposer && asResponder -> MyRole.BOTH
+            asProposer -> MyRole.PROPOSER
+            asResponder -> MyRole.RESPONDER
+            else -> MyRole.NONE
+        }
+    }
+
+    private fun computeMyPendingActions(
+        round: Round,
+        userId: UUID,
+        members: Set<User>,
+    ): List<PendingAction> {
+        val isMember = members.any { it.id == userId }
+        if (!isMember) return emptyList()
+
+        return when (round.roundPhase) {
+            RoundPhase.WAIT_OFFERS -> {
+                if (round.offers.none { it.proposer?.id == userId }) {
+                    listOf(PendingAction(type = PendingActionType.SEND_OFFER))
+                } else {
+                    emptyList()
+                }
+            }
+            RoundPhase.OFFERS_SENT -> {
+                round.offers
+                    .filter { it.responder?.id == userId }
+                    .filter { offer -> round.decisions.none { it.offer?.id == offer.id } }
+                    .map { offer ->
+                        PendingAction(
+                            type = PendingActionType.MAKE_DECISION,
+                            offerId = offer.id,
+                        )
+                    }
+            }
+            else -> emptyList()
+        }
     }
 
     fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {

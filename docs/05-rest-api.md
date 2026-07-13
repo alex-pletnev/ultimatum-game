@@ -88,9 +88,12 @@
 - **Ошибки:** 404 `IdNotFoundException` — если `session.currentRound == null`.
 
 ### `GET /session/{id}/rounds` — история всех раундов сессии
-- **Response 200:** `List<RoundResponse>` — отсортировано по `roundNumber`, включает `offers` и `decisions` каждого раунда.
+- **Response 200:** `List<RoundResponse>` — отсортировано по `roundNumber`, включает `offers` и `decisions` каждого раунда, а также per-user hints:
+  - `myRole: PROPOSER | RESPONDER | BOTH | NONE` — роль вызывающего user'а в этом раунде.
+  - `myPendingActions: List<PendingAction>` — что осталось сделать (`SEND_OFFER` в фазе WAIT_OFFERS, `MAKE_DECISION` с `offerId` в фазе OFFERS_SENT).
 - **Ошибки:** 404 `IdNotFoundException` — если сессии нет.
-- Транзакционный `@Transactional(readOnly = true)` — избегает LazyInitializationException при обходе `session.rounds`.
+- Использует `RoundRepository.findAllBySessionIdWithRelations` с `JOIN FETCH` для избежания N+1.
+- В STOMP-broadcast payload'ах (`/topic/session/{id}/roundStatus`) hints остаются default'ными (`NONE`/`emptyList()`), потому что broadcast не привязан к конкретному пользователю.
 
 ### `POST /session/{sessionId}/join` — присоединиться игроком
 - **Роль:** ADMIN, PLAYER.

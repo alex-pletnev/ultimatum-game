@@ -1,7 +1,7 @@
 ---
 id: T-053
 title: Helper-поля 'myRole' и 'phase' в RoundResponse/OfferCreatedResponse — фронт должен знать «мой ход»
-status: pending
+status: done
 priority: high
 created: 2026-07-13
 updated: 2026-07-13
@@ -42,3 +42,4 @@ Backend знает всё это по определению (state-machine + us
 ## Лог
 
 - 2026-07-13: заведено из frontend-readiness audit'а. Blocker для UX — без hints фронт вынужден дублировать бизнес-логику state-machine, что легко расходится с backend'ом.
+- 2026-07-13: закрыто. `RoundResponse` расширен полями `myRole: MyRole` и `myPendingActions: List<PendingAction>` с default'ами `NONE`/`emptyList()` — backwards-compat для broadcast'ов. Enrichment в `SessionService.enrichWithHints` — вычисляет через `SecurityService.getCurrentUserId()` (runCatching → возвращает DTO как есть если нет user context, чтобы broadcast payload не падал). Правила: `PROPOSER`/`RESPONDER`/`BOTH`/`NONE` по offers; `SEND_OFFER` — WAIT_OFFERS + user не отправил; `MAKE_DECISION(offerId)` — OFFERS_SENT + user назначен responder + нет decision. Observer/non-member → `NONE`/`emptyList()`. TDD: RED (SessionService constructor не принимает SecurityService) → GREEN. Docs 05-rest-api + snapshots обновлены.

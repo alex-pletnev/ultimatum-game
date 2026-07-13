@@ -1,10 +1,14 @@
 package edu.itmo.ultimatumgame.services
 
+import edu.itmo.ultimatumgame.TestFixtures
+import edu.itmo.ultimatumgame.TestFixtures.offer
 import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.sessionConfig
 import edu.itmo.ultimatumgame.TestFixtures.team
 import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatumgame.dto.responses.MyRole
+import edu.itmo.ultimatumgame.dto.responses.PendingActionType
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
@@ -12,9 +16,11 @@ import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
 import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.Round
+import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
+import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.RoundMapper
@@ -39,11 +45,12 @@ import kotlin.test.assertTrue
 class SessionServiceTest {
 
     private val sessionRepo = mockk<SessionRepository>()
-    private val roundRepo = mockk<edu.itmo.ultimatumgame.repositories.RoundRepository>()
+    private val roundRepo = mockk<RoundRepository>()
     private val sessionMapper = mockk<SessionMapper>()
     private val sessionWithTeamsAndMembersMapper = mockk<SessionWithTeamsAndMembersMapper>()
     private val roundMapper = mockk<RoundMapper>()
     private val userService = mockk<UserService>()
+    private val securityService = mockk<SecurityService>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
     private val service = SessionService(
@@ -53,6 +60,7 @@ class SessionServiceTest {
         sessionWithTeamsAndMembersMapper,
         roundMapper,
         userService,
+        securityService,
         eventPublisher,
         domainEventLogger,
     )
@@ -200,6 +208,8 @@ class SessionServiceTest {
         val dto = mockk<RoundResponse>()
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { roundMapper.toDto(r) } returns dto
+        // no user context — enrich returns dto as-is
+        every { securityService.getCurrentUserId() } throws IllegalStateException("no auth")
 
         assertSame(dto, service.getCurrentRound(s.id!!))
     }
@@ -229,6 +239,8 @@ class SessionServiceTest {
         every { roundMapper.toDto(r1) } returns d1
         every { roundMapper.toDto(r2) } returns d2
         every { roundMapper.toDto(r3) } returns d3
+        // no user context — enrich returns dto as-is
+        every { securityService.getCurrentUserId() } throws IllegalStateException("no auth")
 
         val result = service.getRounds(s.id!!)
 
@@ -240,6 +252,93 @@ class SessionServiceTest {
         val id = UUID.randomUUID()
         every { sessionRepo.existsById(id) } returns false
         assertThrows<IdNotFoundException> { service.getRounds(id) }
+    }
+
+    @Test
+    fun `getRounds — myRole вычисляется из offers relative to currentUser`() {
+        val me = user()
+        val other = user()
+        val s = session(members = mutableSetOf(me, other))
+        val r = TestFixtures.round(session = s, roundNumber = 1)
+        val offFromMe = offer(proposer = me, responder = other, round = r)
+        val offToMe = offer(proposer = other, responder = me, round = r)
+        r.offers = mutableListOf(offFromMe, offToMe)
+        r.roundPhase = RoundPhase.OFFERS_SENT
+
+        val baseDto = RoundResponse(
+            id = r.id!!,
+            roundNumber = 1,
+            roundPhase = r.roundPhase!!,
+            offers = mutableListOf(),
+            decisions = mutableListOf(),
+            session = mockk(relaxed = true),
+        )
+        every { sessionRepo.existsById(s.id!!) } returns true
+        every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
+        every { roundMapper.toDto(r) } returns baseDto
+        every { securityService.getCurrentUserId() } returns me.id!!
+
+        val result = service.getRounds(s.id!!)
+
+        assertEquals(MyRole.BOTH, result[0].myRole)
+        val actions = result[0].myPendingActions
+        assertEquals(1, actions.size)
+        assertEquals(PendingActionType.MAKE_DECISION, actions[0].type)
+        assertEquals(offToMe.id, actions[0].offerId)
+    }
+
+    @Test
+    fun `getRounds — WAIT_OFFERS + user не отправил offer → SEND_OFFER pending`() {
+        val me = user()
+        val s = session(members = mutableSetOf(me))
+        val r = TestFixtures.round(session = s, roundNumber = 1)
+        r.roundPhase = RoundPhase.WAIT_OFFERS
+        val baseDto = RoundResponse(
+            id = r.id!!,
+            roundNumber = 1,
+            roundPhase = r.roundPhase!!,
+            offers = mutableListOf(),
+            decisions = mutableListOf(),
+            session = mockk(relaxed = true),
+        )
+        every { sessionRepo.existsById(s.id!!) } returns true
+        every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
+        every { roundMapper.toDto(r) } returns baseDto
+        every { securityService.getCurrentUserId() } returns me.id!!
+
+        val result = service.getRounds(s.id!!)
+
+        assertEquals(MyRole.NONE, result[0].myRole)
+        assertEquals(1, result[0].myPendingActions.size)
+        assertEquals(PendingActionType.SEND_OFFER, result[0].myPendingActions[0].type)
+    }
+
+    @Test
+    fun `getRounds — observer не участник → myRole=NONE, actions пусто`() {
+        val observer = user()
+        val a = user()
+        val b = user()
+        val s = session(members = mutableSetOf(a, b))
+        val r = TestFixtures.round(session = s, roundNumber = 1)
+        r.roundPhase = RoundPhase.OFFERS_SENT
+        r.offers = mutableListOf(offer(proposer = a, responder = b, round = r))
+        val baseDto = RoundResponse(
+            id = r.id!!,
+            roundNumber = 1,
+            roundPhase = r.roundPhase!!,
+            offers = mutableListOf(),
+            decisions = mutableListOf(),
+            session = mockk(relaxed = true),
+        )
+        every { sessionRepo.existsById(s.id!!) } returns true
+        every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
+        every { roundMapper.toDto(r) } returns baseDto
+        every { securityService.getCurrentUserId() } returns observer.id!!
+
+        val result = service.getRounds(s.id!!)
+
+        assertEquals(MyRole.NONE, result[0].myRole)
+        assertTrue(result[0].myPendingActions.isEmpty())
     }
 
     @Test
