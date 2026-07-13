@@ -101,7 +101,7 @@ class EventPublisherService(
     @AsyncPublisher(
         operation = AsyncOperation(
             channelName = "/topic/session/{sessionId}/offersShuffled",
-            description = "Публикуется broadcast'ом после того как shuffle-стратегия назначила responder'ов офферам раунда (T-051). Payload — список (offerId, proposerId, responderId).",
+            description = "Публикуется broadcast'ом после того как shuffle-стратегия назначила responder'ов офферам раунда (переход WAIT_OFFERS→OFFERS_SENT). Payload — список (offerId, proposerId, responderId) для визуализации pairing на фронте.",
             payloadType = OffersShuffledResponse::class
         )
     )
