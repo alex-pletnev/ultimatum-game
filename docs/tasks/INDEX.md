@@ -13,7 +13,6 @@
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
-| T-024 | Перенести superpowers-integration в setup-agent-harness — после обкатки в T-023 | pending | low | 2026-07-13 | [T-024](T-024-superpowers-integration-port-to-harness.md) |
 | T-025 | Правило — при отклонении от буквы AC уведомить пользователя до commit'а | pending | medium | 2026-07-13 | [T-025](T-025-notify-before-ac-deviation.md) |
 
 ## Закрытые задачи
@@ -38,6 +37,7 @@
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | done | 2026-07-13 | [T-002](T-002-decision-fetch-join.md) |
 | T-020 | Починить detekt-findings в тестах вместо @file:Suppress | done | 2026-07-13 | [T-020](T-020-fix-test-detekt-suppresses.md) |
 | T-023 | Интеграция superpowers-skills в наши skills — обкатка в этом проекте | done | 2026-07-13 | [T-023](T-023-superpowers-integration-in-project.md) |
+| T-024 | Перенести superpowers-integration в setup-agent-harness — после обкатки в T-023 | done | 2026-07-13 | [T-024](T-024-superpowers-integration-port-to-harness.md) |
 
 ## Легенда статусов
 
