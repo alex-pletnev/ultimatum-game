@@ -23,6 +23,7 @@
 | T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | pending | medium | 2026-07-13 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
+| T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | pending | high | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 
 ## Закрытые задачи
 
