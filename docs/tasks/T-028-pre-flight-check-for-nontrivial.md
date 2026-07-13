@@ -1,7 +1,7 @@
 ---
 id: T-028
 title: Pre-flight check для non-trivial — assumptions / risks / reversibility
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -40,3 +40,4 @@ tags: [meta, agent-behavior, skills]
 ## Лог
 
 - 2026-07-13: заведена по итогам анализа флоу (Часть 3, гэпы B/C/D объединены в один).
+- 2026-07-13: закрыта. Решение — отдельный skill (`.claude/skills/pre-flight.md`), а не секция в task-add: жизненный цикл разный (task-add создаёт файл до pre-flight, pre-flight — между дизайном и кодингом). 3 вопроса: assumptions/risks/reversibility, 2-4 строки на каждый. Auto-mode триггер: non-trivial + прошёл design-gate + first Edit. Дополнительный триггер high-stakes (DB migration, security-config, deletion, prod-конфиги, cross-cutting breaking API) — обязателен даже для formally-trivial. То же в harness (`references/skills/pre-flight.md`), SKILL.md и playbook.md обновлены с 7 → 8 skill'ов. CLAUDE.md обеих сторон: +1 строка в Slash-команды, +2 строки в Проактивные триггеры.

@@ -88,6 +88,7 @@ tags: [backend, api, security, ...]
 | `/wheel-check` | Перед новой реализацией проверить: нет ли уже готового в проекте / Spring Boot / либах |
 | `/mid-retro` | Пауза внутри задачи для само-осмотра: скоуп, ошибки, follow-up'ы, нужен ли user-check |
 | `/self-review` | Пост-`task-done` ревью последнего commit'а — скоуп, недочёты, подавления, улучшения меня самого |
+| `/pre-flight` | Между дизайном/анализом и первым Edit/Write в `src/**` — 3 вопроса: assumptions, risks, reversibility. Для non-trivial и high-stakes зон |
 
 ## Проактивные триггеры (без явной команды)
 
@@ -107,6 +108,8 @@ Skills вызываются автоматически в перечисленн
 | Сразу после успешного `task-done` (после commit+push) | `self-review` в Auto-mode | Ревью diff'а по 5 категориям, обязательный акцент на пункт E (улучшения меня самого) |
 | Долгая dev-команда (см. «Долгие команды» ниже) выбивается за 2× baseline без выхлопа в stdout | без skill | Диагностика: `ps`, stdout, внешние зависимости (Docker, порты БД). Эскалировать пользователю раньше чем «просто подождать ещё» |
 | Первое сообщение новой сессии | без skill | Session-start ritual (см. секцию выше) — прочитать `INDEX.md`, объявить `in_progress`-таски, спросить продолжение или новая задача |
+| После brainstorming/systematic-debugging для non-trivial задачи, перед первым Edit/Write в `src/**` | `pre-flight` в Auto-mode | Answer 3 questions: assumptions/risks/reversibility. Пауза до кодинга |
+| Задача трогает high-stakes зону (DB migration, security-config, deletion, prod-настройки, cross-cutting breaking API) | `pre-flight` в Auto-mode | Обязательно даже для formally-trivial задач |
 | Баг / упавший тест / неожиданное поведение | `superpowers:systematic-debugging` | Не пытаться сразу фиксить — гипотеза → эксперимент → вывод. Особенно важно если проблема сопротивляется дольше ~10 минут |
 | Новая фича с ясным acceptance criteria | `superpowers:test-driven-development` | До реализации — написать провальные тесты по каждому AC, потом реализация до зелёного. Отсекает «сделал и не проверил» |
 | Многошаговый plan есть (`docs/superpowers/plans/*.md`) — начинаем прогон | `superpowers:executing-plans` | Дисциплинированный прогон с checkpoint'ами, а не «зачитал и побежал» |
