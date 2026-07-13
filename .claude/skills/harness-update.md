@@ -31,29 +31,49 @@ description: Use когда пользователь просит `/harness-upda
    - `self-review.md`
    - `pre-flight.md`
 
-3. **Diff summary.** Для каждого файла — сравнить с существующим в `.claude/skills/`:
+3. **Diff summary + customization check.** Для каждого файла — сравнить с существующим в `.claude/skills/`:
    - Если файла нет в проекте — пометить как «новый (будет добавлен)».
    - Если есть, но идентичен — пометить как «идентичен (skip)».
-   - Если есть, но отличается — показать `git diff --no-index --stat <src> <dst>` (или просто число различающихся строк).
+   - Если есть, но отличается — **определить причину**:
+     - Читаю `.claude/harness-sync-state.json` (создаётся после первого apply): для каждого skill'а лежит `{ "file": "sha256 на момент последнего sync"}`.
+     - Если current-sha == recorded-sha в state → это чистый upstream update (harness обновил файл, локальной кастомизации нет). Пометить как «upstream update: N строк».
+     - Если current-sha != recorded-sha → **user кастомизировал** файл локально после последнего sync'а. Пометить как «⚠ LOCAL CUSTOMIZATION: N строк изменено локально, будет перезаписано upstream'ом».
+     - Если `.claude/harness-sync-state.json` вообще отсутствует (первый запуск harness-update в этом проекте) → любое различие трактуется как upstream update без предупреждения (т.к. не знаем предыдущее состояние).
 
    Показать пользователю итоговый summary:
    ```
-   Обновлю:
+   Обновлю (upstream update):
      - task-done.md (изменено: 15 строк)
      - self-review.md (изменено: 6 строк)
+   ⚠ Обнаружена ЛОКАЛЬНАЯ кастомизация (будет ПОТЕРЯНА):
+     - task-add.md (12 строк отличаются от последнего sync'а)
    Добавлю:
      - pre-flight.md (новый)
    Skip (идентичны):
-     - task-add.md, docs-sync.md, ...
+     - docs-sync.md, task-sync.md, ...
    Не трогаю: docs/, docs/tasks/, CLAUDE.md, .claude/settings.local.json, custom skills.
    Продолжить? (y/n)
    ```
+
+   **Если есть хотя бы один файл с LOCAL CUSTOMIZATION**, отдельно напомнить пользователю: «Твои локальные правки в этих файлах пропадут. Если хочешь сохранить их — перенеси в custom skill (файл вне harness-managed списка) до commit'а. Продолжить всё равно? (y/n)».
 
 4. **Wait for user.** Ждать явного `y` (или синонимов). Молчание/`n`/уточнение — остановить, не трогать файлы.
 
 5. **Apply.** Для каждого файла из списка (кроме «идентичен»):
    - Copy: `cp ~/.claude/skills/setup-agent-harness/references/skills/<file> .claude/skills/<file>`.
    - Force overwrite ок — это ожидаемое поведение.
+   - **Обновить `.claude/harness-sync-state.json`**: для каждого applied файла — записать sha256 текущего содержимого. Формат:
+     ```json
+     {
+       "harness_sha": "<git-sha harness-репо на момент sync'а>",
+       "files": {
+         "task-add.md": "<sha256>",
+         "task-done.md": "<sha256>",
+         ...
+       }
+     }
+     ```
+   - Файл `.claude/harness-sync-state.json` **коммитится в git** (не в .gitignore) — team-consistency detect'а кастомизации.
 
 6. **Custom skills.** Если в `.claude/skills/` есть файлы вне списка из шага 2 (custom skill'ы пользователя) — оставить их **как есть**. НЕ удалять, не трогать.
 

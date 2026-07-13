@@ -1,7 +1,7 @@
 ---
 id: T-037
 title: harness-update — предупреждать о потере кастомизации harness-managed skill'ов
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -32,3 +32,4 @@ tags: [tech-debt, harness, safety]
 ## Лог
 
 - 2026-07-13: заведена авто-режимом из self-review T-035 (категория B).
+- 2026-07-13: закрыта. `harness-update.md` (проект + harness) расширен: шаг 3 «Diff summary + customization check» использует `.claude/harness-sync-state.json` для различения upstream update vs local customization. Local customization помечается ⚠ в diff-summary + отдельный дополнительный prompt user'у. Шаг 5 (apply) обновляет sync-state.json после каждого copy. Playbook Фаза 6 дополнена: initial setup пишет harness-sync-state.json. Сгенерирован `harness-sync-state.json` для этого проекта (post-T-038: все 8 skill'ов = harness references, harness_sha=e324459). AC-check: 3/3 буквально.

@@ -16,7 +16,6 @@
 | T-030 | Hooks-based enforcement для критичных skill'ов | pending | low | 2026-07-13 | [T-030](T-030-hooks-based-enforcement.md) |
 | T-032 | External review (code-reviewer subagent) для high-stakes | pending | low | 2026-07-13 | [T-032](T-032-external-review-for-high-stakes.md) |
 | T-034 | Periodic learning consolidation — сканирование закрытых задач на паттерны | pending | low | 2026-07-13 | [T-034](T-034-periodic-learning-consolidation.md) |
-| T-037 | harness-update — предупреждать о потере кастомизации harness-managed skill'ов | pending | low | 2026-07-13 | [T-037](T-037-harness-update-warn-customization-loss.md) |
 
 ## Закрытые задачи
 
@@ -50,6 +49,7 @@
 | T-033 | Session-end handoff ritual — зеркало T-027 | done | 2026-07-13 | [T-033](T-033-session-end-handoff-ritual.md) |
 | T-035 | /harness-update — sync .claude/skills/ существующего проекта (v1: только skill'ы) | done | 2026-07-13 | [T-035](T-035-harness-update-skill.md) |
 | T-036 | /harness-update v2 — sync CLAUDE.md через harness-config.json | done | 2026-07-13 | [T-036](T-036-harness-update-claude-md.md) |
+| T-037 | harness-update — предупреждать о потере кастомизации harness-managed skill'ов | done | 2026-07-13 | [T-037](T-037-harness-update-warn-customization-loss.md) |
 | T-038 | Привести проект под harness-конвенции — generic skills + SPECIFIC_RULES + отточить /harness-update | done | 2026-07-13 | [T-038](T-038-clean-project-under-harness-conventions.md) |
 
 ## Легенда статусов
