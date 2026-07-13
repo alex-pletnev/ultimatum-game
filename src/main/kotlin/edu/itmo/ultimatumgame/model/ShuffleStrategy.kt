@@ -1,7 +1,7 @@
 package edu.itmo.ultimatumgame.model
 
-import java.util.*
 import java.util.Set.copyOf
+import java.util.UUID
 
 interface ShuffleStrategy {
     fun shuffleOffers(session: Session)

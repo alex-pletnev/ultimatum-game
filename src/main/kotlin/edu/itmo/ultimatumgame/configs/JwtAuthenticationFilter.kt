@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import java.util.*
+import java.util.UUID
 
 const val HEADER_AUTHORIZATION = "Authorization"
 const val BEARER_PREFIX = "Bearer "

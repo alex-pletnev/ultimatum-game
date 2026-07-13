@@ -1,7 +1,7 @@
 package edu.itmo.ultimatumgame.util
 
 import edu.itmo.ultimatumgame.exceptions.InvalidUuidFormatException
-import java.util.*
+import java.util.UUID
 
 fun String?.toUuidOrThrow(fieldName: String = "id"): UUID {
     if (this.isNullOrBlank()) {

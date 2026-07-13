@@ -2,7 +2,12 @@ package edu.itmo.ultimatumgame.util
 
 import edu.itmo.ultimatumgame.dto.responses.TeamResponse
 import edu.itmo.ultimatumgame.model.Team
-import org.mapstruct.*
+import org.mapstruct.BeanMapping
+import org.mapstruct.Mapper
+import org.mapstruct.MappingConstants
+import org.mapstruct.MappingTarget
+import org.mapstruct.NullValuePropertyMappingStrategy
+import org.mapstruct.ReportingPolicy
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,

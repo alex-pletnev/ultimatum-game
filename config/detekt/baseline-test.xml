@@ -2,32 +2,15 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>ArgumentListWrapping:EventPublisherServiceTest.kt$EventPublisherServiceTest$( messagingTemplate, offerMapper, decisionMapper, roundMapper, sessionMapper )</ID>
-    <ID>ArgumentListWrapping:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$( eventPublisher, sessionRepo, sessionService, roundRepo, offerRepo, decisionRepo, userService, coreGameplay )</ID>
-    <ID>ArgumentListWrapping:SessionServiceTest.kt$SessionServiceTest$( id = UUID.randomUUID(), displayName = "s", state = SessionState.CREATED, config = cfg, )</ID>
-    <ID>ArgumentListWrapping:SessionServiceTest.kt$SessionServiceTest$( sessionRepo, sessionMapper, sessionWithTeamsAndMembersMapper, roundMapper, userService, eventPublisher, )</ID>
-    <ID>ArgumentListWrapping:StatsServiceTest.kt$StatsServiceTest$( id = UUID.randomUUID(), session = s, round = r, responder = b, offer = o, decision = true, )</ID>
-    <ID>ArgumentListWrapping:TeamBattleStrategyTest.kt$TeamBattleStrategyTest$(4, round.offers.mapNotNull { it.responder?.id }.toSet().size, "responder'ы должны быть уникальны — каждый игрок ровно раз")</ID>
     <ID>EmptyFunctionBlock:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests${ }</ID>
-    <ID>ImportOrdering:SessionServiceTest.kt$import edu.itmo.ultimatumgame.TestFixtures.session import edu.itmo.ultimatumgame.TestFixtures.sessionConfig import edu.itmo.ultimatumgame.TestFixtures.team import edu.itmo.ultimatumgame.TestFixtures.user import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest import edu.itmo.ultimatumgame.dto.responses.RoundResponse import edu.itmo.ultimatumgame.dto.responses.SessionResponse import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse import edu.itmo.ultimatumgame.exceptions.IdNotFoundException import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException import edu.itmo.ultimatumgame.model.Role import edu.itmo.ultimatumgame.model.Round import edu.itmo.ultimatumgame.model.Session import edu.itmo.ultimatumgame.model.SessionState import edu.itmo.ultimatumgame.model.SessionType import edu.itmo.ultimatumgame.model.Team import edu.itmo.ultimatumgame.model.User import edu.itmo.ultimatumgame.repositories.SessionRepository import edu.itmo.ultimatumgame.util.RoundMapper import edu.itmo.ultimatumgame.util.SessionMapper import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper import io.mockk.every import io.mockk.mockk import io.mockk.slot import io.mockk.verify import org.junit.jupiter.api.assertThrows import org.springframework.data.domain.Page import org.springframework.data.domain.PageImpl import org.springframework.data.domain.Pageable import java.util.Optional import java.util.UUID import kotlin.test.Test import kotlin.test.assertEquals import kotlin.test.assertFalse import kotlin.test.assertNotNull import kotlin.test.assertTrue import kotlin.test.assertSame</ID>
-    <ID>Indentation:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests$ </ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( id: UUID = UUID.randomUUID(), displayName: String = "session-${id.toString().take(8)}", state: SessionState = SessionState.CREATED, admin: User = user(role = Role.ADMIN), config: SessionConfig = sessionConfig(), openToConnect: Boolean = true, members: MutableSet&lt;User&gt; = mutableSetOf(), observers: MutableSet&lt;User&gt; = mutableSetOf(), teams: MutableSet&lt;Team&gt; = mutableSetOf(), currentRound: Round? = null, )</ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( id: UUID = UUID.randomUUID(), proposer: User, responder: User? = null, session: Session? = null, round: Round? = null, offerValue: Int = 50, )</ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( id: UUID = UUID.randomUUID(), session: Session? = null, roundNumber: Int = 1, roundPhase: RoundPhase = RoundPhase.CREATED, offers: MutableList&lt;Offer&gt; = mutableListOf(), decisions: MutableList&lt;Decision&gt; = mutableListOf(), )</ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( sessionType: SessionType = SessionType.FREE_FOR_ALL, numRounds: Int = 3, numTeams: Int = 0, numPlayers: Int = 4, roundSum: Int = 100, timeoutMoveSec: Int = 60, )</ID>
     <ID>MaxLineLength:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$fun</ID>
     <ID>MaximumLineLength:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$ </ID>
-    <ID>NoBlankLineBeforeRbrace:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests$ </ID>
-    <ID>NoUnusedImports:AdminGameplayServiceTest.kt$edu.itmo.ultimatumgame.services.AdminGameplayServiceTest.kt</ID>
-    <ID>NoUnusedImports:CoreGameplayServiceTest.kt$edu.itmo.ultimatumgame.services.CoreGameplayServiceTest.kt</ID>
-    <ID>NoUnusedImports:SessionServiceTest.kt$edu.itmo.ultimatumgame.services.SessionServiceTest.kt</ID>
-    <ID>NoUnusedImports:StatsServiceTest.kt$edu.itmo.ultimatumgame.services.StatsServiceTest.kt</ID>
+    <ID>NoSemicolons:StatsServiceTest.kt$StatsServiceTest$;</ID>
     <ID>VarCouldBeVal:SpecSnapshotGeneratorTest.kt$SpecSnapshotGeneratorTest$@Autowired private lateinit var mockMvc: MockMvc</ID>
     <ID>VarCouldBeVal:SpecSnapshotGeneratorTest.kt$SpecSnapshotGeneratorTest$@Autowired private lateinit var objectMapper: ObjectMapper</ID>
-    <ID>Wrapping:CoreGameplayServiceTest.kt$CoreGameplayServiceTest$;</ID>
-    <ID>Wrapping:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$;</ID>
-    <ID>Wrapping:StatsServiceTest.kt$StatsServiceTest$;</ID>
-    <ID>Wrapping:TeamBattleStrategyTest.kt$TeamBattleStrategyTest$(</ID>
-    <ID>Wrapping:TeamBattleStrategyTest.kt$TeamBattleStrategyTest$;</ID>
   </CurrentIssues>
 </SmellBaseline>

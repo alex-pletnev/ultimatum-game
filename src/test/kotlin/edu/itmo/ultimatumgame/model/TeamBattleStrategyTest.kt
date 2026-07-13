@@ -17,8 +17,10 @@ class TeamBattleStrategyTest {
 
     @Test
     fun `happy path — 2 команды по 2 игрока, responder всегда из чужой команды`() {
-        val a1 = user(nickname = "A1"); val a2 = user(nickname = "A2")
-        val b1 = user(nickname = "B1"); val b2 = user(nickname = "B2")
+        val a1 = user(nickname = "A1")
+        val a2 = user(nickname = "A2")
+        val b1 = user(nickname = "B1")
+        val b2 = user(nickname = "B2")
         val teamA = team(name = "A", members = mutableSetOf(a1, a2))
         val teamB = team(name = "B", members = mutableSetOf(b1, b2))
         val members = mutableSetOf<User>(a1, a2, b1, b2)
@@ -49,8 +51,11 @@ class TeamBattleStrategyTest {
                 assertTrue(responder.id in teamAIds, "responder ${responder.id} должен быть из команды A")
             }
         }
-        assertEquals(4, round.offers.mapNotNull { it.responder?.id }.toSet().size,
-            "responder'ы должны быть уникальны — каждый игрок ровно раз")
+        assertEquals(
+            4,
+            round.offers.mapNotNull { it.responder?.id }.toSet().size,
+            "responder'ы должны быть уникальны — каждый игрок ровно раз"
+        )
     }
 
     @Test
@@ -61,7 +66,9 @@ class TeamBattleStrategyTest {
 
     @Test
     fun `throws when offers count не совпадает с числом members`() {
-        val a1 = user(); val a2 = user(); val b1 = user()
+        val a1 = user()
+        val a2 = user()
+        val b1 = user()
         val teamA = team(members = mutableSetOf(a1, a2))
         val teamB = team(members = mutableSetOf(b1))
         val round = round(offers = mutableListOf(offer(proposer = a1))) // 1 offer, 3 members
@@ -91,7 +98,8 @@ class TeamBattleStrategyTest {
     @Test
     fun `throws when не осталось валидного responder из другой команды`() {
         // 1 игрок в команде A предлагает, но все остальные — тоже в A
-        val a1 = user(); val a2 = user()
+        val a1 = user()
+        val a2 = user()
         val teamA = team(members = mutableSetOf(a1, a2))
         val round = round(offers = mutableListOf(offer(proposer = a1), offer(proposer = a2)))
         val session = session(

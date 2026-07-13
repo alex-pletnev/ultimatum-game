@@ -6,7 +6,7 @@ import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.logger
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class AdminGameplayService(

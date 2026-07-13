@@ -37,7 +37,14 @@ class PlayerGameplayServiceTest {
     private val coreGameplay = mockk<CoreGameplayService>(relaxUnitFun = true)
 
     private val service = PlayerGameplayService(
-        eventPublisher, sessionRepo, sessionService, roundRepo, offerRepo, decisionRepo, userService, coreGameplay
+        eventPublisher,
+        sessionRepo,
+        sessionService,
+        roundRepo,
+        offerRepo,
+        decisionRepo,
+        userService,
+        coreGameplay
     )
 
     private fun stubOfferSaveIdentity() {
@@ -68,7 +75,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `sendOffer — сохраняет offer, добавляет в round_offers, публикует OfferCreated`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
@@ -87,7 +95,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `sendOffer — последний оффер переводит round в ALL_OFFERS_RECEIVED, вызывает CoreGameplay и публикует RoundStatus`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         // Уже один оффер от b
@@ -107,7 +116,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `sendOffer — DuplicateIdException если игрок уже отправил offer в этом раунде`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round()
         r.offers += offer(proposer = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
@@ -148,7 +158,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `makeDecision — сохраняет decision, добавляет в round_decisions, публикует DecisionMade`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round(roundPhase = RoundPhase.OFFERS_SENT)
         val offerFromB = offer(proposer = b, responder = a, round = r)
         r.offers += offerFromB
@@ -169,7 +180,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `makeDecision — последнее решение переводит round в ALL_DECISIONS_RECEIVED и публикует RoundStatus`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round(roundPhase = RoundPhase.OFFERS_SENT)
         val offA = offer(proposer = b, responder = a, round = r)
         val offB = offer(proposer = a, responder = b, round = r)
@@ -191,7 +203,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `makeDecision — DuplicateIdException если игрок уже принимал решение в этом раунде`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round()
         val offB = offer(proposer = b, responder = a, round = r)
         r.offers += offB
@@ -207,7 +220,8 @@ class PlayerGameplayServiceTest {
 
     @Test
     fun `makeDecision — IdNotFoundException если offerId не из этого раунда`() {
-        val a = user(); val b = user()
+        val a = user()
+        val b = user()
         val r = round()
         r.offers += offer(proposer = b, responder = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)

@@ -1,7 +1,8 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.SessionState
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 data class SessionStatsDto(
     val sessionId: UUID,

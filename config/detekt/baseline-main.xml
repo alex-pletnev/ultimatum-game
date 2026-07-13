@@ -30,31 +30,7 @@
     <ID>MaximumLineLength:SessionConfigDto.kt$SessionConfigDto$ </ID>
     <ID>MaximumLineLength:SessionService.kt$SessionService$ </ID>
     <ID>MaximumLineLength:User.kt$User$ </ID>
-    <ID>MultiLineIfElse:SessionService.kt$SessionService$throw SessionJoinRejectedException( "В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})" )</ID>
-    <ID>MultiLineIfElse:SessionService.kt$SessionService$throw SessionJoinRejectedException( "Вы на можете подключиться к сессии в качестве зрителя, так как вы ее администратор" )</ID>
-    <ID>MultiLineIfElse:SessionService.kt$SessionService$throw SessionJoinRejectedException( "Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор" )</ID>
     <ID>NoNameShadowing:AdminGameplayService.kt$AdminGameplayService$sessionId</ID>
-    <ID>NoWildcardImports:AuthController.kt$import org.springframework.web.bind.annotation.*</ID>
-    <ID>NoWildcardImports:Decision.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:DecisionMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:DecisionPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:EventPublisherService.kt$import edu.itmo.ultimatumgame.util.*</ID>
-    <ID>NoWildcardImports:Offer.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:OfferMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:OfferPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:Round.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:RoundMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:RoundPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:Session.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:SessionConfigMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:SessionController.kt$import org.springframework.web.bind.annotation.*</ID>
-    <ID>NoWildcardImports:SessionMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:SessionService.kt$import edu.itmo.ultimatumgame.model.*</ID>
-    <ID>NoWildcardImports:Team.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:TeamMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:User.kt$import jakarta.persistence.*</ID>
-    <ID>NoWildcardImports:UserMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:WebSocketSecurityConfig.kt$import org.springframework.messaging.simp.SimpMessageType.*</ID>
     <ID>ReturnCount:JwtStompChannelInterceptor.kt$JwtStompChannelInterceptor$override fun preSend(message: Message&lt;*&gt;, channel: MessageChannel): Message&lt;*&gt;?</ID>
     <ID>SerialVersionUIDInSerializableClass:ApiErrorResponse.kt$ApiErrorResponse : Serializable</ID>
     <ID>SerialVersionUIDInSerializableClass:CreateOfferCmd.kt$CreateOfferCmd : Serializable</ID>
@@ -116,26 +92,5 @@
     <ID>UseCheckOrError:ShuffleStrategy.kt$TeamBattleStrategy$throw IllegalStateException("Невозможно подобрать отвечающего из другой команды для ${proposer.id}")</ID>
     <ID>UseIsNullOrEmpty:JwtAuthenticationFilter.kt$JwtAuthenticationFilter$authHeader == null || authHeader == ""</ID>
     <ID>UseOrEmpty:RestAccessDeniedHandler.kt$RestAccessDeniedHandler$request?.servletPath ?: ""</ID>
-    <ID>WildcardImport:AuthController.kt$import org.springframework.web.bind.annotation.*</ID>
-    <ID>WildcardImport:Decision.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:DecisionMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:DecisionPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:EventPublisherService.kt$import edu.itmo.ultimatumgame.util.*</ID>
-    <ID>WildcardImport:Offer.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:OfferMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:OfferPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:Round.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:RoundMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:RoundPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:Session.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:SessionConfigMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:SessionController.kt$import org.springframework.web.bind.annotation.*</ID>
-    <ID>WildcardImport:SessionMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:SessionService.kt$import edu.itmo.ultimatumgame.model.*</ID>
-    <ID>WildcardImport:Team.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:TeamMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:User.kt$import jakarta.persistence.*</ID>
-    <ID>WildcardImport:UserMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:WebSocketSecurityConfig.kt$import org.springframework.messaging.simp.SimpMessageType.*</ID>
   </CurrentIssues>
 </SmellBaseline>

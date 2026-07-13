@@ -5,7 +5,7 @@ import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.repositories.UserRepository
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class UserService(

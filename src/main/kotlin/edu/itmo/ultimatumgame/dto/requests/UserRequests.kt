@@ -5,7 +5,7 @@ import edu.itmo.ultimatumgame.util.toUuidOrThrow
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import java.util.*
+import java.util.UUID
 
 data class CreateUserRequest(
     @field:NotBlank(message = "Имя обязательное поле")

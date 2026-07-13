@@ -3,7 +3,12 @@ package edu.itmo.ultimatumgame.util
 import edu.itmo.ultimatumgame.dto.requests.SessionConfigDto
 import edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse
 import edu.itmo.ultimatumgame.model.SessionConfig
-import org.mapstruct.*
+import org.mapstruct.BeanMapping
+import org.mapstruct.Mapper
+import org.mapstruct.MappingConstants
+import org.mapstruct.MappingTarget
+import org.mapstruct.NullValuePropertyMappingStrategy
+import org.mapstruct.ReportingPolicy
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 abstract class SessionConfigMapper {

@@ -2,7 +2,7 @@ package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.RoundPhase
 import java.io.Serializable
-import java.util.*
+import java.util.UUID
 
 /**
  * DTO for {@link edu.itmo.ultimatumgame.model.Round}

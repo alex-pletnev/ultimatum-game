@@ -28,7 +28,11 @@ class EventPublisherServiceTest {
     private val roundMapper = mockk<RoundMapper>()
     private val sessionMapper = mockk<SessionWithTeamsAndMembersMapper>()
     private val service = EventPublisherService(
-        messagingTemplate, offerMapper, decisionMapper, roundMapper, sessionMapper
+        messagingTemplate,
+        offerMapper,
+        decisionMapper,
+        roundMapper,
+        sessionMapper
     )
 
     @Test

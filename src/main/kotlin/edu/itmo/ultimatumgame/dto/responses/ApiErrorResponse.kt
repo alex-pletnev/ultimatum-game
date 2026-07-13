@@ -1,7 +1,7 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import java.io.Serializable
-import java.util.*
+import java.util.Date
 
 data class ApiErrorResponse(
     val timestamp: Date,

@@ -15,7 +15,7 @@ import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import java.security.Principal
-import java.util.*
+import java.util.UUID
 
 @Controller
 class OfferWsController(

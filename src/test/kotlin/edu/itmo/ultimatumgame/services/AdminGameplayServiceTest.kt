@@ -2,15 +2,12 @@ package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.round
 import edu.itmo.ultimatumgame.TestFixtures.session
-import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test

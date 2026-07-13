@@ -7,8 +7,6 @@ import edu.itmo.ultimatumgame.TestFixtures.sessionConfig
 import edu.itmo.ultimatumgame.TestFixtures.team
 import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.model.Decision
-import edu.itmo.ultimatumgame.model.Round
-import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.repositories.DecisionRepository
 import edu.itmo.ultimatumgame.repositories.OfferRepository
@@ -55,7 +53,8 @@ class StatsServiceTest {
 
     @Test
     fun `FREE_FOR_ALL — proposerTeam и responderTeam всегда null`() {
-        val a = user(); val b = user()
+        val a = user();
+        val b = user()
         val s = session(members = mutableSetOf(a, b), config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL))
         val r = round(session = s)
         val o = offer(proposer = a, responder = b, round = r)
@@ -74,7 +73,8 @@ class StatsServiceTest {
 
     @Test
     fun `TEAM_BATTLE — proposerTeam и responderTeam проставляются по членству`() {
-        val a = user(); val b = user()
+        val a = user();
+        val b = user()
         val tA = team(name = "A", members = mutableSetOf(a))
         val tB = team(name = "B", members = mutableSetOf(b))
         val s = session(
@@ -97,12 +97,18 @@ class StatsServiceTest {
 
     @Test
     fun `accepted проставляется из decision`() {
-        val a = user(); val b = user()
+        val a = user();
+        val b = user()
         val s = session(members = mutableSetOf(a, b))
         val r = round(session = s)
         val o = offer(proposer = a, responder = b, round = r)
         val d = Decision(
-            id = UUID.randomUUID(), session = s, round = r, responder = b, offer = o, decision = true,
+            id = UUID.randomUUID(),
+            session = s,
+            round = r,
+            responder = b,
+            offer = o,
+            decision = true,
         )
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { offerRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(o)
@@ -115,7 +121,10 @@ class StatsServiceTest {
 
     @Test
     fun `offers сортируются по roundNumber`() {
-        val a = user(); val b = user(); val c = user(); val d = user()
+        val a = user();
+        val b = user();
+        val c = user();
+        val d = user()
         val s = session(members = mutableSetOf(a, b, c, d))
         val r1 = round(session = s, roundNumber = 1)
         val r2 = round(session = s, roundNumber = 2)

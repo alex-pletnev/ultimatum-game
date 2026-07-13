@@ -15,8 +15,6 @@ import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
-import edu.itmo.ultimatumgame.model.Team
-import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionMapper
@@ -34,9 +32,8 @@ import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class SessionServiceTest {
 
@@ -47,7 +44,12 @@ class SessionServiceTest {
     private val userService = mockk<UserService>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
     private val service = SessionService(
-        sessionRepo, sessionMapper, sessionWithTeamsAndMembersMapper, roundMapper, userService, eventPublisher,
+        sessionRepo,
+        sessionMapper,
+        sessionWithTeamsAndMembersMapper,
+        roundMapper,
+        userService,
+        eventPublisher,
     )
 
     // ---------- createSession ----------
@@ -58,7 +60,8 @@ class SessionServiceTest {
         val cfg = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numRounds = 3, numTeams = 0)
         val newSession = Session(
             id = UUID.randomUUID(),
-            displayName = "s", state = SessionState.CREATED,
+            displayName = "s",
+            state = SessionState.CREATED,
             config = cfg,
         )
         val currentUser = user(role = Role.ADMIN)
@@ -83,7 +86,10 @@ class SessionServiceTest {
         val req = CreateSessionRequest()
         val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numRounds = 2, numTeams = 3)
         val newSession = Session(
-            id = UUID.randomUUID(), displayName = "s", state = SessionState.CREATED, config = cfg,
+            id = UUID.randomUUID(),
+            displayName = "s",
+            state = SessionState.CREATED,
+            config = cfg,
         )
         every { sessionMapper.toEntity(req) } returns newSession
         every { userService.getCurrentUser() } returns user(role = Role.ADMIN)

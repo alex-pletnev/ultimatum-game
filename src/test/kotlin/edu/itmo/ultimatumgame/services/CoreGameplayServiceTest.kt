@@ -6,7 +6,6 @@ import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.model.Offer
 import edu.itmo.ultimatumgame.model.RoundPhase
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
@@ -20,7 +19,8 @@ class CoreGameplayServiceTest {
 
     @Test
     fun `initWaitDecisionsPhase — шафл через стратегию, публикация офферов респондентам, фаза OFFERS_SENT`() {
-        val a = user(nickname = "A"); val b = user(nickname = "B")
+        val a = user(nickname = "A")
+        val b = user(nickname = "B")
         val r = round()
         val oA = offer(proposer = a, round = r)
         val oB = offer(proposer = b, round = r)

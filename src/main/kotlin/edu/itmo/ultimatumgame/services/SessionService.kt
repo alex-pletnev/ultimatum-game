@@ -6,7 +6,11 @@ import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
-import edu.itmo.ultimatumgame.model.*
+import edu.itmo.ultimatumgame.model.Round
+import edu.itmo.ultimatumgame.model.Session
+import edu.itmo.ultimatumgame.model.SessionState
+import edu.itmo.ultimatumgame.model.SessionType
+import edu.itmo.ultimatumgame.model.Team
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionMapper
@@ -17,7 +21,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class SessionService(
@@ -127,12 +131,16 @@ class SessionService(
             return sessionWithTeamsAndMembersMapper.toDto(session)
         }
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
-        if (session.members.size >= config.numPlayers) throw SessionJoinRejectedException(
-            "В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})"
-        )
-        if (session.admin == user) throw SessionJoinRejectedException(
-            "Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор"
-        )
+        if (session.members.size >= config.numPlayers) {
+            throw SessionJoinRejectedException(
+                "В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})"
+            )
+        }
+        if (session.admin == user) {
+            throw SessionJoinRejectedException(
+                "Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор"
+            )
+        }
         if (config.sessionType == SessionType.TEAM_BATTLE) {
             val tId = teamId
                 ?: error("Для подключения к режиму ${config.sessionType} обязательно надо указывать teamId")
@@ -159,9 +167,11 @@ class SessionService(
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         if (session.observers.contains(observer)) return sessionWithTeamsAndMembersMapper.toDto(session)
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
-        if (session.admin == observer) throw SessionJoinRejectedException(
-            "Вы на можете подключиться к сессии в качестве зрителя, так как вы ее администратор"
-        )
+        if (session.admin == observer) {
+            throw SessionJoinRejectedException(
+                "Вы на можете подключиться к сессии в качестве зрителя, так как вы ее администратор"
+            )
+        }
         session.observers += observer
         if (session.members.remove(observer)) {
             session.teams.forEach { it.members.remove(observer) }
