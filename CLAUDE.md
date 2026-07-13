@@ -257,6 +257,14 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 
 **Ключевая интуиция:** молча ждать больше 5 минут без диагностики = плохо. False-alarm диагностика стоит 30 секунд, false-negative ожидание — 20+ минут. Всегда лучше эскалировать раньше.
 
+### Правила запуска long-running Gradle команд
+
+Извлечены из инцидента 2026-07-13 в T-053 — три конкурирующих `./gradlew check` заблокировали друг друга через `.gradle/configuration-cache-*.lock`.
+
+1. **Никогда не пайпить gradle через `| tail -N`.** Pipe буферизует stdout — тула считает команду висящей и переводит в фон, а gradle daemon / test executor продолжают жить. Правильно: `./gradlew check > /tmp/check.log 2>&1` + `tail -5 /tmp/check.log` отдельной командой в конце.
+2. **Проверить нет ли живого gradle до запуска нового:** `ps -eo pid,command | grep -E "gradlew|GradleWorker" | grep -v grep | wc -l`. Если > 0 — либо ждать завершения (`until grep -qE "BUILD SUCCESSFUL|BUILD FAILED" /tmp/check.log; do sleep 3; done`), либо спросить пользователя убить (нельзя kill'ать чужие процессы без разрешения).
+3. **Один активный gradle-запуск на repo одновременно.** Если запускаешь `run_in_background=true` — дождись `task-notification completed` до нового запуска, не наслаивай.
+
 ## Что не делать
 
 - Не создавать PR без запроса.

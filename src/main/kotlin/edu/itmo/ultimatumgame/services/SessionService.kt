@@ -144,7 +144,14 @@ class SessionService(
         round: Round,
         members: Set<User>,
     ): RoundResponse {
-        val userId = runCatching { securityService.getCurrentUserId() }.getOrNull() ?: return dto
+        // Ловим только отсутствие user-context (broadcast / system-каналы);
+        // остальные ошибки должны пробрасываться, чтобы не маскировать баги.
+        val userId = try {
+            securityService.getCurrentUserId()
+        } catch (ex: IllegalStateException) {
+            logger.debug("enrichWithHints: no user context ({}), возвращаю dto без hints", ex.message)
+            return dto
+        }
         val role = computeMyRole(round, userId)
         val actions = computeMyPendingActions(round, userId, members)
         return dto.copy(myRole = role, myPendingActions = actions)
