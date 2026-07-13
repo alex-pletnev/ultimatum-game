@@ -14,6 +14,8 @@
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
 | T-040 | Починить Stop-hook — hookSpecificOutput не валиден для события Stop | pending | high | 2026-07-13 | [T-040](T-040-fix-stop-hook-output-schema.md) |
+| T-041 | Часть C — warn при sha256-коллизии между recommended hook'ами | pending | low | 2026-07-13 | [T-041](T-041-sha-collision-warn-in-part-c.md) |
+| T-042 | Skill'ы, использующие sha/hash, обязать приводить input→expected-output пример | pending | medium | 2026-07-13 | [T-042](T-042-inline-hash-examples-in-skills.md) |
 
 ## Закрытые задачи
 
