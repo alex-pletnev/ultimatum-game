@@ -210,6 +210,37 @@ class SessionServiceTest {
     }
 
     @Test
+    fun `getRounds — возвращает список DTO отсортированный по roundNumber`() {
+        val s = session()
+        val r1 = Round(id = UUID.randomUUID(), session = s, roundNumber = 1)
+        val r2 = Round(id = UUID.randomUUID(), session = s, roundNumber = 2)
+        val r3 = Round(id = UUID.randomUUID(), session = s, roundNumber = 3)
+        // произвольный порядок в множестве rounds
+        s.rounds = mutableSetOf(r3, r1, r2)
+        val d1 = mockk<RoundResponse>()
+        every { d1.roundNumber } returns 1
+        val d2 = mockk<RoundResponse>()
+        every { d2.roundNumber } returns 2
+        val d3 = mockk<RoundResponse>()
+        every { d3.roundNumber } returns 3
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { roundMapper.toDto(r1) } returns d1
+        every { roundMapper.toDto(r2) } returns d2
+        every { roundMapper.toDto(r3) } returns d3
+
+        val result = service.getRounds(s.id!!)
+
+        assertEquals(listOf(1, 2, 3), result.map { it.roundNumber })
+    }
+
+    @Test
+    fun `getRounds — NotFound если сессии нет`() {
+        val id = UUID.randomUUID()
+        every { sessionRepo.findById(id) } returns Optional.empty()
+        assertThrows<IdNotFoundException> { service.getRounds(id) }
+    }
+
+    @Test
     fun `getAllSessions — пустая строка поиска = findAll`() {
         val s = session()
         val page: Page<Session> = PageImpl(listOf(s))

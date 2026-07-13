@@ -1,7 +1,7 @@
 ---
 id: T-052
 title: Endpoint для получения истории раундов сессии со всеми оффер'ами и решениями
-status: pending
+status: done
 priority: high
 created: 2026-07-13
 updated: 2026-07-13
@@ -44,3 +44,4 @@ tags: [feature, api, rest, frontend-blocker]
 ## Лог
 
 - 2026-07-13: заведено из frontend-readiness audit'а. Blocker — без этого фронт не может отрисовать прогресс сессии и историю.
+- 2026-07-13: закрыто. `GET /session/{id}/rounds` возвращает `List<RoundResponse>` отсортированных по `roundNumber`. `SessionService.getRounds` под `@Transactional(readOnly = true)` — избегает LazyInit при обходе `session.rounds`. TDD RED→GREEN. Docs 05-rest-api обновлены, `openapi.json` регенерирован.

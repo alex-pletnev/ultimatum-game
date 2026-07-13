@@ -15,6 +15,7 @@
 | GET | `/session/{id}` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:38-45` |
 | GET | `/session/{id}/with-teams-and-members` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:47-54` |
 | GET | `/session/{id}/current-round` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:56-63` |
+| GET | `/session/{id}/rounds` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:74-81` |
 | POST | `/session/{sessionId}/join` | ADMIN, PLAYER | `SessionController.kt:81-92` |
 | POST | `/session/{sessionId}/join/observer` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:94-101` |
 | GET | `/user` | authenticated | `UserController.kt:35-41` |
@@ -85,6 +86,11 @@
 ### `GET /session/{id}/current-round`
 - **Response 200:** `RoundResponse`
 - **Ошибки:** 404 `IdNotFoundException` — если `session.currentRound == null`.
+
+### `GET /session/{id}/rounds` — история всех раундов сессии
+- **Response 200:** `List<RoundResponse>` — отсортировано по `roundNumber`, включает `offers` и `decisions` каждого раунда.
+- **Ошибки:** 404 `IdNotFoundException` — если сессии нет.
+- Транзакционный `@Transactional(readOnly = true)` — избегает LazyInitializationException при обходе `session.rounds`.
 
 ### `POST /session/{sessionId}/join` — присоединиться игроком
 - **Роль:** ADMIN, PLAYER.

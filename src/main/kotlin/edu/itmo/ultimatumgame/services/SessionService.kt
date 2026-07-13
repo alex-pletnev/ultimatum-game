@@ -117,6 +117,16 @@ class SessionService(
         return dto
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    fun getRounds(sessionId: UUID): List<RoundResponse> {
+        val session = sessionRepository.findById(sessionId)
+            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
+        logger.debug("getRounds — найдена сессия {}, раундов: {}", session.id, session.rounds.size)
+        return session.rounds
+            .sortedBy { it.roundNumber }
+            .map { roundMapper.toDto(it) }
+    }
+
     fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {
 //        val pageable = createPageable(page, pageSize)
         val sessions: Page<Session> =

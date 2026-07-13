@@ -71,6 +71,15 @@ class SessionController(
         return response
     }
 
+    @GetMapping("/{id}/rounds")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
+    fun getRounds(@PathVariable id: String): List<RoundResponse> {
+        logger.info("Получен запрос на получение истории раундов сессии с id: $id")
+        val response = sessionService.getRounds(id.toUuidOrThrow())
+        logger.info("По sessionId {} найдено раундов: {}", id, response.size)
+        return response
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
     fun getSessions(
