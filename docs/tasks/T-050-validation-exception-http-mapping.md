@@ -15,20 +15,23 @@ tags: [tech-debt, api, error-handling]
 
 ## Контекст
 
-T-045 добавил `require(offerValue in 0..roundSum)` в `PlayerGameplayService.sendOffer`. При нарушении инварианта бросается `IllegalArgumentException`. Spring по умолчанию мапит его в HTTP 500 (Internal Server Error), хотя логически это HTTP 400 (Bad Request) — клиент прислал invalid data. Не проверил, есть ли уже `GlobalExceptionHandler` или `@ExceptionHandler` для этого проекта.
+T-045 добавил `require(offerValue in 0..roundSum)` в `PlayerGameplayService.sendOffer`. При нарушении инварианта бросается `IllegalArgumentException`.
 
-Аналогично: другие `error(...)` / `require(...)` в service-слое могут иметь ту же проблему.
+**Пост-проверка (сразу же):** `exceptions/GlobalExceptionsHandler.kt:106-117` уже мапит `IllegalArgumentException` → 400 для REST. Значит для REST-endpoint'ов проблема уже решена.
+
+**Оставшийся scope:**
+1. **STOMP endpoint'ы.** `@RestControllerAdvice` не покрывает `@MessageMapping`. Ошибки из STOMP'а могут теряться / отдаваться не тем каналом. Нужно завести `@MessageExceptionHandler` или отдельный interceptor.
+2. **`Exception.class` handler (строки 64-76) утекает stack trace в message** — security concern (message + "; st: -> " + stackTraceToString()).
+3. **Тестовое покрытие** — нет теста, что клиент реально получает 400 на `amount > roundSum`.
 
 ## Acceptance criteria
 
-- [ ] Проверить наличие `@RestControllerAdvice` / `GlobalExceptionHandler` в проекте.
-- [ ] Если нет — завести с mapping'ом:
-  - `IllegalArgumentException` → 400 с payload `ApiErrorResponse`.
-  - `IdNotFoundException` → 404.
-  - `DuplicateIdException` → 409.
-  - остальное → 500 без утечки stack trace.
-- [ ] Интеграционный тест через `MockMvc` (или существующий stack) — POST offer с `amount > roundSum` возвращает 400.
-- [ ] Обновить `docs/06-websocket-api.md` (если endpoint через STOMP) или соответствующий REST-doc с описанием ошибок.
+- [x] Проверить наличие `@RestControllerAdvice` / `GlobalExceptionHandler` в проекте — есть (`exceptions/GlobalExceptionsHandler.kt`).
+- [ ] Убрать утечку stack trace в message из общего `@ExceptionHandler(Exception::class)` — вернуть generic message, stack trace писать только в log.
+- [ ] Добавить `@MessageExceptionHandler` для STOMP-каналов — публиковать `ApiErrorResponse` в персональный error-topic пользователя.
+- [ ] Интеграционный тест — POST offer через REST с `amount > roundSum` возвращает 400 + `ApiErrorResponse`.
+- [ ] STOMP-тест — offer через `/app/session/*/offer.create` с `amount > roundSum` возвращает error-frame + payload с 400.
+- [ ] Обновить `docs/06-websocket-api.md` — раздел «Error handling»: список кодов + destinations для ошибок.
 
 ## План
 
@@ -39,3 +42,4 @@ T-045 добавил `require(offerValue in 0..roundSum)` в `PlayerGameplayServ
 ## Лог
 
 - 2026-07-13: заведено из self-review T-045 (commit 2df5b37). Категория D. Priority low — нарушения границ валидируются, клиент получает ошибку; но 500 вместо 400 путает автоматизированные клиенты.
+- 2026-07-13: post-check — `GlobalExceptionsHandler` уже мапит `IllegalArgumentException` → 400 для REST. Реальный scope сузился: (1) fix stack-trace leak в fallback handler, (2) добавить STOMP `@MessageExceptionHandler`, (3) integration-тесты.
