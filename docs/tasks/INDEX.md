@@ -18,6 +18,7 @@
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-045 | Сверить реализованные правила gameplay с канонической Ultimatum Game + многопользовательские адаптации | pending | medium | 2026-07-13 | [T-045](T-045-verify-game-rules-vs-canonical.md) |
 | T-046 | Оптимизировать время `./gradlew check` — сейчас порог 5 мин | pending | medium | 2026-07-13 | [T-046](T-046-optimize-gradle-check-time.md) |
+| T-047 | TDD discipline — сначала провальный тест, потом impl, а не одновременно | pending | low | 2026-07-13 | [T-047](T-047-invoke-tdd-skill-for-features.md) |
 
 ## Закрытые задачи
 
