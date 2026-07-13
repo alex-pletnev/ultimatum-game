@@ -17,6 +17,7 @@
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
+| T-050 | Validation exceptions в service-слое должны отдаваться клиенту как HTTP 400 (не 500) | pending | low | 2026-07-13 | [T-050](T-050-validation-exception-http-mapping.md) |
 
 ## Закрытые задачи
 
