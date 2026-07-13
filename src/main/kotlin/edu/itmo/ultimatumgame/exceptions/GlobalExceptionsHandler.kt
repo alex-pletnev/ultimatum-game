@@ -156,6 +156,7 @@ class GlobalExceptionsHandler {
 
     @ExceptionHandler(ExpiredJwtException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @Suppress("UnusedParameter") // ex не используется — Spring требует параметр типа для @ExceptionHandler
     fun handleExpiredJwt(
         ex: ExpiredJwtException,
         request: HttpServletRequest

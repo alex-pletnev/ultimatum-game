@@ -1,3 +1,5 @@
+@file:Suppress("UnsafeCallOnNullableType")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.dto.responses.OfferStatsDto

@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "UnsafeCallOnNullableType")
 
 package edu.itmo.ultimatumgame.services
 
@@ -21,7 +21,7 @@ class AuthService(
 
     fun quickLogin(authenticateUserRequest: AuthenticateUserRequest): JwtAuthenticationResponse {
         logger.info("Попытка быстрого входа для пользователя с id=${authenticateUserRequest.id}")
-        val user = userService.getUserDetailService().invoke(authenticateUserRequest.id!!)
+        val user = userService.getUserDetailService().invoke(authenticateUserRequest.id)
         val token = jwtService.generateToken(user)
         logger.info("Токен успешно сгенерирован для пользователя с id=${authenticateUserRequest.id}")
         return JwtAuthenticationResponse(token)

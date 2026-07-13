@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "UnsafeCallOnNullableType")
 
 package edu.itmo.ultimatumgame.services
 
@@ -78,7 +78,6 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} прервана и закрыта для подключений", session.id)
 
-        val sessionId = requireNotNull(session.id) { "session.id is null after save" }
         session.currentRound?.let { round ->
             eventPublisherService.publishRoundStatus(sessionId, round)
             logger.info("Опубликован RoundStatus для сессии {} после прерывания", sessionId)
@@ -106,7 +105,6 @@ class AdminGameplayService(
         sessionRepository.save(session)
         logger.info("Сессия {} сохранена после перехода между раундами", session.id)
 
-        val sessionId = requireNotNull(session.id) { "session.id is null after save" }
         // session.currentRound здесь: либо newRound (перешли), либо старый currentRound c phase=FINISHED (кончились раунды) — не null
         eventPublisherService.publishRoundStatus(sessionId, session.currentRound!!)
         logger.info("Опубликован RoundStatus для сессии {} после запуска нового раунда", sessionId)

@@ -1,3 +1,5 @@
+@file:Suppress("UnsafeCallOnNullableType")
+
 package edu.itmo.ultimatumgame.model
 
 import java.util.Set.copyOf
@@ -12,10 +14,8 @@ class FreeForAllStrategy : ShuffleStrategy {
     override fun shuffleOffers(session: Session) {
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
         val responders = copyOf(session.members).toMutableSet()
-        if (responders.size != round.offers.size) {
-            throw IllegalStateException(
-                "Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)"
-            )
+        check(responders.size == round.offers.size) {
+            "Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)"
         }
         round.offers.forEach {
             var responder: User
@@ -41,8 +41,8 @@ class TeamBattleStrategy : ShuffleStrategy {
 
         // Кандидаты-отвечающие
         val responders = session.members.toMutableList()
-        if (responders.size != round.offers.size) {
-            throw IllegalStateException("Неверное состояние: участников и оферов должно быть равное число")
+        check(responders.size == round.offers.size) {
+            "Неверное состояние: участников и оферов должно быть равное число"
         }
 
         round.offers.forEach { offer ->
@@ -55,8 +55,8 @@ class TeamBattleStrategy : ShuffleStrategy {
             val valid = responders.filter { responder ->
                 userToTeam[responder.id] != proposerTeam
             }
-            if (valid.isEmpty()) {
-                throw IllegalStateException("Невозможно подобрать отвечающего из другой команды для ${proposer.id}")
+            check(valid.isNotEmpty()) {
+                "Невозможно подобрать отвечающего из другой команды для ${proposer.id}"
             }
 
             // Случайный выбор и удаление из списка

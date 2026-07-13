@@ -32,7 +32,7 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         val authHeader = request.getHeader(HEADER_AUTHORIZATION)
-        if (authHeader == null || authHeader == "" || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (authHeader.isNullOrEmpty() || !authHeader.startsWith(BEARER_PREFIX)) {
             log.debug("Отсутствует или некорректный Authorization Header")
             filterChain.doFilter(request, response)
             return

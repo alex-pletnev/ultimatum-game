@@ -2,13 +2,11 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>EmptyFunctionBlock:WebSocketConfig.kt$WebSocketConfig.&lt;no name provided&gt;${}</ID>
     <ID>LongParameterList:Decision.kt$Decision$( @field:Id @GeneratedValue(strategy = GenerationType.UUID) var id: UUID? = null, @field:ManyToOne(fetch = FetchType.LAZY) @field:JoinColumn(name = "session_id", nullable = false) var session: Session? = null, @field:ManyToOne(optional = false) @field:JoinColumn(name = "round_id", nullable = false) var round: Round? = null, @field:ManyToOne(optional = false) @field:JoinColumn(name = "responder_id", nullable = false) var responder: User? = null, @field:OneToOne( cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH], optional = false, orphanRemoval = true ) @field:JoinColumn(nullable = false) var offer: Offer? = null, @field:Column(nullable = false) var decision: Boolean, @field:Column(nullable = false, updatable = false) var createdAt: Date = Date(), )</ID>
     <ID>LongParameterList:Offer.kt$Offer$( @field:Id @field:GeneratedValue(strategy = GenerationType.UUID) var id: UUID? = null, @field:ManyToOne(fetch = FetchType.LAZY) @field:JoinColumn(name = "session_id", nullable = false) var session: Session? = null, @field:ManyToOne(optional = false) @field:JoinColumn(name = "round_id", nullable = false) var round: Round? = null, @field:ManyToOne(optional = false) @field:JoinColumn(name = "proposer_id", nullable = false) var proposer: User? = null, @field:ManyToOne @field:JoinColumn(name = "responder_id", nullable = true) var responder: User? = null, @field:Column(nullable = false) var offerValue: Int, @field:Column(nullable = false, updatable = false) var createdAt: Date = Date(), )</ID>
     <ID>LongParameterList:PlayerGameplayService.kt$PlayerGameplayService$( private val eventPublisher: EventPublisherService, private val sessionRepository: SessionRepository, private val sessionService: SessionService, private val roundRepository: RoundRepository, private val offerRepository: OfferRepository, private val decisionRepository: DecisionRepository, private val userService: UserService, private val gameplayService: CoreGameplayService )</ID>
     <ID>LongParameterList:Session.kt$Session$( @field:Id @field:GeneratedValue(strategy = GenerationType.UUID) var id: UUID? = null, @field:Column(nullable = false) var displayName: String = "", @field:Enumerated(EnumType.STRING) @field:Column(nullable = false) var state: SessionState = SessionState.CREATED, @field:Column(nullable = false) var createdAt: Date = Date(), @field:ManyToOne(optional = false) var admin: User? = null, var openToConnect: Boolean = true, @OneToOne @JoinColumn(name = "current_round_id") var currentRound: Round? = null, @OneToMany( mappedBy = "session", cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE], orphanRemoval = true ) var rounds: MutableSet&lt;Round&gt; = mutableSetOf(), @field:Embedded var config: SessionConfig? = null, @field:OneToMany( mappedBy = "session", cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE], orphanRemoval = true ) var teams: MutableSet&lt;Team&gt; = mutableSetOf(), @field:ManyToMany(cascade = [CascadeType.MERGE], fetch = FetchType.EAGER) var members: MutableSet&lt;User&gt; = mutableSetOf(), @field:ManyToMany(cascade = [CascadeType.MERGE]) var observers: MutableSet&lt;User&gt; = mutableSetOf(), )</ID>
     <ID>MagicNumber:JwtService.kt$JwtService$365</ID>
-    <ID>NoNameShadowing:AdminGameplayService.kt$AdminGameplayService$sessionId</ID>
     <ID>ReturnCount:JwtStompChannelInterceptor.kt$JwtStompChannelInterceptor$override fun preSend(message: Message&lt;*&gt;, channel: MessageChannel): Message&lt;*&gt;?</ID>
     <ID>SpreadOperator:CsvService.kt$CsvService$(*header)</ID>
     <ID>SpreadOperator:UltimatumGameApplication.kt$(*args)</ID>
@@ -18,25 +16,5 @@
     <ID>TooGenericExceptionCaught:JwtAuthenticationFilter.kt$JwtAuthenticationFilter$e: Exception</ID>
     <ID>TooManyFunctions:GlobalExceptionsHandler.kt$GlobalExceptionsHandler</ID>
     <ID>TooManyFunctions:SessionService.kt$SessionService</ID>
-    <ID>UnnecessaryNotNullOperator:AuthService.kt$AuthService$authenticateUserRequest.id!!</ID>
-    <ID>UnsafeCallOnNullableType:AdminGameplayService.kt$AdminGameplayService$session.currentRound!!</ID>
-    <ID>UnsafeCallOnNullableType:AuthService.kt$AuthService$createUserRequest.nickname!!</ID>
-    <ID>UnsafeCallOnNullableType:CoreGameplayService.kt$CoreGameplayService$session.config!!</ID>
-    <ID>UnsafeCallOnNullableType:ShuffleStrategy.kt$TeamBattleStrategy$it.id!!</ID>
-    <ID>UnsafeCallOnNullableType:ShuffleStrategy.kt$TeamBattleStrategy$team.id!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$it.id!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$it.offer!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$offer.id!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$offer.proposer!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$offer.proposer!!.id!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$offer.round!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$session.id!!</ID>
-    <ID>UnsafeCallOnNullableType:StatsService.kt$StatsService$this.id!!</ID>
-    <ID>UnusedParameter:GlobalExceptionsHandler.kt$GlobalExceptionsHandler$ex: ExpiredJwtException</ID>
-    <ID>UseCheckOrError:ShuffleStrategy.kt$FreeForAllStrategy$throw IllegalStateException( "Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)" )</ID>
-    <ID>UseCheckOrError:ShuffleStrategy.kt$TeamBattleStrategy$throw IllegalStateException("Неверное состояние: участников и оферов должно быть равное число")</ID>
-    <ID>UseCheckOrError:ShuffleStrategy.kt$TeamBattleStrategy$throw IllegalStateException("Невозможно подобрать отвечающего из другой команды для ${proposer.id}")</ID>
-    <ID>UseIsNullOrEmpty:JwtAuthenticationFilter.kt$JwtAuthenticationFilter$authHeader == null || authHeader == ""</ID>
-    <ID>UseOrEmpty:RestAccessDeniedHandler.kt$RestAccessDeniedHandler$request?.servletPath ?: ""</ID>
   </CurrentIssues>
 </SmellBaseline>

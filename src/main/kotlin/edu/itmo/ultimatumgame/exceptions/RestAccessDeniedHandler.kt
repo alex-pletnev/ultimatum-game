@@ -26,7 +26,7 @@ class RestAccessDeniedHandler(
             status = HttpStatus.FORBIDDEN.value(),
             error = HttpStatus.FORBIDDEN.reasonPhrase,
             message = accessDeniedException?.message ?: "Доступ запрещён",
-            path = request?.servletPath ?: ""
+            path = request?.servletPath.orEmpty()
         )
 
         response?.status = HttpStatus.FORBIDDEN.value()

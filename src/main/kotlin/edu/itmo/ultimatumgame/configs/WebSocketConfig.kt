@@ -40,6 +40,7 @@ class WebSocketConfig(
                         return true
                     }
 
+                    @Suppress("EmptyFunctionBlock") // intentional no-op after WebSocket handshake
                     override fun afterHandshake(
                         request: ServerHttpRequest,
                         response: ServerHttpResponse,
