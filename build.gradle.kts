@@ -157,13 +157,12 @@ tasks.check {
 // ----- detekt (T-014): статический анализ Kotlin -----
 //
 // Дефолтные правила + detekt-formatting (обёртка над ktlint).
-// Существующие нарушения зафиксированы в config/detekt/baseline.xml
-// (T-015 — постепенно выхлопать).
+// Baseline вычищен в T-015; исключения оформлены точечными @Suppress
+// / @file:Suppress в коде.
 
 detekt {
     toolVersion = "1.23.7"
     config.setFrom(files("config/detekt/detekt.yml"))
-    baseline = file("config/detekt/baseline.xml")
     buildUponDefaultConfig = true
     allRules = false
     autoCorrect = false

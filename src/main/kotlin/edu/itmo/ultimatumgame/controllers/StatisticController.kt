@@ -2,6 +2,7 @@ package edu.itmo.ultimatumgame.controllers
 
 import edu.itmo.ultimatumgame.services.CsvService
 import edu.itmo.ultimatumgame.services.StatsService
+import edu.itmo.ultimatumgame.util.logger
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
@@ -22,6 +23,8 @@ class StatisticController(
     private val csvService: CsvService,
 ) {
 
+    private val log = logger()
+
     /**
      * Скачать CSV со всеми офферами указанной сессии.
      */
@@ -40,6 +43,7 @@ class StatisticController(
                 .contentType(MediaType.TEXT_PLAIN) // text/csv → некоторые браузеры лучше обрабатывают text/plain
                 .body(ByteArrayResource(bytes))
         } catch (ex: EntityNotFoundException) {
+            log.debug("CSV download rejected for session {}: {}", sessionId, ex.message)
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package edu.itmo.ultimatumgame.exceptions
 
 import edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse

@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.dto.requests.CreateOfferCmd

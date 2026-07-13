@@ -1,7 +1,7 @@
 ---
 id: T-015
 title: Выхлопать detekt baseline — починить все зафиксированные findings
-status: in_progress
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -19,11 +19,12 @@ tags: [tech-debt, quality]
 
 ## Acceptance criteria
 
-- [ ] Все findings из baseline либо починены в коде, либо явно suppress'нуты через `@Suppress("...")` с комментарием почему.
-- [ ] `config/detekt/baseline.xml` удалён.
-- [ ] `./gradlew detekt` (без baseline) зелёный.
-- [ ] `./gradlew test` остался зелёный.
-- [ ] Не меняется поведение — только стиль/структура кода.
+- [x] Все findings из baseline либо починены в коде, либо явно suppress'нуты через `@Suppress("...")` с комментарием почему.
+- [x] `config/detekt/baseline-*.xml` удалены (autofix через `detektBaselineMain` не создаёт файл при 0 findings).
+- [x] `baseline = file(...)` убран из `build.gradle.kts`.
+- [x] `./gradlew detektMain` + `./gradlew detektTest` (без baseline) зелёные.
+- [x] `./gradlew test` остался зелёный.
+- [x] Не меняется поведение — только стиль/структура кода.
 
 ## План
 
@@ -52,3 +53,22 @@ tags: [tech-debt, quality]
   - `GlobalExceptionsHandler.handleExpiredJwt`: точечный `@Suppress("UnusedParameter")` с объяснением (Spring `@ExceptionHandler` требует параметр типа).
   - `WebSocketConfig.afterHandshake`: точечный `@Suppress("EmptyFunctionBlock")` — intentional no-op override.
   Итого **23→14 findings**. `./gradlew test` + `./gradlew check` зелёные.
+- 2026-07-13: **Wave 9 — final cleanup: 3 real fixes + 8 обоснованных suppress'ов** (14 findings → 0).
+  Real fixes:
+  - `JwtService`: extract `TOKEN_EXPIRATION_DAYS = 365L` в `companion object` (MagicNumber).
+  - `InvalidUuidFormatException`: добавлен `cause: Throwable? = null` в конструктор; `FieldMappers.toUuidOrThrow` пробрасывает исходный `IllegalArgumentException` (SwallowedException).
+  - `StatisticController.downloadCsv`: добавлено `log.debug` в `catch (ex: EntityNotFoundException)` перед возвратом 404 (SwallowedException).
+
+  Обоснованные `@file:Suppress`:
+  - `Decision`, `Offer`, `Session`: `LongParameterList` — JPA entities с 7+ полями это норма формы, не запах.
+  - `PlayerGameplayService`: `LongParameterList` — 8 constructor DI-параметров, каждый — свой репозиторий/сервис.
+  - `SessionService`: добавлены `TooManyFunctions`, `ThrowsCount` — session-lifecycle сервис с 10+ методами и validation-heavy `joinSession`.
+  - `GlobalExceptionsHandler`: `TooManyFunctions` — по методу на каждый тип исключения, целевой дизайн.
+  - `UltimatumGameApplication`: `SpreadOperator` — стандартный `runApplication<T>(*args)`.
+  - `CsvService`: `SpreadOperator` — `printer.printRecord(*header)` для CSV.
+  - `JwtAuthenticationFilter`: `TooGenericExceptionCaught` — catch `Exception` в security-filter'е перед перебрасыванием как `AccessDeniedException`.
+  - `JwtStompChannelInterceptor`: `ReturnCount` — 5 early-returns при валидации STOMP-фреймов.
+
+  Также убран `baseline = file(...)` из `build.gradle.kts` и правило про baseline из `CLAUDE.md` — заменено на «новые findings ломают check, править или @Suppress с обоснованием».
+
+  Итого **14→0 findings**. Baseline пустой; `detektBaselineMain` больше не создаёт файл. `./gradlew check` зелёный (только `detektMain`/`detektTest`, никакого baseline'а).

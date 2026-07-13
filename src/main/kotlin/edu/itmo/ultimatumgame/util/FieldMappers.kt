@@ -10,6 +10,6 @@ fun String?.toUuidOrThrow(fieldName: String = "id"): UUID {
     return try {
         UUID.fromString(this)
     } catch (ex: IllegalArgumentException) {
-        throw InvalidUuidFormatException("Поле '$fieldName' содержит некорректный UUID: '$this'")
+        throw InvalidUuidFormatException("Поле '$fieldName' содержит некорректный UUID: '$this'", ex)
     }
 }

@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "TooManyFunctions", "ThrowsCount")
 
 package edu.itmo.ultimatumgame.services
 

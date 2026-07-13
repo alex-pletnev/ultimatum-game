@@ -126,9 +126,9 @@ Skills вызываются автоматически в перечисленн
   Без него `./gradlew ...` падает с «Unable to locate a Java Runtime» (на этой машине `java` не на PATH).
 - Локальный запуск: `./gradlew bootRun` (нужен `JWT_SIGNING_KEY` env).
 - Тесты: `./gradlew test`.
-- Полная проверка: `./gradlew check` — прогоняет `test` + `jacocoTestCoverageVerification` (порог 0.80) + `detektMain` / `detektTest` (baseline: `config/detekt/baseline-{main,test}.xml`).
+- Полная проверка: `./gradlew check` — прогоняет `test` + `jacocoTestCoverageVerification` (порог 0.80) + `detektMain` / `detektTest`.
 - Если задача трогает бизнес-логику раундов — обязательно проверить `FreeForAllTest`.
-- Новые findings в detekt (не в baseline) ломают `check`. Правило: не расширять baseline «на ходу», а править код или явно `@Suppress("...")` с комментарием. Вычистить baseline постепенно — задача **T-015**.
+- detekt-baseline не используется (T-015 вычищен). Любые новые findings ломают `check` — правило: править код или отдельным `@Suppress("...")` с обоснованием. Не создавать `baseline.xml` обратно без явного согласия пользователя.
 
 ## Git-автоматизация
 

@@ -1,3 +1,5 @@
+@file:Suppress("SpreadOperator")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.dto.responses.SessionStatsDto

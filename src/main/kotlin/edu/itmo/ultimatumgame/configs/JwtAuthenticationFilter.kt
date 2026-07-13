@@ -1,3 +1,5 @@
+@file:Suppress("TooGenericExceptionCaught")
+
 package edu.itmo.ultimatumgame.configs
 
 import edu.itmo.ultimatumgame.services.JwtService

@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "LongParameterList")
 
 package edu.itmo.ultimatumgame.model
 

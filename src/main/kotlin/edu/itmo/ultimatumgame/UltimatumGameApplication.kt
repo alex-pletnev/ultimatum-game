@@ -1,3 +1,5 @@
+@file:Suppress("SpreadOperator")
+
 package edu.itmo.ultimatumgame
 
 import org.springframework.boot.autoconfigure.SpringBootApplication

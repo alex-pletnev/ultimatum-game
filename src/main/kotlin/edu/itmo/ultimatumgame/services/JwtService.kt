@@ -25,6 +25,10 @@ class JwtService(
 
     private val logger = logger()
 
+    companion object {
+        private const val TOKEN_EXPIRATION_DAYS = 365L
+    }
+
     fun generateToken(userDetails: UserDetails): String {
         logger.info("dto to Map для пользователя с username=${userDetails.username}")
         val claims = HashMap<String, Any>()
@@ -80,7 +84,7 @@ class JwtService(
         logger.info("Генерация JWT токена для username=${userDetails.username}")
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.username)
             .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
+            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(TOKEN_EXPIRATION_DAYS)))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact()
     }
 

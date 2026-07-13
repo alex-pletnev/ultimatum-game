@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
+@file:Suppress("MaxLineLength", "MaximumLineLength", "ReturnCount")
 
 package edu.itmo.ultimatumgame.configs
 
