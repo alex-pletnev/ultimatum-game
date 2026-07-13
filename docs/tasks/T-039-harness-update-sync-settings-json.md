@@ -1,7 +1,7 @@
 ---
 id: T-039
 title: /harness-update — синхронизировать .claude/settings.json с harness template
-status: pending
+status: in_progress
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -36,3 +36,4 @@ T-030 добавил Stop-hook (reminder для self-review после commit'а
 ## Лог
 
 - 2026-07-13: заведена как follow-up T-030. Priority low — пока в template один hook, ручной sync тривиален. Актуальность вырастет при добавлении второго hook'а.
+- 2026-07-13: взято в работу. Написан design-spec `docs/superpowers/specs/2026-07-13-harness-update-settings-json-sync-design.md` и implementation-plan `docs/superpowers/plans/2026-07-13-harness-update-settings-json-sync.md`. По ходу обнаружен bug hook'а из T-030 (invalid schema для Stop) — заведён T-040 (high).
