@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "MaximumLineLength")
+
 package edu.itmo.ultimatumgame.model
 
 import jakarta.persistence.Column

@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "MaximumLineLength")
+
 package edu.itmo.ultimatumgame.configs
 
 import edu.itmo.ultimatumgame.exceptions.InvalidJwtException

@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "MaximumLineLength")
+
 package edu.itmo.ultimatumgame.dto.requests
 
 import edu.itmo.ultimatumgame.model.SessionType

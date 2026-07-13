@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "MaximumLineLength")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.model.RoundPhase
