@@ -1,5 +1,3 @@
-@file:Suppress("MaxLineLength", "MaximumLineLength")
-
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.offer
@@ -99,7 +97,7 @@ class PlayerGameplayServiceTest {
     }
 
     @Test
-    fun `sendOffer — последний оффер переводит round в ALL_OFFERS_RECEIVED, вызывает CoreGameplay и публикует RoundStatus`() {
+    fun `sendOffer — последний оффер → ALL_OFFERS_RECEIVED + CoreGameplay + RoundStatus`() {
         val a = user()
         val b = user()
         val r = round(roundPhase = RoundPhase.WAIT_OFFERS)

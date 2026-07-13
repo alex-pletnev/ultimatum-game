@@ -1,7 +1,7 @@
 ---
 id: T-020
 title: Починить detekt-findings в тестах вместо @file:Suppress
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -42,3 +42,4 @@ tags: [tech-debt, tests, detekt]
 ## Лог
 
 - 2026-07-13: заведена по итогам T-017. Тех-долг чистого type: pre-existing findings, вылезшие только при полноценном прогоне `./gradlew check`.
+- 2026-07-13: закрыта. Стратегия: детект-конфиг для правил, которые идиоматичны в тестах (`LongParameterList`, `EmptyFunctionBlock` — `excludes: ['**/test/**']`; `VarCouldBeVal.ignoreLateinitVar: true` — `lateinit` только с `var`); code-fix для остальных (semicolons → удалены, long test name → сокращён). `@file:Suppress` убраны из 5 файлов. Verification gate: `./gradlew check` — BUILD SUCCESSFUL в 21s.

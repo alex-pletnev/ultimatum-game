@@ -131,6 +131,7 @@ complexity:
     threshold: 60
   LongParameterList:
     active: true
+    excludes: ['**/test/**']
     functionThreshold: 6
     constructorThreshold: 7
     ignoreDefaultParameters: false
@@ -217,6 +218,7 @@ empty-blocks:
     active: true
   EmptyFunctionBlock:
     active: true
+    excludes: ['**/test/**']
     ignoreOverridden: false
   EmptyIfBlock:
     active: true
@@ -778,7 +780,7 @@ style:
     active: true
   VarCouldBeVal:
     active: true
-    ignoreLateinitVar: false
+    ignoreLateinitVar: true
   WildcardImport:
     active: true
     excludeImports:

@@ -1,5 +1,3 @@
-@file:Suppress("NoSemicolons")
-
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.offer
@@ -55,7 +53,7 @@ class StatsServiceTest {
 
     @Test
     fun `FREE_FOR_ALL — proposerTeam и responderTeam всегда null`() {
-        val a = user();
+        val a = user()
         val b = user()
         val s = session(members = mutableSetOf(a, b), config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL))
         val r = round(session = s)
@@ -75,7 +73,7 @@ class StatsServiceTest {
 
     @Test
     fun `TEAM_BATTLE — proposerTeam и responderTeam проставляются по членству`() {
-        val a = user();
+        val a = user()
         val b = user()
         val tA = team(name = "A", members = mutableSetOf(a))
         val tB = team(name = "B", members = mutableSetOf(b))
@@ -99,7 +97,7 @@ class StatsServiceTest {
 
     @Test
     fun `accepted проставляется из decision`() {
-        val a = user();
+        val a = user()
         val b = user()
         val s = session(members = mutableSetOf(a, b))
         val r = round(session = s)
@@ -123,9 +121,9 @@ class StatsServiceTest {
 
     @Test
     fun `offers сортируются по roundNumber`() {
-        val a = user();
-        val b = user();
-        val c = user();
+        val a = user()
+        val b = user()
+        val c = user()
         val d = user()
         val s = session(members = mutableSetOf(a, b, c, d))
         val r1 = round(session = s, roundNumber = 1)
