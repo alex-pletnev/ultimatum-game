@@ -1,7 +1,7 @@
 ---
 id: T-034
 title: Periodic learning consolidation — сканирование закрытых задач на кросс-паттерны
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -41,3 +41,4 @@ tags: [meta, agent-behavior, skills]
 ## Лог
 
 - 2026-07-13: заведена по итогам анализа флоу (гэп K).
+- 2026-07-13: закрыта. Новый standalone skill `.claude/skills/consolidate.md` (10-й в наборе), а не секция в self-review — жизненный цикл разный (self-review per-task, consolidate periodic). Auto-mode: caждые 10 закрытых с прошлой consolidation → user notify + confirm. Explicit `/consolidate [N]`. State в `.claude/consolidation-state.json` (last_run_date, last_run_after_task, count). Формат отчёта: список паттернов (тема встретилась в 2+ задачах) + предложение action item'ов. Task-add в Auto-mode с приоритетом `medium` (у паттернов приоритет выше single-task). Обновлены SKILL.md (10 skills), playbook (Фаза 6 копирует 10, добавлен consolidate), claude-md.template.md (+1 slash-команда, +1 триггер), harness-update.md (List targets 8 → 9). AC-check: 4/4 буквально.

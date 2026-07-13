@@ -112,6 +112,7 @@ tags: [backend, api, security, ...]
 | `/self-review` | После `task-done`: ревью diff'а по 5 категориям (акцент — улучшения меня) | иногда micro-fix commit |
 | `/pre-flight` | Между дизайном/анализом и первым Edit/Write в исходниках — 3 вопроса: assumptions, risks, reversibility. Для non-trivial и high-stakes зон | нет |
 | `/harness-update` | Sync `.claude/skills/` проекта с последними templates из harness-репо. Explicit-only (пользователь запрашивает вручную). Показывает diff-summary + spawns commit + push | commit + push |
+| `/consolidate` | Периодический sweep закрытых задач на кросс-задачные паттерны в E-категории self-review. Auto каждые 10 done-задач или explicit | commit (state + tasks) → push |
 
 ## Проактивные триггеры (без явной команды)
 
@@ -133,6 +134,7 @@ Skills вызываются автоматически в перечисленн
 | Пользователь явно завершает сессию («на сегодня всё», «пауза», «до завтра», «afk») | без skill | Session-end ritual (см. секцию выше) — обновить `## Лог` `in_progress`-тасков записью «остановились на / следующий шаг / блокеры», commit + push, попрощаться |
 | После brainstorming/systematic-debugging для non-trivial задачи, перед первым Edit/Write в исходниках | `pre-flight` в Auto-mode | Answer 3 questions: assumptions/risks/reversibility. Пауза до кодинга |
 | Задача трогает high-stakes зону (DB migration, security-config, deletion, prod-настройки, cross-cutting breaking API) | `pre-flight` в Auto-mode | Обязательно даже для formally-trivial задач |
+| После task-done, если с прошлой consolidation закрылось ≥10 задач | `consolidate` в Auto-mode | Одной строкой предложить пользователю запустить `/consolidate`; не запускать без confirm'а |
 | Баг / упавший тест / неожиданное поведение | `superpowers:systematic-debugging` | Не пытаться сразу фиксить — гипотеза → эксперимент → вывод. Особенно важно если проблема сопротивляется дольше ~10 минут |
 | Новая фича с ясным acceptance criteria | `superpowers:test-driven-development` | До реализации — написать провальные тесты по каждому AC, потом реализация до зелёного. Отсекает «сделал и не проверил» |
 | Многошаговый plan есть (`docs/superpowers/plans/*.md`) — начинаем прогон | `superpowers:executing-plans` | Дисциплинированный прогон с checkpoint'ами, а не «зачитал и побежал» |

@@ -7,7 +7,7 @@ description: Use когда пользователь просит `/harness-upda
 
 Синхронизировать harness-managed артефакты в проекте с последними версиями из harness-репо. Два раздела:
 
-- **Часть A** (v1): 8 skill-файлов в `.claude/skills/`.
+- **Часть A** (v1): 9 skill-файлов в `.claude/skills/`.
 - **Часть B** (v2): CLAUDE.md с сохранением project-specific placeholder-values через `.claude/harness-config.json`.
 
 Если `.claude/harness-config.json` **отсутствует** — Часть B пропускается, предлагается bootstrap (см. ниже).
@@ -21,7 +21,7 @@ description: Use когда пользователь просит `/harness-upda
 
 1. **Determine source.** Harness repo — `~/.claude/skills/setup-agent-harness/`. Проверить что директория существует и содержит `references/skills/`. Если нет — сказать пользователю «harness не установлен», остановиться.
 
-2. **List targets.** Пройтись по 8 файлам в `~/.claude/skills/setup-agent-harness/references/skills/`:
+2. **List targets.** Пройтись по 9 файлам в `~/.claude/skills/setup-agent-harness/references/skills/`:
    - `task-add.md`
    - `task-done.md`
    - `task-sync.md`
@@ -30,6 +30,7 @@ description: Use когда пользователь просит `/harness-upda
    - `mid-retro.md`
    - `self-review.md`
    - `pre-flight.md`
+   - `consolidate.md`
 
 3. **Diff summary + customization check.** Для каждого файла — сравнить с существующим в `.claude/skills/`:
    - Если файла нет в проекте — пометить как «новый (будет добавлен)».
