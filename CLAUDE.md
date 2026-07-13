@@ -119,6 +119,11 @@ Skills вызываются автоматически в перечисленн
 
 ## Запуск и проверки
 
+- Требуется `JAVA_HOME`. На macOS с brew:
+  ```
+  export JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
+  ```
+  Без него `./gradlew ...` падает с «Unable to locate a Java Runtime» (на этой машине `java` не на PATH).
 - Локальный запуск: `./gradlew bootRun` (нужен `JWT_SIGNING_KEY` env).
 - Тесты: `./gradlew test`.
 - Если задача трогает бизнес-логику раундов — обязательно проверить `FreeForAllTest`.

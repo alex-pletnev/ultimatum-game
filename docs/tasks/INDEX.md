@@ -12,7 +12,6 @@
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
-| T-013 | Восстановить gradle-wrapper (gradle/wrapper/*) | pending | low | 2026-07-12 | [T-013](T-013-restore-gradle-wrapper.md) |
 
 ## Закрытые задачи
 
@@ -26,6 +25,7 @@
 | T-010 | Упростить авторизацию до JWT-only (убрать CSRF + session STOMP checks) | done | 2026-07-12 | [T-010](T-010-simplify-auth-jwt-only.md) |
 | T-011 | Удалить orphan-методы isUserAreSession* из SessionService | done | 2026-07-12 | [T-011](T-011-remove-orphan-session-membership-methods.md) |
 | T-012 | Поднять тестовое покрытие бизнес-логики до 80%+ (services + shuffle strategies) | done | 2026-07-12 | [T-012](T-012-test-coverage-80-percent-business-logic.md) |
+| T-013 | Восстановить gradle-wrapper (gradle/wrapper/*) | done | 2026-07-13 | [T-013](T-013-restore-gradle-wrapper.md) |
 
 ## Легенда статусов
 
