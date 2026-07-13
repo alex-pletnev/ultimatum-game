@@ -6,12 +6,12 @@ priority: high
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/configs/SecurityConfiguration.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/configs/WebSocketConfig.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/configs/PlaySessionStompChannelInterceptor.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/CsrfController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/dto/responses/CsrfTokenResponse.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/exceptions/SessionStompRejectedException.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/configs/SecurityConfiguration.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/configs/WebSocketConfig.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/configs/PlaySessionStompChannelInterceptor.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/CsrfController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/dto/responses/CsrfTokenResponse.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/exceptions/SessionStompRejectedException.kt
 related_docs:
   - docs/08-security.md
   - docs/05-rest-api.md

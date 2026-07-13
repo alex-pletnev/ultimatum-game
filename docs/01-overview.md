@@ -32,7 +32,7 @@
 ## Пакеты и структура
 
 ```
-edu.itmo.ultimatum_game
+edu.itmo.ultimatumgame
 ├── UltimatumGameApplication.kt   # entry point
 ├── configs/                       # Security, WebSocket, интерцепторы
 ├── controllers/                   # REST + ws/ WebSocket
@@ -103,6 +103,6 @@ export JWT_SIGNING_KEY=...
 
 - `src/main/resources/doc/ultimatum-game.yaml` — OpenAPI 3 спека REST.
 - `src/main/resources/doc/ws-ultimatum-game.yaml` — AsyncAPI спека WebSocket.
-- `src/main/resources/doc/use-case-diagram.puml`, `class-diagram.puml`, `ultimatum_game_class_diagram.puml` — PlantUML.
+- `src/main/resources/doc/use-case-diagram.puml`, `class-diagram.puml`, `ultimatumgame_class_diagram.puml` — PlantUML.
 - `src/main/resources/doc/old-er-diagram.md` — исходная ER-схема.
 - `src/main/resources/index.sql` — DDL для триграмм-индекса поиска.

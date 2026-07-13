@@ -38,7 +38,7 @@
     <ID>NoWildcardImports:Decision.kt$import jakarta.persistence.*</ID>
     <ID>NoWildcardImports:DecisionMapper.kt$import org.mapstruct.*</ID>
     <ID>NoWildcardImports:DecisionPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:EventPublisherService.kt$import edu.itmo.ultimatum_game.util.*</ID>
+    <ID>NoWildcardImports:EventPublisherService.kt$import edu.itmo.ultimatumgame.util.*</ID>
     <ID>NoWildcardImports:Offer.kt$import jakarta.persistence.*</ID>
     <ID>NoWildcardImports:OfferMapper.kt$import org.mapstruct.*</ID>
     <ID>NoWildcardImports:OfferPrewMapper.kt$import org.mapstruct.*</ID>
@@ -49,188 +49,12 @@
     <ID>NoWildcardImports:SessionConfigMapper.kt$import org.mapstruct.*</ID>
     <ID>NoWildcardImports:SessionController.kt$import org.springframework.web.bind.annotation.*</ID>
     <ID>NoWildcardImports:SessionMapper.kt$import org.mapstruct.*</ID>
-    <ID>NoWildcardImports:SessionService.kt$import edu.itmo.ultimatum_game.model.*</ID>
+    <ID>NoWildcardImports:SessionService.kt$import edu.itmo.ultimatumgame.model.*</ID>
     <ID>NoWildcardImports:Team.kt$import jakarta.persistence.*</ID>
     <ID>NoWildcardImports:TeamMapper.kt$import org.mapstruct.*</ID>
     <ID>NoWildcardImports:User.kt$import jakarta.persistence.*</ID>
     <ID>NoWildcardImports:UserMapper.kt$import org.mapstruct.*</ID>
     <ID>NoWildcardImports:WebSocketSecurityConfig.kt$import org.springframework.messaging.simp.SimpMessageType.*</ID>
-    <ID>PackageName:AdminGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:ApiErrorResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:AuthController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageName:AuthService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:CoreGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:CreateOfferCmd.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageName:CreateSessionRequest.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageName:CsvService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:Decision.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:DecisionMadeResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:DecisionMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:DecisionPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:DecisionPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:DecisionRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:DuplicateIdException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:EventPublisherService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:FieldMappers.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:GlobalExceptionsHandler.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:IdNotFoundException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:InvalidJwtException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:InvalidOfferException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:InvalidUuidFormatException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:JwtAuthenticationFilter.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageName:JwtAuthenticationResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:JwtService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:JwtStompChannelInterceptor.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageName:Logger.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:MakeDecisionCmd.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageName:Offer.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:OfferCreatedResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:OfferMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:OfferPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:OfferPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:OfferRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:OfferWsController.kt$package edu.itmo.ultimatum_game.controllers.ws</ID>
-    <ID>PackageName:OpenApiConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageName:PlayerGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:RestAccessDeniedHandler.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:Role.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:Round.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:RoundMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:RoundPhase.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:RoundPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:RoundPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:RoundRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:RoundResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:SecurityConfiguration.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageName:SecurityService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:Session.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:SessionAdminWsController.kt$package edu.itmo.ultimatum_game.controllers.ws</ID>
-    <ID>PackageName:SessionConfig.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:SessionConfigDto.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageName:SessionConfigMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:SessionConfigResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:SessionController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageName:SessionJoinRejectedException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:SessionMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:SessionPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:SessionPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:SessionRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:SessionResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:SessionService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:SessionState.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:SessionType.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:SessionWithTeamsAndMembersMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:SessionWithTeamsAndMembersResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:ShuffleStrategy.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:StatisticController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageName:StatsDtos.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:StatsService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:Team.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:TeamMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:TeamPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:TeamPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:TeamRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:TeamResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:UltimatumGameApplication.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageName:User.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:UserController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageName:UserIdResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:UserMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageName:UserRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageName:UserRequests.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageName:UserResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageName:UserRoleNotAllowedException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageName:UserService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:WebSocketConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageName:WebSocketSecurityConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:AdminGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:ApiErrorResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:AuthController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageNaming:AuthService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:CoreGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:CreateOfferCmd.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageNaming:CreateSessionRequest.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageNaming:CsvService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:Decision.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:DecisionMadeResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:DecisionMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:DecisionPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:DecisionPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:DecisionRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:DuplicateIdException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:EventPublisherService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:FieldMappers.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:GlobalExceptionsHandler.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:IdNotFoundException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:InvalidJwtException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:InvalidOfferException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:InvalidUuidFormatException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:JwtAuthenticationFilter.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:JwtAuthenticationResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:JwtService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:JwtStompChannelInterceptor.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:Logger.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:MakeDecisionCmd.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageNaming:Offer.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:OfferCreatedResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:OfferMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:OfferPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:OfferPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:OfferRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:OfferWsController.kt$package edu.itmo.ultimatum_game.controllers.ws</ID>
-    <ID>PackageNaming:OpenApiConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:PlayerGameplayService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:RestAccessDeniedHandler.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:Role.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:Round.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:RoundMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:RoundPhase.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:RoundPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:RoundPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:RoundRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:RoundResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:SecurityConfiguration.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:SecurityService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:Session.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:SessionAdminWsController.kt$package edu.itmo.ultimatum_game.controllers.ws</ID>
-    <ID>PackageNaming:SessionConfig.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:SessionConfigDto.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageNaming:SessionConfigMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:SessionConfigResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:SessionController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageNaming:SessionJoinRejectedException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:SessionMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:SessionPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:SessionPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:SessionRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:SessionResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:SessionService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:SessionState.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:SessionType.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:SessionWithTeamsAndMembersMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:SessionWithTeamsAndMembersResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:ShuffleStrategy.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:StatisticController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageNaming:StatsDtos.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:StatsService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:Team.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:TeamMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:TeamPrewMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:TeamPrewResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:TeamRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:TeamResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:UltimatumGameApplication.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageNaming:User.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:UserController.kt$package edu.itmo.ultimatum_game.controllers</ID>
-    <ID>PackageNaming:UserIdResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:UserMapper.kt$package edu.itmo.ultimatum_game.util</ID>
-    <ID>PackageNaming:UserRepository.kt$package edu.itmo.ultimatum_game.repositories</ID>
-    <ID>PackageNaming:UserRequests.kt$package edu.itmo.ultimatum_game.dto.requests</ID>
-    <ID>PackageNaming:UserResponse.kt$package edu.itmo.ultimatum_game.dto.responses</ID>
-    <ID>PackageNaming:UserRoleNotAllowedException.kt$package edu.itmo.ultimatum_game.exceptions</ID>
-    <ID>PackageNaming:UserService.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:WebSocketConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
-    <ID>PackageNaming:WebSocketSecurityConfig.kt$package edu.itmo.ultimatum_game.configs</ID>
     <ID>ReturnCount:JwtStompChannelInterceptor.kt$JwtStompChannelInterceptor$override fun preSend(message: Message&lt;*&gt;, channel: MessageChannel): Message&lt;*&gt;?</ID>
     <ID>SerialVersionUIDInSerializableClass:ApiErrorResponse.kt$ApiErrorResponse : Serializable</ID>
     <ID>SerialVersionUIDInSerializableClass:CreateOfferCmd.kt$CreateOfferCmd : Serializable</ID>
@@ -296,7 +120,7 @@
     <ID>WildcardImport:Decision.kt$import jakarta.persistence.*</ID>
     <ID>WildcardImport:DecisionMapper.kt$import org.mapstruct.*</ID>
     <ID>WildcardImport:DecisionPrewMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:EventPublisherService.kt$import edu.itmo.ultimatum_game.util.*</ID>
+    <ID>WildcardImport:EventPublisherService.kt$import edu.itmo.ultimatumgame.util.*</ID>
     <ID>WildcardImport:Offer.kt$import jakarta.persistence.*</ID>
     <ID>WildcardImport:OfferMapper.kt$import org.mapstruct.*</ID>
     <ID>WildcardImport:OfferPrewMapper.kt$import org.mapstruct.*</ID>
@@ -307,7 +131,7 @@
     <ID>WildcardImport:SessionConfigMapper.kt$import org.mapstruct.*</ID>
     <ID>WildcardImport:SessionController.kt$import org.springframework.web.bind.annotation.*</ID>
     <ID>WildcardImport:SessionMapper.kt$import org.mapstruct.*</ID>
-    <ID>WildcardImport:SessionService.kt$import edu.itmo.ultimatum_game.model.*</ID>
+    <ID>WildcardImport:SessionService.kt$import edu.itmo.ultimatumgame.model.*</ID>
     <ID>WildcardImport:Team.kt$import jakarta.persistence.*</ID>
     <ID>WildcardImport:TeamMapper.kt$import org.mapstruct.*</ID>
     <ID>WildcardImport:User.kt$import jakarta.persistence.*</ID>

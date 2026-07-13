@@ -6,8 +6,8 @@ priority: low
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/repositories/DecisionRepository.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/StatsService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/repositories/DecisionRepository.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/StatsService.kt
 related_docs:
   - docs/02-domain-model.md
   - docs/04-services.md

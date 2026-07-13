@@ -7,8 +7,8 @@ created: 2026-07-12
 updated: 2026-07-12
 related_code:
   - build.gradle.kts
-  - src/test/kotlin/edu/itmo/ultimatum_game/SpecSnapshotGeneratorTest.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/configs/OpenApiConfig.kt
+  - src/test/kotlin/edu/itmo/ultimatumgame/SpecSnapshotGeneratorTest.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/configs/OpenApiConfig.kt
 related_docs:
   - docs/05-rest-api.md
   - CLAUDE.md

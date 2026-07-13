@@ -6,7 +6,7 @@ priority: low
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/EventPublisherService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/EventPublisherService.kt
 related_docs:
   - docs/04-services.md
 tags: [tech-debt, refactor]

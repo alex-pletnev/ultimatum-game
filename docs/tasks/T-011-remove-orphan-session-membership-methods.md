@@ -6,7 +6,7 @@ priority: low
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/SessionService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/SessionService.kt
 related_docs:
   - docs/04-services.md
 tags: [tech-debt, refactor]
@@ -14,7 +14,7 @@ tags: [tech-debt, refactor]
 
 ## Контекст
 
-После T-010 удалён `PlaySessionStompChannelInterceptor`, который был единственным потребителем методов `SessionService.isUserAreSessionAdmin`, `isUserAreSessionMember`, `isUserAreSessionObserver`. Сейчас (`src/main/kotlin/edu/itmo/ultimatum_game/services/SessionService.kt:122-133`) эти три метода мертвы: grep по `src/` не находит других вызовов.
+После T-010 удалён `PlaySessionStompChannelInterceptor`, который был единственным потребителем методов `SessionService.isUserAreSessionAdmin`, `isUserAreSessionMember`, `isUserAreSessionObserver`. Сейчас (`src/main/kotlin/edu/itmo/ultimatumgame/services/SessionService.kt:122-133`) эти три метода мертвы: grep по `src/` не находит других вызовов.
 
 **Дополнительно (найдено при написании тестов в T-012):** в `isUserAreSessionObserver` реализация ошибочно ищет пользователя в `session.members`, а не в `session.observers`. Метод фактически дублирует `isUserAreSessionMember`. Не критично — метод всё равно не вызывается, но если однажды вернём его к жизни, нужно исправить.
 

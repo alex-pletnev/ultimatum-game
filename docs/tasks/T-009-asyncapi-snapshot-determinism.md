@@ -6,7 +6,7 @@ priority: low
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/test/kotlin/edu/itmo/ultimatum_game/SpecSnapshotGeneratorTest.kt
+  - src/test/kotlin/edu/itmo/ultimatumgame/SpecSnapshotGeneratorTest.kt
   - src/main/resources/doc/asyncapi.json
 related_docs:
   - docs/06-websocket-api.md

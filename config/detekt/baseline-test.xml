@@ -9,7 +9,7 @@
     <ID>ArgumentListWrapping:StatsServiceTest.kt$StatsServiceTest$( id = UUID.randomUUID(), session = s, round = r, responder = b, offer = o, decision = true, )</ID>
     <ID>ArgumentListWrapping:TeamBattleStrategyTest.kt$TeamBattleStrategyTest$(4, round.offers.mapNotNull { it.responder?.id }.toSet().size, "responder'ы должны быть уникальны — каждый игрок ровно раз")</ID>
     <ID>EmptyFunctionBlock:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests${ }</ID>
-    <ID>ImportOrdering:SessionServiceTest.kt$import edu.itmo.ultimatum_game.TestFixtures.session import edu.itmo.ultimatum_game.TestFixtures.sessionConfig import edu.itmo.ultimatum_game.TestFixtures.team import edu.itmo.ultimatum_game.TestFixtures.user import edu.itmo.ultimatum_game.dto.requests.CreateSessionRequest import edu.itmo.ultimatum_game.dto.responses.RoundResponse import edu.itmo.ultimatum_game.dto.responses.SessionResponse import edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse import edu.itmo.ultimatum_game.exceptions.IdNotFoundException import edu.itmo.ultimatum_game.exceptions.SessionJoinRejectedException import edu.itmo.ultimatum_game.model.Role import edu.itmo.ultimatum_game.model.Round import edu.itmo.ultimatum_game.model.Session import edu.itmo.ultimatum_game.model.SessionState import edu.itmo.ultimatum_game.model.SessionType import edu.itmo.ultimatum_game.model.Team import edu.itmo.ultimatum_game.model.User import edu.itmo.ultimatum_game.repositories.SessionRepository import edu.itmo.ultimatum_game.util.RoundMapper import edu.itmo.ultimatum_game.util.SessionMapper import edu.itmo.ultimatum_game.util.SessionWithTeamsAndMembersMapper import io.mockk.every import io.mockk.mockk import io.mockk.slot import io.mockk.verify import org.junit.jupiter.api.assertThrows import org.springframework.data.domain.Page import org.springframework.data.domain.PageImpl import org.springframework.data.domain.Pageable import java.util.Optional import java.util.UUID import kotlin.test.Test import kotlin.test.assertEquals import kotlin.test.assertFalse import kotlin.test.assertNotNull import kotlin.test.assertTrue import kotlin.test.assertSame</ID>
+    <ID>ImportOrdering:SessionServiceTest.kt$import edu.itmo.ultimatumgame.TestFixtures.session import edu.itmo.ultimatumgame.TestFixtures.sessionConfig import edu.itmo.ultimatumgame.TestFixtures.team import edu.itmo.ultimatumgame.TestFixtures.user import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest import edu.itmo.ultimatumgame.dto.responses.RoundResponse import edu.itmo.ultimatumgame.dto.responses.SessionResponse import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse import edu.itmo.ultimatumgame.exceptions.IdNotFoundException import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException import edu.itmo.ultimatumgame.model.Role import edu.itmo.ultimatumgame.model.Round import edu.itmo.ultimatumgame.model.Session import edu.itmo.ultimatumgame.model.SessionState import edu.itmo.ultimatumgame.model.SessionType import edu.itmo.ultimatumgame.model.Team import edu.itmo.ultimatumgame.model.User import edu.itmo.ultimatumgame.repositories.SessionRepository import edu.itmo.ultimatumgame.util.RoundMapper import edu.itmo.ultimatumgame.util.SessionMapper import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper import io.mockk.every import io.mockk.mockk import io.mockk.slot import io.mockk.verify import org.junit.jupiter.api.assertThrows import org.springframework.data.domain.Page import org.springframework.data.domain.PageImpl import org.springframework.data.domain.Pageable import java.util.Optional import java.util.UUID import kotlin.test.Test import kotlin.test.assertEquals import kotlin.test.assertFalse import kotlin.test.assertNotNull import kotlin.test.assertTrue import kotlin.test.assertSame</ID>
     <ID>Indentation:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests$ </ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( id: UUID = UUID.randomUUID(), displayName: String = "session-${id.toString().take(8)}", state: SessionState = SessionState.CREATED, admin: User = user(role = Role.ADMIN), config: SessionConfig = sessionConfig(), openToConnect: Boolean = true, members: MutableSet&lt;User&gt; = mutableSetOf(), observers: MutableSet&lt;User&gt; = mutableSetOf(), teams: MutableSet&lt;Team&gt; = mutableSetOf(), currentRound: Round? = null, )</ID>
     <ID>LongParameterList:TestFixtures.kt$TestFixtures$( id: UUID = UUID.randomUUID(), proposer: User, responder: User? = null, session: Session? = null, round: Round? = null, offerValue: Int = 50, )</ID>
@@ -18,42 +18,10 @@
     <ID>MaxLineLength:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$fun</ID>
     <ID>MaximumLineLength:PlayerGameplayServiceTest.kt$PlayerGameplayServiceTest$ </ID>
     <ID>NoBlankLineBeforeRbrace:UltimatumGameApplicationTests.kt$UltimatumGameApplicationTests$ </ID>
-    <ID>NoUnusedImports:AdminGameplayServiceTest.kt$edu.itmo.ultimatum_game.services.AdminGameplayServiceTest.kt</ID>
-    <ID>NoUnusedImports:CoreGameplayServiceTest.kt$edu.itmo.ultimatum_game.services.CoreGameplayServiceTest.kt</ID>
-    <ID>NoUnusedImports:SessionServiceTest.kt$edu.itmo.ultimatum_game.services.SessionServiceTest.kt</ID>
-    <ID>NoUnusedImports:StatsServiceTest.kt$edu.itmo.ultimatum_game.services.StatsServiceTest.kt</ID>
-    <ID>PackageName:AdminGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:AuthServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:CoreGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:CsvServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:EventPublisherServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:FreeForAllTest.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:JwtServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:PlayerGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:SecurityServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:SessionServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:SpecSnapshotGeneratorTest.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageName:StatsServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageName:TeamBattleStrategyTest.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageName:TestFixtures.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageName:UltimatumGameApplicationTests.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageName:UserServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:AdminGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:AuthServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:CoreGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:CsvServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:EventPublisherServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:FreeForAllTest.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:JwtServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:PlayerGameplayServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:SecurityServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:SessionServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:SpecSnapshotGeneratorTest.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageNaming:StatsServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
-    <ID>PackageNaming:TeamBattleStrategyTest.kt$package edu.itmo.ultimatum_game.model</ID>
-    <ID>PackageNaming:TestFixtures.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageNaming:UltimatumGameApplicationTests.kt$package edu.itmo.ultimatum_game</ID>
-    <ID>PackageNaming:UserServiceTest.kt$package edu.itmo.ultimatum_game.services</ID>
+    <ID>NoUnusedImports:AdminGameplayServiceTest.kt$edu.itmo.ultimatumgame.services.AdminGameplayServiceTest.kt</ID>
+    <ID>NoUnusedImports:CoreGameplayServiceTest.kt$edu.itmo.ultimatumgame.services.CoreGameplayServiceTest.kt</ID>
+    <ID>NoUnusedImports:SessionServiceTest.kt$edu.itmo.ultimatumgame.services.SessionServiceTest.kt</ID>
+    <ID>NoUnusedImports:StatsServiceTest.kt$edu.itmo.ultimatumgame.services.StatsServiceTest.kt</ID>
     <ID>VarCouldBeVal:SpecSnapshotGeneratorTest.kt$SpecSnapshotGeneratorTest$@Autowired private lateinit var mockMvc: MockMvc</ID>
     <ID>VarCouldBeVal:SpecSnapshotGeneratorTest.kt$SpecSnapshotGeneratorTest$@Autowired private lateinit var objectMapper: ObjectMapper</ID>
     <ID>Wrapping:CoreGameplayServiceTest.kt$CoreGameplayServiceTest$;</ID>

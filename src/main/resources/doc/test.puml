@@ -17,7 +17,7 @@ database "PostgreSQL" as Postgres
 ' ----------------------------------------------------------------
 ' 1) Domain model: вместо enum — class <<enumeration>>
 ' ----------------------------------------------------------------
-package edu.itmo.ultimatum_game.model {
+package edu.itmo.ultimatumgame.model {
 
   class Role <<enumeration>> {
     ADMIN
@@ -100,7 +100,7 @@ package edu.itmo.ultimatum_game.model {
 ' ----------------------------------------------------------------
 ' 2) Репозитории → PostgreSQL
 ' ----------------------------------------------------------------
-package edu.itmo.ultimatum_game.repositories {
+package edu.itmo.ultimatumgame.repositories {
   interface UserRepository     <<Repository>>
   interface TeamRepository     <<Repository>>
   interface SessionRepository  <<Repository>>
@@ -118,7 +118,7 @@ DecisionRepository --> Postgres
 ' ----------------------------------------------------------------
 ' 3) Сервисы
 ' ----------------------------------------------------------------
-package edu.itmo.ultimatum_game.services {
+package edu.itmo.ultimatumgame.services {
   class AuthService
   class SessionService
   class AdminGameplayService
@@ -145,7 +145,7 @@ CoreGameplayService   ..> DecisionRepository
 ' ----------------------------------------------------------------
 ' 4) REST API
 ' ----------------------------------------------------------------
-package edu.itmo.ultimatum_game.controllers {
+package edu.itmo.ultimatumgame.controllers {
   class AuthController    <<Controller>>
   class CsrfController    <<Controller>>
   class SessionController <<Controller>>
@@ -164,7 +164,7 @@ Client --> UserController    : HTTP/JSON
 ' ----------------------------------------------------------------
 ' 5) WebSocket / STOMP
 ' ----------------------------------------------------------------
-package edu.itmo.ultimatum_game.controllers.ws {
+package edu.itmo.ultimatumgame.controllers.ws {
   class OfferWsController        <<MessageController>>
   class SessionAdminWsController <<MessageController>>
 }

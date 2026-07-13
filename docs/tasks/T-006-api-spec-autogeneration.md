@@ -7,14 +7,14 @@ created: 2026-07-12
 updated: 2026-07-12
 related_code:
   - build.gradle.kts
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/EventPublisherService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/AuthController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/SessionController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/UserController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/StatisticController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/CsrfController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/ws/OfferWsController.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/controllers/ws/SessionAdminWsController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/EventPublisherService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/AuthController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/SessionController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/UserController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/StatisticController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/CsrfController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/ws/OfferWsController.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/controllers/ws/SessionAdminWsController.kt
   - src/main/resources/doc/ultimatum-game.yaml
   - src/main/resources/doc/ws-ultimatum-game.yaml
 related_docs:

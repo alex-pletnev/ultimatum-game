@@ -1,6 +1,6 @@
 # 02. Доменная модель и БД
 
-Все сущности в пакете `edu.itmo.ultimatum_game.model`. ORM: Hibernate/JPA (Jakarta Persistence). Настройка: `spring.jpa.hibernate.ddl-auto=update` (`application.properties:7`).
+Все сущности в пакете `edu.itmo.ultimatumgame.model`. ORM: Hibernate/JPA (Jakarta Persistence). Настройка: `spring.jpa.hibernate.ddl-auto=update` (`application.properties:7`).
 
 ## ER-схема (связи)
 

@@ -6,18 +6,18 @@ priority: high
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/AdminGameplayService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/AuthService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/CoreGameplayService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/CsvService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/EventPublisherService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/JwtService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/PlayerGameplayService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/SecurityService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/SessionService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/StatsService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/UserService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/model/ShuffleStrategy.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/AdminGameplayService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/AuthService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/CoreGameplayService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/CsvService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/EventPublisherService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/JwtService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/PlayerGameplayService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/SecurityService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/SessionService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/StatsService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/UserService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/model/ShuffleStrategy.kt
   - build.gradle.kts
 related_docs:
   - docs/04-services.md
@@ -44,16 +44,16 @@ tags: [test, backend, tech-debt, ci]
 
 **Внутри** (обязательные к покрытию):
 
-- `edu.itmo.ultimatum_game.services.*` — все 11 сервисов.
-- `edu.itmo.ultimatum_game.model.ShuffleStrategy` (`FreeForAllStrategy`, `TeamBattleStrategy`).
+- `edu.itmo.ultimatumgame.services.*` — все 11 сервисов.
+- `edu.itmo.ultimatumgame.model.ShuffleStrategy` (`FreeForAllStrategy`, `TeamBattleStrategy`).
 
 **Снаружи** (исключить из coverage-подсчёта):
 
-- `edu.itmo.ultimatum_game.configs.*` — Spring wiring.
-- `edu.itmo.ultimatum_game.controllers.*` — HTTP/WS адаптеры (тестируются интеграционно, если появятся; сейчас не в scope).
-- `edu.itmo.ultimatum_game.dto.*`, `edu.itmo.ultimatum_game.util.*` — data + сгенерированные MapStruct-мапперы.
-- `edu.itmo.ultimatum_game.exceptions.*`, `edu.itmo.ultimatum_game.repositories.*` — тонкие обёртки.
-- `edu.itmo.ultimatum_game.model.*` кроме `ShuffleStrategy` — JPA-сущности, geter'ы/setter'ы.
+- `edu.itmo.ultimatumgame.configs.*` — Spring wiring.
+- `edu.itmo.ultimatumgame.controllers.*` — HTTP/WS адаптеры (тестируются интеграционно, если появятся; сейчас не в scope).
+- `edu.itmo.ultimatumgame.dto.*`, `edu.itmo.ultimatumgame.util.*` — data + сгенерированные MapStruct-мапперы.
+- `edu.itmo.ultimatumgame.exceptions.*`, `edu.itmo.ultimatumgame.repositories.*` — тонкие обёртки.
+- `edu.itmo.ultimatumgame.model.*` кроме `ShuffleStrategy` — JPA-сущности, geter'ы/setter'ы.
 
 ## Acceptance criteria
 
@@ -85,7 +85,7 @@ tags: [test, backend, tech-debt, ci]
    - Настроить `jacocoTestReport` (HTML+XML) и `jacocoTestCoverageVerification` с include-паттерном по scope (см. выше) и `minimum = 0.80` по `LINE` counter.
    - Привязать verification к `check`.
 2. **Test scaffold.**
-   - Создать `src/test/kotlin/edu/itmo/ultimatum_game/services/` — по одному файлу на сервис.
+   - Создать `src/test/kotlin/edu/itmo/ultimatumgame/services/` — по одному файлу на сервис.
    - Общие фикстуры (User, Session, Round, Offer) — вынести в `TestFixtures.kt` в том же пакете.
 3. **Написание тестов по приоритету.**
    - Порядок: сервисы с самой сложной логикой первыми (`PlayerGameplayService`, `AdminGameplayService`, `CoreGameplayService`, `SessionService`, `StatsService`), затем `AuthService`, `JwtService`, `SecurityService`, `UserService`, `EventPublisherService`, `CsvService`.
@@ -112,7 +112,7 @@ tags: [test, backend, tech-debt, ci]
 
 - **JaCoCo vs Kover.** Взял JaCoCo как более зрелый и совместимый с CI/GitHub Actions. Если хочется чистого Kotlin-инструмента — можно переключиться на Kover (`org.jetbrains.kotlinx:kover`), но в контексте Spring Boot экосистема JaCoCo привычнее.
 - **80% — минимум, а не цель.** Некоторые сервисы могут допрыгнуть до 95%, некоторые (например, `EventPublisherService` — тонкая обёртка над SimpMessagingTemplate) — с трудом до 80%. Возможно, придётся исключить отдельные тривиальные классы из подсчёта (если тесты на них — checkbox без смысла).
-- **Дубликаты `FreeForAllTest`.** Существующий тест в `src/test/kotlin/edu/itmo/ultimatum_game/model/FreeForAllTest.kt` может быть неполным — сохранить его основу, дополнить недостающими кейсами.
+- **Дубликаты `FreeForAllTest`.** Существующий тест в `src/test/kotlin/edu/itmo/ultimatumgame/model/FreeForAllTest.kt` может быть неполным — сохранить его основу, дополнить недостающими кейсами.
 
 ## Лог
 

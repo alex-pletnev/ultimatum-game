@@ -6,10 +6,10 @@ priority: high
 created: 2026-07-12
 updated: 2026-07-12
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/PlayerGameplayService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/AdminGameplayService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/StatsService.kt
-  - src/main/kotlin/edu/itmo/ultimatum_game/model/
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/PlayerGameplayService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/AdminGameplayService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/StatsService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/model/
 related_docs:
   - docs/03-state-machines.md
   - docs/04-services.md

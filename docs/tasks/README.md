@@ -24,7 +24,7 @@ priority: low | medium | high
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_code:
-  - src/main/kotlin/edu/itmo/ultimatum_game/services/SessionService.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/services/SessionService.kt
 related_docs:
   - docs/04-services.md
 tags: [backend, api, security, db, refactor, bug, feature, tech-debt, meta]

@@ -15,7 +15,7 @@
 | `spring.jpa.properties.hibernate.format_sql` | `true` | pretty-print SQL |
 | `logging.level.org.springframework.security` | `DEBUG` | |
 | `logging.level.org.springframework.web` | `DEBUG` | |
-| `logging.level.edu.itmo.ultimatum_game` | `DEBUG` | |
+| `logging.level.edu.itmo.ultimatumgame` | `DEBUG` | |
 | `logging.level.org.springframework.web.socket.messaging.StompSubProtocolHandler` | `TRACE` | |
 | `logging.level.org.springframework.messaging.simp.stomp` | `TRACE` | |
 
@@ -133,12 +133,12 @@ CREATE INDEX idx_session_name_trgm
 ```
 
 Есть 2 файла:
-- `src/test/kotlin/edu/itmo/ultimatum_game/UltimatumGameApplicationTests.kt` — smoke `contextLoads`.
-- `src/test/kotlin/edu/itmo/ultimatum_game/model/FreeForAllTest.kt` — тесты `FreeForAllStrategy`.
+- `src/test/kotlin/edu/itmo/ultimatumgame/UltimatumGameApplicationTests.kt` — smoke `contextLoads`.
+- `src/test/kotlin/edu/itmo/ultimatumgame/model/FreeForAllTest.kt` — тесты `FreeForAllStrategy`.
 
 ## Точка входа
 
-`src/main/kotlin/edu/itmo/ultimatum_game/UltimatumGameApplication.kt`:
+`src/main/kotlin/edu/itmo/ultimatumgame/UltimatumGameApplication.kt`:
 
 ```kotlin
 @SpringBootApplication

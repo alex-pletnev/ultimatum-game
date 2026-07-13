@@ -111,10 +111,10 @@ jacoco {
 }
 
 val coverageIncludes = listOf(
-    "edu/itmo/ultimatum_game/services/**",
-    "edu/itmo/ultimatum_game/model/ShuffleStrategy*",
-    "edu/itmo/ultimatum_game/model/FreeForAllStrategy*",
-    "edu/itmo/ultimatum_game/model/TeamBattleStrategy*"
+    "edu/itmo/ultimatumgame/services/**",
+    "edu/itmo/ultimatumgame/model/ShuffleStrategy*",
+    "edu/itmo/ultimatumgame/model/FreeForAllStrategy*",
+    "edu/itmo/ultimatumgame/model/TeamBattleStrategy*"
 )
 
 tasks.jacocoTestReport {

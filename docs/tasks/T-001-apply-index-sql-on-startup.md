@@ -7,7 +7,7 @@ created: 2026-07-12
 updated: 2026-07-12
 related_code:
   - src/main/resources/index.sql
-  - src/main/kotlin/edu/itmo/ultimatum_game/UltimatumGameApplication.kt
+  - src/main/kotlin/edu/itmo/ultimatumgame/UltimatumGameApplication.kt
   - src/main/resources/application.properties
 related_docs:
   - docs/02-domain-model.md

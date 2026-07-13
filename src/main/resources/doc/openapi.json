@@ -43,7 +43,7 @@
         "title" : "Sort",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequestDto" : {
+      "edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto" : {
         "properties" : {
           "id" : {
             "type" : "string"
@@ -53,10 +53,10 @@
         "title" : "AuthenticateUserRequestDto",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.requests.CreateSessionRequest" : {
+      "edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest" : {
         "properties" : {
           "config" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.SessionConfigDto"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.SessionConfigDto"
           },
           "displayName" : {
             "maxLength" : 100,
@@ -79,7 +79,7 @@
         "title" : "CreateSessionRequest",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.requests.CreateUserRequest" : {
+      "edu.itmo.ultimatumgame.dto.requests.CreateUserRequest" : {
         "properties" : {
           "nickname" : {
             "maxLength" : 42,
@@ -97,7 +97,7 @@
         "title" : "CreateUserRequest",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.requests.SessionConfigDto" : {
+      "edu.itmo.ultimatumgame.dto.requests.SessionConfigDto" : {
         "description" : "Конфигурация сессии. Кросс-инвариант: для FREE_FOR_ALL numTeams=0; для TEAM_BATTLE numTeams>=2. Числовые поля не должны быть null (валидируется на уровне сервиса).",
         "properties" : {
           "numPlayers" : {
@@ -132,7 +132,7 @@
         "title" : "SessionConfigDto",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse" : {
         "properties" : {
           "error" : {
             "type" : "string"
@@ -156,7 +156,7 @@
         "title" : "ApiErrorResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.DecisionPrewResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse" : {
         "properties" : {
           "createdAt" : {
             "format" : "date-time",
@@ -170,17 +170,17 @@
             "type" : "string"
           },
           "offer" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
           },
           "responder" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
         "required" : [ "createdAt" ],
         "title" : "DecisionPrewResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.JwtAuthenticationResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse" : {
         "properties" : {
           "token" : {
             "type" : "string"
@@ -190,7 +190,7 @@
         "title" : "JwtAuthenticationResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse" : {
         "properties" : {
           "createdAt" : {
             "format" : "date-time",
@@ -205,17 +205,17 @@
             "type" : "integer"
           },
           "proposer" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           },
           "responder" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
         "required" : [ "createdAt" ],
         "title" : "OfferPrewResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse" : {
         "properties" : {
           "id" : {
             "format" : "uuid",
@@ -234,11 +234,11 @@
         "title" : "RoundPrewResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.RoundResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.RoundResponse" : {
         "properties" : {
           "decisions" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.DecisionPrewResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse"
             },
             "type" : "array"
           },
@@ -248,7 +248,7 @@
           },
           "offers" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.OfferPrewResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
             },
             "type" : "array"
           },
@@ -261,14 +261,14 @@
             "type" : "string"
           },
           "session" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionPrewResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse"
           }
         },
         "required" : [ "decisions", "id", "offers", "roundNumber", "roundPhase", "session" ],
         "title" : "RoundResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse" : {
         "properties" : {
           "numPlayers" : {
             "format" : "int32",
@@ -299,13 +299,13 @@
         "title" : "SessionConfigResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.SessionPrewResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse" : {
         "properties" : {
           "admin" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           },
           "config" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
           },
           "createdAt" : {
             "format" : "date-time",
@@ -330,20 +330,20 @@
         "title" : "SessionPrewResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.SessionResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.SessionResponse" : {
         "properties" : {
           "admin" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           },
           "config" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
           },
           "createdAt" : {
             "format" : "date-time",
             "type" : "string"
           },
           "currentRound" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
           },
           "displayName" : {
             "type" : "string"
@@ -357,7 +357,7 @@
           },
           "rounds" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
             },
             "type" : "array",
             "uniqueItems" : true
@@ -368,7 +368,7 @@
           },
           "teams" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.TeamPrewResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.TeamPrewResponse"
             },
             "type" : "array",
             "uniqueItems" : true
@@ -378,20 +378,20 @@
         "title" : "SessionResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse" : {
         "properties" : {
           "admin" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           },
           "config" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionConfigResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
           },
           "createdAt" : {
             "format" : "date-time",
             "type" : "string"
           },
           "currentRound" : {
-            "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundPrewResponse"
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
           },
           "displayName" : {
             "type" : "string"
@@ -402,14 +402,14 @@
           },
           "members" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
             },
             "type" : "array",
             "uniqueItems" : true
           },
           "observers" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
             },
             "type" : "array",
             "uniqueItems" : true
@@ -423,7 +423,7 @@
           },
           "teams" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.TeamResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.TeamResponse"
             },
             "type" : "array",
             "uniqueItems" : true
@@ -433,7 +433,7 @@
         "title" : "SessionWithTeamsAndMembersResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.TeamPrewResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.TeamPrewResponse" : {
         "properties" : {
           "id" : {
             "format" : "uuid",
@@ -447,7 +447,7 @@
         "title" : "TeamPrewResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.TeamResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.TeamResponse" : {
         "properties" : {
           "id" : {
             "format" : "uuid",
@@ -455,7 +455,7 @@
           },
           "members" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
             },
             "type" : "array",
             "uniqueItems" : true
@@ -468,7 +468,7 @@
         "title" : "TeamResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.UserIdResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.UserIdResponse" : {
         "properties" : {
           "id" : {
             "format" : "uuid",
@@ -479,7 +479,7 @@
         "title" : "UserIdResponse",
         "type" : "object"
       },
-      "edu.itmo.ultimatum_game.dto.responses.UserResponse" : {
+      "edu.itmo.ultimatumgame.dto.responses.UserResponse" : {
         "properties" : {
           "createdAt" : {
             "format" : "date-time",
@@ -537,11 +537,11 @@
         "title" : "UiConfigGroup",
         "type" : "object"
       },
-      "org.springframework.data.domain.PageEdu.itmo.ultimatum_game.dto.responses.SessionResponse" : {
+      "org.springframework.data.domain.PageEdu.itmo.ultimatumgame.dto.responses.SessionResponse" : {
         "properties" : {
           "content" : {
             "items" : {
-              "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionResponse"
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionResponse"
             },
             "type" : "array"
           },
@@ -600,7 +600,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequestDto"
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto"
               }
             }
           },
@@ -611,7 +611,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.JwtAuthenticationResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
                 }
               }
             },
@@ -621,7 +621,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -631,7 +631,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -641,7 +641,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -651,7 +651,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -661,7 +661,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -671,7 +671,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -688,7 +688,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.CreateUserRequest"
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.CreateUserRequest"
               }
             }
           },
@@ -699,7 +699,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.JwtAuthenticationResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
                 }
               }
             },
@@ -709,7 +709,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -719,7 +719,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -729,7 +729,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -739,7 +739,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -749,7 +749,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -759,7 +759,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -806,7 +806,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/org.springframework.data.domain.PageEdu.itmo.ultimatum_game.dto.responses.SessionResponse"
+                  "$ref" : "#/components/schemas/org.springframework.data.domain.PageEdu.itmo.ultimatumgame.dto.responses.SessionResponse"
                 }
               }
             },
@@ -816,7 +816,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -826,7 +826,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -836,7 +836,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -846,7 +846,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -856,7 +856,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -866,7 +866,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -881,7 +881,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.requests.CreateSessionRequest"
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest"
               }
             }
           },
@@ -892,7 +892,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
                 }
               }
             },
@@ -902,7 +902,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -912,7 +912,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -922,7 +922,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -932,7 +932,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -942,7 +942,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -952,7 +952,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -978,7 +978,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionResponse"
                 }
               }
             },
@@ -988,7 +988,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -998,7 +998,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1008,7 +1008,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1018,7 +1018,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1028,7 +1028,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1038,7 +1038,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1064,7 +1064,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.RoundResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundResponse"
                 }
               }
             },
@@ -1074,7 +1074,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1084,7 +1084,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1094,7 +1094,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1104,7 +1104,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1114,7 +1114,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1124,7 +1124,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1150,7 +1150,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
                 }
               }
             },
@@ -1160,7 +1160,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1170,7 +1170,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1180,7 +1180,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1190,7 +1190,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1200,7 +1200,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1210,7 +1210,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1243,7 +1243,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
                 }
               }
             },
@@ -1253,7 +1253,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1263,7 +1263,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1273,7 +1273,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1283,7 +1283,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1293,7 +1293,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1303,7 +1303,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1329,7 +1329,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.SessionWithTeamsAndMembersResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
                 }
               }
             },
@@ -1339,7 +1339,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1349,7 +1349,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1359,7 +1359,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1369,7 +1369,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1379,7 +1379,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1389,7 +1389,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1427,7 +1427,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1437,7 +1437,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1447,7 +1447,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1457,7 +1457,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1467,7 +1467,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1477,7 +1477,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1495,7 +1495,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
                 }
               }
             },
@@ -1505,7 +1505,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1515,7 +1515,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1525,7 +1525,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1535,7 +1535,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1545,7 +1545,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1555,7 +1555,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1573,7 +1573,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.UserIdResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserIdResponse"
                 }
               }
             },
@@ -1583,7 +1583,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1593,7 +1593,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1603,7 +1603,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1613,7 +1613,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1623,7 +1623,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
@@ -1633,7 +1633,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse"
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
                 }
               }
             },
