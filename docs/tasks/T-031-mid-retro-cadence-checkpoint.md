@@ -1,7 +1,7 @@
 ---
 id: T-031
 title: Cadence-based checkpoint для mid-retro — для тихих длинных задач
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -33,3 +33,4 @@ tags: [meta, agent-behavior, skills]
 ## Лог
 
 - 2026-07-13: заведена по итогам анализа флоу (гэп G).
+- 2026-07-13: закрыта. Триггер Д (cadence) добавлен в `mid-retro.md` (проект + harness). Формулировка через практические подсчёты (нет реальных таймеров): >7 подряд Edit/Write в исходниках ИЛИ >15 tool-calls с последнего user-facing сообщения. AC-check: 3/3 буквально (AC2 явно разрешил замену минут на tool-calls).
