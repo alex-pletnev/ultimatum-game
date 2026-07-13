@@ -16,7 +16,7 @@
 | T-030 | Hooks-based enforcement для критичных skill'ов | pending | low | 2026-07-13 | [T-030](T-030-hooks-based-enforcement.md) |
 | T-032 | External review (code-reviewer subagent) для high-stakes | pending | low | 2026-07-13 | [T-032](T-032-external-review-for-high-stakes.md) |
 | T-034 | Periodic learning consolidation — сканирование закрытых задач на паттерны | pending | low | 2026-07-13 | [T-034](T-034-periodic-learning-consolidation.md) |
-| T-035 | /harness-update — обновить skills+CLAUDE.md существующего проекта из свежих шаблонов | pending | medium | 2026-07-13 | [T-035](T-035-harness-update-skill.md) |
+| T-036 | /harness-update v2 — sync CLAUDE.md через harness-config.json | pending | medium | 2026-07-13 | [T-036](T-036-harness-update-claude-md.md) |
 
 ## Закрытые задачи
 
@@ -48,6 +48,7 @@
 | T-029 | Расширить wheel-check — read before write (docs + impact) | done | 2026-07-13 | [T-029](T-029-wheel-check-docs-and-impact.md) |
 | T-031 | Cadence-based checkpoint для mid-retro — тихие длинные задачи | done | 2026-07-13 | [T-031](T-031-mid-retro-cadence-checkpoint.md) |
 | T-033 | Session-end handoff ritual — зеркало T-027 | done | 2026-07-13 | [T-033](T-033-session-end-handoff-ritual.md) |
+| T-035 | /harness-update — sync .claude/skills/ существующего проекта (v1: только skill'ы) | done | 2026-07-13 | [T-035](T-035-harness-update-skill.md) |
 
 ## Легенда статусов
 

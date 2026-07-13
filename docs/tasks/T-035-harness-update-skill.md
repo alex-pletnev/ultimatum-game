@@ -1,7 +1,7 @@
 ---
 id: T-035
 title: /harness-update — обновить skills+CLAUDE.md существующего проекта из свежих шаблонов harness'а
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -47,3 +47,4 @@ tags: [meta, harness, skills]
 ## Лог
 
 - 2026-07-13: заведена по итогам обсуждения T-033 — пользователь заметил, что при live-разработке я вручную дублирую правки в обе стороны, и предложил формализовать процесс синхронизации.
+- 2026-07-13: закрыта v1. **AC-deviation (согласовано с пользователем до commit'а):** CLAUDE.md-sync descope'нут в отдельную задачу T-036 (вариант A — `.claude/harness-config.json`). Реализовано в v1: новый skill `.claude/skills/harness-update.md` в проекте + `~/.claude/skills/setup-agent-harness/references/skills/harness-update.md` в harness. Skill описывает Explicit-only процедуру: `определить source → list 8 target'ов → diff-summary с пометками (обновлю/добавлю/skip) → wait for user y/n → apply force-copy → сохранить custom skill'ы → commit + push`. SKILL.md, playbook.md, claude-md.template.md обновлены с 8 → 9 skills. Slash-команда `/harness-update` добавлена в таблицу CLAUDE.md обеих сторон.

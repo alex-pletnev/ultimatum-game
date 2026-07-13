@@ -108,6 +108,7 @@ tags: [backend, api, security, ...]
 | `/mid-retro` | Пауза внутри задачи для само-осмотра: скоуп, ошибки, follow-up'ы, нужен ли user-check |
 | `/self-review` | Пост-`task-done` ревью последнего commit'а — скоуп, недочёты, подавления, улучшения меня самого |
 | `/pre-flight` | Между дизайном/анализом и первым Edit/Write в `src/**` — 3 вопроса: assumptions, risks, reversibility. Для non-trivial и high-stakes зон |
+| `/harness-update` | Sync `.claude/skills/` проекта с последними templates из harness-репо. Explicit-only. Показывает diff-summary → user confirm → commit + push |
 
 ## Проактивные триггеры (без явной команды)
 
