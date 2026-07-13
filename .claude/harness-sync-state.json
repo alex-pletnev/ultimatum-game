@@ -10,5 +10,8 @@
     "self-review.md": "25847272168a2f24da1d9349fda3583d7970b896f1253120e9ae1cbb3db288dd",
     "pre-flight.md": "b160e60881ba820b4ecf38e35509edb5e2a6763c79171817208e5e590e4b6d26",
     "consolidate.md": "bd81a4463b6eb818ae6f6c23646597cb3ebdf629914f97fdbd48103304931240"
+  },
+  "hooks": {
+    "self-review-reminder": "9aaa7b82dea83330cc96e73812e649554921e8ab0eb93ee7ff5f18beae7df789"
   }
 }
