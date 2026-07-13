@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("kapt") version "2.1.20"
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
     jacoco
 }
 
@@ -61,6 +62,8 @@ dependencies {
 
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
 
 kotlin {
@@ -149,4 +152,56 @@ tasks.jacocoTestCoverageVerification {
 
 tasks.check {
     dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+// ----- detekt (T-014): статический анализ Kotlin -----
+//
+// Дефолтные правила + detekt-formatting (обёртка над ktlint).
+// Существующие нарушения зафиксированы в config/detekt/baseline.xml
+// (T-015 — постепенно выхлопать).
+
+detekt {
+    toolVersion = "1.23.7"
+    config.setFrom(files("config/detekt/detekt.yml"))
+    baseline = file("config/detekt/baseline.xml")
+    buildUponDefaultConfig = true
+    allRules = false
+    autoCorrect = false
+    parallel = true
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "21"
+    reports {
+        html.required.set(true)
+        sarif.required.set(true)
+        xml.required.set(false)
+        txt.required.set(false)
+        md.required.set(false)
+    }
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "21"
+}
+
+// Плагин detekt автоматически добавляет дефолтный `:detekt` таск (без type
+// resolution) в `check`. Мы работаем только через type-resolution версии
+// (`detektMain`/`detektTest`) — baseline сгенерирован именно под них.
+// Отключаем дефолтный, чтобы `check` не падал на нём.
+tasks.named("detekt") { enabled = false }
+
+tasks.check {
+    dependsOn(tasks.named("detektMain"), tasks.named("detektTest"))
+}
+
+// detekt 1.23.7 скомпилирован с Kotlin 2.0.10; в classpath проекта — 2.1.20
+// (тянет `kotlin("kapt") version 2.1.20`, рассинхрон с основным `jvm 1.9.25` — см. T-016).
+// Форсируем Kotlin в detekt-конфигурациях, чтобы плагин запустился.
+configurations.matching { it.name.startsWith("detekt") }.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("2.0.10")
+        }
+    }
 }

@@ -1,0 +1,38 @@
+---
+id: T-015
+title: Выхлопать detekt baseline — починить все зафиксированные findings
+status: pending
+priority: medium
+created: 2026-07-13
+updated: 2026-07-13
+related_code:
+  - config/detekt/baseline.xml
+  - src/
+related_docs:
+  - docs/tasks/T-014-setup-detekt-baseline.md
+tags: [tech-debt, quality]
+---
+
+## Контекст
+
+В T-014 подключили detekt с baseline — все текущие нарушения зафиксированы в `config/detekt/baseline.xml` и не ломают `check`. Задача этой — постепенно вычистить baseline: пройти по каждому findings, починить/сознательно suppress'нуть (`@Suppress` с комментарием), удалить `baseline.xml`. Blocked by T-014.
+
+## Acceptance criteria
+
+- [ ] Все findings из baseline либо починены в коде, либо явно suppress'нуты через `@Suppress("...")` с комментарием почему.
+- [ ] `config/detekt/baseline.xml` удалён.
+- [ ] `./gradlew detekt` (без baseline) зелёный.
+- [ ] `./gradlew test` остался зелёный.
+- [ ] Не меняется поведение — только стиль/структура кода.
+
+## План
+
+1. После T-014 открыть `config/detekt/baseline.xml`, сгруппировать findings по правилу (сортировкой).
+2. Дробить работу на batch'и по правилу или пакету (naming, complexity, style, exceptions) — каждый batch отдельным commit'ом.
+3. Для каждой группы: починить (переименовать, дробить, вынести константу), либо `@Suppress("RuleId") // причина` если fix не оправдан.
+4. Периодически перегенерировать baseline, проверять регрессии.
+5. В конце — удалить `baseline.xml`, убрать соответствующие ссылки из `build.gradle.kts` (или оставить пустой файл, если удобнее).
+
+## Лог
+
+- 2026-07-13: заведена одновременно с T-014 по явному запросу пользователя. Blocked until T-014 done.
