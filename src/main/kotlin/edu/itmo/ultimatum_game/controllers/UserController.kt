@@ -19,7 +19,6 @@ class UserController(
 
     private val logger = logger()
 
-
     @GetMapping("id")
     fun getCurrentUserId(): UserIdResponse {
         logger.info("Запрос на получение текущего userId")
@@ -39,5 +38,4 @@ class UserController(
         val dto = userMapper.toDto(user)
         return dto
     }
-
 }

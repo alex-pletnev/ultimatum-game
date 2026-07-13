@@ -19,7 +19,7 @@ class WebSocketConfig(
 ) :
     WebSocketMessageBrokerConfigurer {
 
-        private val logger = logger()
+    private val logger = logger()
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         registry.enableSimpleBroker("/topic")
@@ -46,7 +46,8 @@ class WebSocketConfig(
                         wsHandler: WebSocketHandler,
                         exception: Exception?
                     ) {}
-                })
+                }
+            )
             .setAllowedOrigins("*")
     }
 

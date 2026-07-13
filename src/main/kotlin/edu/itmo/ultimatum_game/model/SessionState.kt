@@ -15,7 +15,7 @@ enum class SessionState {
             entries.find { it.name.equals(value, ignoreCase = true) }
                 ?: throw IllegalArgumentException(
                     "Недопустимое значение для SessionState: $value. " +
-                            "Допустимые значения: ${entries.joinToString()}"
+                        "Допустимые значения: ${entries.joinToString()}"
                 )
     }
 }

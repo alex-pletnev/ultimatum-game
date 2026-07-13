@@ -13,7 +13,9 @@ class FreeForAllStrategy : ShuffleStrategy {
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
         val responders = copyOf(session.members).toMutableSet()
         if (responders.size != round.offers.size) {
-            throw IllegalStateException("Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)")
+            throw IllegalStateException(
+                "Недопустимое состояние (количество игроков и оферов должно совпадать на этом этапе)"
+            )
         }
         round.offers.forEach {
             var responder: User
@@ -63,6 +65,4 @@ class TeamBattleStrategy : ShuffleStrategy {
             offer.responder = chosen
         }
     }
-
 }
-

@@ -5,7 +5,8 @@ import edu.itmo.ultimatum_game.model.Round
 import org.mapstruct.*
 
 @Mapper(
-    unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [OfferPrewMapper::class, DecisionPrewMapper::class, SessionPrewMapper::class]
 )
 abstract class RoundMapper {
@@ -22,5 +23,4 @@ abstract class RoundMapper {
     abstract fun toEntity(roundResponse: RoundResponse): Round
 
     abstract fun toDto(round: Round): RoundResponse
-
 }

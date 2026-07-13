@@ -17,8 +17,7 @@ enum class RoundPhase {
             entries.find { it.name.equals(value, ignoreCase = true) }
                 ?: throw IllegalArgumentException(
                     "Недопустимое значение для RoundPhase: $value. " +
-                            "Допустимые значения: ${entries.joinToString()}"
+                        "Допустимые значения: ${entries.joinToString()}"
                 )
     }
-
 }

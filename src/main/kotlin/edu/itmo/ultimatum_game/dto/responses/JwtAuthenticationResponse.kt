@@ -4,4 +4,4 @@ import java.io.Serializable
 
 data class JwtAuthenticationResponse(
     val token: String,
-): Serializable
+) : Serializable

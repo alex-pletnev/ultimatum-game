@@ -24,7 +24,7 @@ data class User(
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
         mutableListOf(SimpleGrantedAuthority(role.name))
 
-    override fun getPassword(): String = "" //пароли не используются
+    override fun getPassword(): String = "" // пароли не используются
 
     override fun getUsername(): String = id.toString()
 
@@ -56,5 +56,4 @@ data class User(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   nickname = $nickname   ,   role = $role   ,   createdAt = $createdAt )"
     }
-
 }

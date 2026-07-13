@@ -7,11 +7,11 @@ import org.mapstruct.MappingConstants
 import org.mapstruct.ReportingPolicy
 
 @Mapper(
-    unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [SessionConfigMapper::class, UserMapper::class]
 )
 abstract class SessionPrewMapper {
 
     abstract fun toDto(session: Session): SessionPrewResponse
-
 }

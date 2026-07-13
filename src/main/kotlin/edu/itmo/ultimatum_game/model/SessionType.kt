@@ -13,7 +13,7 @@ enum class SessionType(val shuffleStrategy: ShuffleStrategy) {
             entries.find { it.name.equals(value, ignoreCase = true) }
                 ?: throw IllegalArgumentException(
                     "Недопустимое значение для SessionType: $value. " +
-                            "Допустимые значения: ${entries.joinToString()}"
+                        "Допустимые значения: ${entries.joinToString()}"
                 )
     }
 }

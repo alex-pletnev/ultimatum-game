@@ -13,8 +13,8 @@ data class SessionConfig(
     val sessionType: SessionType,
     @field:Column(nullable = false)
     val numRounds: Int,
+    // если игра не по командам, то значение 0
     @field:Column(nullable = false)
-    //если игра не по командам, то значение 0
     val numTeams: Int,
     @field:Column(nullable = false)
     val numPlayers: Int,

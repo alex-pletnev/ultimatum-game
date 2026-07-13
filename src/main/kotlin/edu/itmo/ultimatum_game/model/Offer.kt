@@ -31,7 +31,7 @@ class Offer(
     @field:Column(nullable = false, updatable = false)
     var createdAt: Date = Date(),
 
-    ) {
+) {
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false
@@ -52,6 +52,4 @@ class Offer(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   round = $round   ,   proposer = $proposer   ,   responder = $responder   ,   offerValue = $offerValue )"
     }
-
-
 }

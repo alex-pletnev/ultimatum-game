@@ -15,7 +15,7 @@ interface SessionRepository : CrudRepository<Session, UUID> {
     fun findAll(pageable: Pageable): Page<Session>
 
     @Query(
-        value ="""
+        value = """
     SELECT *, similarity(display_name, :search) AS sml
     FROM session
     WHERE display_name ILIKE :pattern

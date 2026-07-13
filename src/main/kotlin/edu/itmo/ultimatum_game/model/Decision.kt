@@ -56,6 +56,4 @@ class Decision(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   round = $round   ,   responder = $responder   ,   offer = $offer   ,   decision = $decision )"
     }
-
-
 }

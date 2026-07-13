@@ -28,7 +28,6 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 it.requestMatchers("/actuator/**").permitAll()

@@ -26,13 +26,11 @@ class JwtAuthenticationFilter(
 
     private val log = logger()
 
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-
         val authHeader = request.getHeader(HEADER_AUTHORIZATION)
         if (authHeader == null || authHeader == "" || !authHeader.startsWith(BEARER_PREFIX)) {
             log.debug("Отсутствует или некорректный Authorization Header")
@@ -45,16 +43,13 @@ class JwtAuthenticationFilter(
         if (username.isNotBlank() && SecurityContextHolder.getContext().authentication == null) {
             log.info("Попытка аутентификации пользователя с id=$username по токену")
             try {
-
-
                 val userDetail = userService.getUserDetailService().invoke(UUID.fromString(username))
                 if (jwtService.isTokenValid(jwt, userDetail)) {
                     log.info("Токен валиден для пользователя id=$username (${userDetail.role}) ")
                     val context = SecurityContextHolder.createEmptyContext()
 
-
                     val authorities = userDetail.authorities
-                        .map { "ROLE_${it}" }
+                        .map { "ROLE_$it" }
                         .map { SimpleGrantedAuthority(it) }
                     val authToken = UsernamePasswordAuthenticationToken(
                         userDetail,
@@ -64,15 +59,19 @@ class JwtAuthenticationFilter(
                     authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                     context.authentication = authToken
                     SecurityContextHolder.setContext(context)
-
-
-                } else log.warn("Невалидный токен для пользователя id=$username")
+                } else {
+                    log.warn("Невалидный токен для пользователя id=$username")
+                }
             } catch (e: Exception) {
                 throw AccessDeniedException("В доступе отказано", e)
             }
         } else {
             if (username.isBlank()) log.warn("Не удалось извлечь username из токена")
-            if (SecurityContextHolder.getContext().authentication != null) log.debug("Пользователь уже аутентифицирован, пропускаем фильтр")
+            if (SecurityContextHolder.getContext().authentication != null) {
+                log.debug(
+                    "Пользователь уже аутентифицирован, пропускаем фильтр"
+                )
+            }
         }
         filterChain.doFilter(request, response)
     }

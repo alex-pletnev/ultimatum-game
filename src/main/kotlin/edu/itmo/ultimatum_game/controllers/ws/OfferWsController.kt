@@ -65,5 +65,4 @@ class OfferWsController(
         val playerUuid: UUID = principal.name.toUuidOrThrow()
         gameplayService.makeDecision(sessionUuid, playerUuid, cmd)
     }
-
 }

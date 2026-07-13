@@ -6,7 +6,8 @@ import edu.itmo.ultimatum_game.model.Session
 import org.mapstruct.*
 
 @Mapper(
-    unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [SessionConfigMapper::class, RoundPrewMapper::class, UserMapper::class, TeamPrewMapper::class]
 )
 abstract class SessionMapper {

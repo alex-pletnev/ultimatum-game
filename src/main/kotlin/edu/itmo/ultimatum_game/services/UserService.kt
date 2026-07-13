@@ -28,10 +28,8 @@ class UserService(
         return userRepository.save(user)
     }
 
-    //spring security required
+    // spring security required
     fun getUserDetailService() = this::getUserById
 
     fun getCurrentUser(): User = getUserById(securityService.getCurrentUserId())
-
-
 }

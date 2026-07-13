@@ -13,7 +13,6 @@ import org.springframework.messaging.support.MessageHeaderAccessor
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -40,12 +39,12 @@ class JwtStompChannelInterceptor(
         if (accessor.command == StompCommand.SUBSCRIBE) {
             logger.info(
                 ">>> SUBSCRIBE interceptor: destination=${accessor.destination}, " +
-                        "user=${accessor.user}, " +
-                        "SecurityContext=${SecurityContextHolder.getContext().authentication}"
+                    "user=${accessor.user}, " +
+                    "SecurityContext=${SecurityContextHolder.getContext().authentication}"
             )
         }
 
-        //проверяем что пришел CONNECT
+        // проверяем что пришел CONNECT
         if (accessor.command != StompCommand.CONNECT) return message
 
         val authHeader = accessor.getFirstNativeHeader(HEADER_AUTHORIZATION)
@@ -65,7 +64,7 @@ class JwtStompChannelInterceptor(
                 val context = SecurityContextHolder.createEmptyContext()
 
                 val authorities = userDetail.authorities
-                    .map { "ROLE_${it}" }
+                    .map { "ROLE_$it" }
                     .map { SimpleGrantedAuthority(it) }
 
                 val authToken = UsernamePasswordAuthenticationToken(
@@ -81,14 +80,16 @@ class JwtStompChannelInterceptor(
                 logger.warn("Невалидный токен для пользователя id=$username")
                 throw InvalidJwtException("Невалидный jwt, попробуйте с повторить логин")
             }
-
         } else {
             if (username.isBlank()) {
                 logger.warn("Не удалось извлечь username из токена")
-                throw InvalidJwtException("Невалидный jwt (не удалось извлечь пользователя), попробуйте с повторить логин")
+                throw InvalidJwtException(
+                    "Невалидный jwt (не удалось извлечь пользователя), попробуйте с повторить логин"
+                )
             }
-            if (SecurityContextHolder.getContext().authentication == null || SecurityContextHolder.getContext().authentication is AnonymousAuthenticationToken)
+            if (SecurityContextHolder.getContext().authentication == null || SecurityContextHolder.getContext().authentication is AnonymousAuthenticationToken) {
                 logger.debug("Пользователь уже аутентифицирован, пропускаем фильтр")
+            }
         }
         return message
     }

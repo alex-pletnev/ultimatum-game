@@ -1,6 +1,5 @@
 package edu.itmo.ultimatum_game.services
 
-
 import edu.itmo.ultimatum_game.dto.responses.OfferStatsDto
 import edu.itmo.ultimatum_game.dto.responses.SessionStatsDto
 import edu.itmo.ultimatum_game.dto.responses.TeamInfo
@@ -36,7 +35,9 @@ class StatsService(
         val teamBattle = session.config?.sessionType == SessionType.TEAM_BATTLE
         val userIdToTeam = if (teamBattle) {
             session.teams.flatMap { team -> team.members.map { it.id to team } }.toMap()
-        } else emptyMap()
+        } else {
+            emptyMap()
+        }
 
         val offerDtos = offers.map { offer ->
             val dec = decisionByOffer[offer.id]
@@ -47,7 +48,7 @@ class StatsService(
                 responder = offer.responder?.let { UserInfo(it.id!!, it.nickname) },
                 proposerTeam = userIdToTeam[offer.proposer!!.id]?.toTeamInfo(),
                 responderTeam = offer.responder?.let { userIdToTeam[it.id]?.toTeamInfo() },
-                accepted = dec?.decision,      // null, true или false
+                accepted = dec?.decision, // null, true или false
                 roundNumber = offer.round!!.roundNumber,
                 timestamp = offer.createdAt,
             )

@@ -52,6 +52,4 @@ data class Round(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   session = $session   ,   roundNumber = $roundNumber   ,   roundPhase = $roundPhase )"
     }
-
-
 }

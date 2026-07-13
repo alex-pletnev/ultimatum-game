@@ -12,7 +12,7 @@
 | T-002 | Fetch join для `DecisionRepository.findBySessionId` | pending | low | 2026-07-12 | [T-002](T-002-decision-fetch-join.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
-| T-015 | Выхлопать detekt baseline — починить все зафиксированные findings | pending | medium | 2026-07-13 | [T-015](T-015-detekt-clear-baseline.md) |
+| T-015 | Выхлопать detekt baseline — починить все зафиксированные findings | in_progress | medium | 2026-07-13 | [T-015](T-015-detekt-clear-baseline.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 
 ## Закрытые задачи

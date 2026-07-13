@@ -14,7 +14,7 @@ import java.security.Key
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-//username is user.id
+// username is user.id
 
 @Service
 class JwtService(
@@ -23,7 +23,6 @@ class JwtService(
 ) {
 
     private val logger = logger()
-
 
     fun generateToken(userDetails: UserDetails): String {
         logger.info("dto to Map для пользователя с username=${userDetails.username}")
@@ -36,12 +35,10 @@ class JwtService(
         return generateToken(claims, userDetails)
     }
 
-
     fun extractUsername(token: String): String {
         logger.info("Извлечение username из токена")
         return extractClaim(token, Claims::getSubject)
     }
-
 
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         val isExpired = isTokenExpired(token)
@@ -50,7 +47,7 @@ class JwtService(
         return !isExpired && usernameMatches
     }
 
-    //extraction util
+    // extraction util
     private fun isTokenExpired(token: String): Boolean {
         val expired = extractExpiration(token).before(Date())
         logger.info("Проверка истечения срока действия токена: expired=$expired")
@@ -77,7 +74,7 @@ class JwtService(
             .body
     }
 
-    //generation util
+    // generation util
     private fun generateToken(extraClaims: MutableMap<String, *>, userDetails: UserDetails): String {
         logger.info("Генерация JWT токена для username=${userDetails.username}")
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.username)

@@ -38,7 +38,7 @@ class EventPublisherService(
     @StompAsyncOperationBinding
     fun publishOfferCreated(sessionId: UUID, offer: Offer) {
         val dto = offerMapper.toDto(offer)
-        val destination = "/topic/session/${sessionId}/offerCreated"
+        val destination = "/topic/session/$sessionId/offerCreated"
         logger.info("Публикация события OfferCreated в $destination для offer=$dto")
         messagingTemplate.convertAndSend(destination, dto)
     }
@@ -53,7 +53,7 @@ class EventPublisherService(
     @StompAsyncOperationBinding
     fun publishOfferToPlayer(sessionId: UUID, proposerId: UUID, offer: Offer) {
         val dto = offerMapper.toDto(offer)
-        val destination = "/topic/session/${sessionId}/player/${proposerId}/offer"
+        val destination = "/topic/session/$sessionId/player/$proposerId/offer"
         logger.info("Публикация события offer в $destination для offer=$dto")
         messagingTemplate.convertAndSend(destination, dto)
     }
@@ -68,7 +68,7 @@ class EventPublisherService(
     @StompAsyncOperationBinding
     fun publishDecisionMade(sessionId: UUID, decision: Decision) {
         val dto = decisionMapper.toDto(decision)
-        val destination = "/topic/session/${sessionId}/decisionMade"
+        val destination = "/topic/session/$sessionId/decisionMade"
         logger.info("Публикация события DecisionMade в $destination для decision=$dto")
         messagingTemplate.convertAndSend(destination, dto)
     }
@@ -83,8 +83,10 @@ class EventPublisherService(
     @StompAsyncOperationBinding
     fun publishRoundStatus(sessionId: UUID, round: Round) {
         val dto = roundMapper.toDto(round)
-        val destination = "/topic/session/${sessionId}/roundStatus"
-        logger.info("Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})")
+        val destination = "/topic/session/$sessionId/roundStatus"
+        logger.info(
+            "Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})"
+        )
         messagingTemplate.convertAndSend(destination, dto)
     }
 
@@ -98,7 +100,7 @@ class EventPublisherService(
     @StompAsyncOperationBinding
     fun publishSessionStatus(sessionId: UUID, session: Session) {
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
-        val destination = "/topic/session/${sessionId}/sessionStatus"
+        val destination = "/topic/session/$sessionId/sessionStatus"
         logger.info("Публикация события SessionStatus в $destination для сессии #${dto.displayName} (id=${dto.id})")
         messagingTemplate.convertAndSend(destination, dto)
     }

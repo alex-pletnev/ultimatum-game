@@ -1,6 +1,5 @@
 package edu.itmo.ultimatum_game.controllers
 
-
 import edu.itmo.ultimatum_game.services.CsvService
 import edu.itmo.ultimatum_game.services.StatsService
 import jakarta.persistence.EntityNotFoundException
@@ -35,7 +34,7 @@ class StatisticController(
             ResponseEntity.ok()
                 .header(
                     HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"session-${sessionId}-stats.csv\""
+                    "attachment; filename=\"session-$sessionId-stats.csv\""
                 )
                 .contentLength(bytes.size.toLong())
                 .contentType(MediaType.TEXT_PLAIN) // text/csv → некоторые браузеры лучше обрабатывают text/plain

@@ -4,7 +4,7 @@ import edu.itmo.ultimatum_game.dto.responses.ApiErrorResponse
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -31,7 +31,6 @@ class GlobalExceptionsHandler {
             path = request.requestURI
         )
 
-
     @ExceptionHandler(AccessDeniedException::class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     fun handleAccessDenied(
@@ -46,7 +45,6 @@ class GlobalExceptionsHandler {
             path = request.requestURI
         )
 
-
     @ExceptionHandler(UserRoleNotAllowedException::class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     fun handleUserRoleNotAllowed(
@@ -60,7 +58,6 @@ class GlobalExceptionsHandler {
             message = ex.message ?: "Роль пользователя не разрешена",
             path = request.requestURI
         )
-
 
     @ExceptionHandler(Exception::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -107,7 +104,8 @@ class GlobalExceptionsHandler {
     @ExceptionHandler(IllegalArgumentException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleIllegalArgument(
-        ex: IllegalArgumentException, request: HttpServletRequest
+        ex: IllegalArgumentException,
+        request: HttpServletRequest
     ): ApiErrorResponse = ApiErrorResponse(
         timestamp = Date(),
         status = HttpStatus.BAD_REQUEST.value(),
@@ -119,7 +117,8 @@ class GlobalExceptionsHandler {
     @ExceptionHandler(InvalidUuidFormatException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleInvalidUuidFormat(
-        ex: InvalidUuidFormatException, request: HttpServletRequest
+        ex: InvalidUuidFormatException,
+        request: HttpServletRequest
     ): ApiErrorResponse = ApiErrorResponse(
         timestamp = Date(),
         status = HttpStatus.BAD_REQUEST.value(),
@@ -131,7 +130,8 @@ class GlobalExceptionsHandler {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleHttpMessageNotReadable(
-        ex: HttpMessageNotReadableException, request: HttpServletRequest
+        ex: HttpMessageNotReadableException,
+        request: HttpServletRequest
     ): ApiErrorResponse = ApiErrorResponse(
         timestamp = Date(),
         status = HttpStatus.BAD_REQUEST.value(),
@@ -181,5 +181,4 @@ class GlobalExceptionsHandler {
             message = ex.message ?: "Невозможно присоединиться к сессии",
             path = request.requestURI
         )
-
 }

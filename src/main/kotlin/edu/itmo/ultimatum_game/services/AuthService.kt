@@ -26,7 +26,9 @@ class AuthService(
     }
 
     fun quickRegister(createUserRequest: CreateUserRequest): JwtAuthenticationResponse {
-        logger.info("Попытка быстрой регистрации пользователя с ником='${createUserRequest.nickname}' и ролью=${createUserRequest.role}")
+        logger.info(
+            "Попытка быстрой регистрации пользователя с ником='${createUserRequest.nickname}' и ролью=${createUserRequest.role}"
+        )
 
         var user = User(
             nickname = createUserRequest.nickname!!,

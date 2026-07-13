@@ -20,7 +20,7 @@ data class OfferStatsDto(
     val responder: UserInfo?,
     val proposerTeam: TeamInfo? = null,
     val responderTeam: TeamInfo? = null,
-    val accepted: Boolean?,               // null-если решения ещё нет
+    val accepted: Boolean?, // null-если решения ещё нет
     val roundNumber: Int,
     val timestamp: Date,
 )

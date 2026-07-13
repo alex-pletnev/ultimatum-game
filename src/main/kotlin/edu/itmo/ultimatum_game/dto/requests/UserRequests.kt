@@ -29,4 +29,3 @@ fun AuthenticateUserRequestDto.toDomain(): AuthenticateUserRequest = Authenticat
 data class AuthenticateUserRequest(
     val id: UUID,
 )
-

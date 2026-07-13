@@ -15,8 +15,7 @@ enum class Role {
             entries.find { it.name.equals(value, ignoreCase = true) }
                 ?: throw IllegalArgumentException(
                     "Недопустимое значение для Role: $value. " +
-                            "Допустимые значения: ${entries.joinToString()}"
+                        "Допустимые значения: ${entries.joinToString()}"
                 )
     }
-
 }

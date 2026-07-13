@@ -27,7 +27,13 @@ class CoreGameplayService(
                 logger.warn("Оффер {} без respondera — публикация пропущена (баг данных)", offer.id)
                 return@forEach
             }
-            logger.info("Публикую оффер {} игроку {} в раунде {} сессии {}", offer.id, responderId, round.roundNumber, sessionId)
+            logger.info(
+                "Публикую оффер {} игроку {} в раунде {} сессии {}",
+                offer.id,
+                responderId,
+                round.roundNumber,
+                sessionId
+            )
             eventPublisherService.publishOfferToPlayer(sessionId, responderId, offer)
         }
 

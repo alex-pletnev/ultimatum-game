@@ -1,7 +1,7 @@
 ---
 id: T-015
 title: Выхлопать detekt baseline — починить все зафиксированные findings
-status: pending
+status: in_progress
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -36,3 +36,4 @@ tags: [tech-debt, quality]
 ## Лог
 
 - 2026-07-13: заведена одновременно с T-014 по явному запросу пользователя. Blocked until T-014 done.
+- 2026-07-13: **Wave 1 — autofix через `./gradlew detektMain detektTest --auto-correct` (autoCorrect временно включён на время прогона).** Baseline main 579→311, test 59→59 (в test autofix не сработал, разбираться отдельно). Итого 638→370 findings. Тесты + `./gradlew check` зелёные. Затронуто 86 файлов — чисто стилевые правки (NewLineAtEndOfFile, NoConsecutiveBlankLines, ArgumentListWrapping, ParameterListWrapping, Indentation, spacing, semi, blank lines, imports order, MultiLineIfElse, EmptyClassBlock, AnnotationSpacing, StringTemplate, NoBlankLineBeforeRbrace). Никаких изменений в поведении.

@@ -35,7 +35,7 @@ class SessionAdminWsController(
         @DestinationVariable sessionId: String,
         principal: Principal
     ) {
-        logger.info("получена запрос на session/${sessionId}/start от $principal")
+        logger.info("получена запрос на session/$sessionId/start от $principal")
         val sessionUuid = sessionId.toUuidOrThrow()
         adminGameplayService.startSession(sessionUuid)
     }
@@ -99,6 +99,4 @@ class SessionAdminWsController(
         val sessionUuid = sessionId.toUuidOrThrow()
         adminGameplayService.startNextRound(sessionUuid)
     }
-
-
 }

@@ -8,16 +8,13 @@ import edu.itmo.ultimatum_game.exceptions.IdNotFoundException
 import edu.itmo.ultimatum_game.exceptions.SessionJoinRejectedException
 import edu.itmo.ultimatum_game.model.*
 import edu.itmo.ultimatum_game.repositories.SessionRepository
-import edu.itmo.ultimatum_game.repositories.TeamRepository
 import edu.itmo.ultimatum_game.util.RoundMapper
 import edu.itmo.ultimatum_game.util.SessionMapper
 import edu.itmo.ultimatum_game.util.SessionWithTeamsAndMembersMapper
 import edu.itmo.ultimatum_game.util.logger
-import jakarta.servlet.http.HttpSession
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.util.*
@@ -51,7 +48,6 @@ class SessionService(
         return dto
     }
 
-
     @Transactional
     fun setSessionState(sessionId: UUID, newSessionState: SessionState) {
         val session = getSessionEntity(sessionId)
@@ -64,7 +60,6 @@ class SessionService(
         val session = getSessionEntity(sessionId)
         session.currentRound = newRound
         sessionRepository.save(session)
-
     }
 
     fun getSession(sessionId: UUID): SessionResponse {
@@ -77,7 +72,7 @@ class SessionService(
 
     fun getSessionEntity(sessionId: UUID): Session {
         val session = sessionRepository.findById(sessionId)
-        .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
+            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         return session
     }
 
@@ -93,27 +88,29 @@ class SessionService(
         val session = sessionRepository.findById(sessionId)
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         logger.debug("Найдена сессия {}", session)
-        val round = session.currentRound?: throw IdNotFoundException("Текущий раунд null сессия ${session.displayName} еще не началась")
+        val round = session.currentRound ?: throw IdNotFoundException("Текущий раунд null сессия ${session.displayName} еще не началась")
         val dto = roundMapper.toDto(round)
         return dto
     }
 
-
     fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {
 //        val pageable = createPageable(page, pageSize)
         val sessions: Page<Session> =
-            if (s.isBlank()) sessionRepository.findAll(
-                PageRequest.of(
-                    page,
-                    pageSize,
-                    Sort.by("createdAt").descending()
+            if (s.isBlank()) {
+                sessionRepository.findAll(
+                    PageRequest.of(
+                        page,
+                        pageSize,
+                        Sort.by("createdAt").descending()
+                    )
                 )
-            )
-            else sessionRepository.searchByNameTrgm(
-                s,
-                "%$s%",
-                PageRequest.of(page, pageSize, Sort.by("created_at").descending())
-            )
+            } else {
+                sessionRepository.searchByNameTrgm(
+                    s,
+                    "%$s%",
+                    PageRequest.of(page, pageSize, Sort.by("created_at").descending())
+                )
+            }
         val response = sessions.map { sessionMapper.toDto(it) }
         logger.info("По запросу '$s' найдено ${response.size} сессий")
         return response
@@ -130,8 +127,12 @@ class SessionService(
             return sessionWithTeamsAndMembersMapper.toDto(session)
         }
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
-        if (session.members.size >= config.numPlayers) throw SessionJoinRejectedException("В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})")
-        if (session.admin == user) throw SessionJoinRejectedException("Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор")
+        if (session.members.size >= config.numPlayers) throw SessionJoinRejectedException(
+            "В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})"
+        )
+        if (session.admin == user) throw SessionJoinRejectedException(
+            "Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор"
+        )
         if (config.sessionType == SessionType.TEAM_BATTLE) {
             val tId = teamId
                 ?: error("Для подключения к режиму ${config.sessionType} обязательно надо указывать teamId")
@@ -158,7 +159,9 @@ class SessionService(
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         if (session.observers.contains(observer)) return sessionWithTeamsAndMembersMapper.toDto(session)
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
-        if (session.admin == observer) throw SessionJoinRejectedException("Вы на можете подключиться к сессии в качестве зрителя, так как вы ее администратор")
+        if (session.admin == observer) throw SessionJoinRejectedException(
+            "Вы на можете подключиться к сессии в качестве зрителя, так как вы ее администратор"
+        )
         session.observers += observer
         if (session.members.remove(observer)) {
             session.teams.forEach { it.members.remove(observer) }
@@ -169,9 +172,7 @@ class SessionService(
         return sessionWithTeamsAndMembersMapper.toDto(session)
     }
 
-
     // --- util
-
 
     private fun createRounds(newSession: Session) {
         val cfg = newSession.config
@@ -179,7 +180,6 @@ class SessionService(
         repeat(cfg.numRounds) { index ->
             newSession.rounds += Round(roundNumber = index + 1, session = newSession)
         }
-
     }
 
     private fun createTeams(session: Session) {

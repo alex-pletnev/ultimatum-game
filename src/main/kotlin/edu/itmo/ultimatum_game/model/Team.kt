@@ -16,7 +16,7 @@ data class Team(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "session_id", nullable = false)
     var session: Session? = null,
-    ) {
+) {
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -38,6 +38,4 @@ data class Team(
     override fun toString(): String {
         return this::class.simpleName + "(  id = $id   ,   name = $name   ,   session = $session )"
     }
-
-
 }

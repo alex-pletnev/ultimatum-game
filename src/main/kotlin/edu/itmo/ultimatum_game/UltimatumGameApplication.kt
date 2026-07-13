@@ -7,7 +7,5 @@ import org.springframework.boot.runApplication
 class UltimatumGameApplication
 
 fun main(args: Array<String>) {
-
     runApplication<UltimatumGameApplication>(*args)
 }
-

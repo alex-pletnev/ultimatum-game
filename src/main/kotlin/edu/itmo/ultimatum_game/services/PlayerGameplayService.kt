@@ -52,10 +52,10 @@ class PlayerGameplayService(
 
         val offer = offerRepository.save(
             Offer(
-            session = session,
-            round = round,
-            proposer = user,
-            offerValue = offerValue,
+                session = session,
+                round = round,
+                proposer = user,
+                offerValue = offerValue,
             )
         )
         round.offers += offer
@@ -87,7 +87,10 @@ class PlayerGameplayService(
         val offerId = makeDecisionCmd.offerId.toUuidOrThrow()
         logger.info(
             "Вызван метод makeDecision с sessionId={} playerId={} offerId={} decision={}",
-            sessionId, playerId, offerId, decisionValue
+            sessionId,
+            playerId,
+            offerId,
+            decisionValue
         )
 
         val user = userService.getUserById(playerId)
@@ -113,11 +116,12 @@ class PlayerGameplayService(
 
         val decision = decisionRepository.save(
             Decision(
-            session = session,
-            round = round,
-            responder = user,
-            offer = offer,
-            decision = decisionValue)
+                session = session,
+                round = round,
+                responder = user,
+                offer = offer,
+                decision = decisionValue
+            )
         )
         round.decisions += decision
         roundRepository.save(round)

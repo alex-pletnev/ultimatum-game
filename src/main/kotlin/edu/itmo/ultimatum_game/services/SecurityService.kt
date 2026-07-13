@@ -10,7 +10,6 @@ class SecurityService {
 
     private val logger = logger()
 
-
     fun getCurrentUserId(): UUID {
         val authentication = SecurityContextHolder.getContext().authentication
         val userId = UUID.fromString(authentication.name)

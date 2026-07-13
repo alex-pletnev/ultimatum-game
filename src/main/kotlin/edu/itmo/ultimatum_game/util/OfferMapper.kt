@@ -6,7 +6,8 @@ import edu.itmo.ultimatum_game.model.Offer
 import org.mapstruct.*
 
 @Mapper(
-    unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [RoundPrewMapper::class, UserMapper::class]
 )
 abstract class OfferMapper {

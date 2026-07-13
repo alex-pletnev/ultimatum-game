@@ -1,7 +1,6 @@
 package edu.itmo.ultimatum_game.model
 
 import jakarta.persistence.*
-import org.hibernate.annotations.Fetch
 import org.hibernate.proxy.HibernateProxy
 import java.util.*
 
@@ -25,7 +24,6 @@ class Session(
     @JoinColumn(name = "current_round_id")
     var currentRound: Round? = null,
 
-
     @OneToMany(
         mappedBy = "session",
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],
@@ -48,7 +46,7 @@ class Session(
 
     @field:ManyToMany(cascade = [CascadeType.MERGE])
     var observers: MutableSet<User> = mutableSetOf(),
-    ) {
+) {
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false

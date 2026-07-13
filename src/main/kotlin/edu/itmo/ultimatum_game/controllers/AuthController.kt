@@ -1,6 +1,5 @@
 package edu.itmo.ultimatum_game.controllers
 
-import edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequest
 import edu.itmo.ultimatum_game.dto.requests.AuthenticateUserRequestDto
 import edu.itmo.ultimatum_game.dto.requests.CreateUserRequest
 import edu.itmo.ultimatum_game.dto.requests.toDomain
@@ -22,12 +21,13 @@ class AuthController(
 
     private val logger = logger()
 
-
     @PostMapping("/quick-register")
     @PermitAll
     @ResponseStatus(HttpStatus.CREATED)
     fun quickRegister(@RequestBody @Valid createUserRequest: CreateUserRequest): JwtAuthenticationResponse {
-        logger.info("Запрос быстрой регистрации: nickname='${createUserRequest.nickname}', role=${createUserRequest.role}")
+        logger.info(
+            "Запрос быстрой регистрации: nickname='${createUserRequest.nickname}', role=${createUserRequest.role}"
+        )
         val jwtToken = authService.quickRegister(createUserRequest)
         logger.info("Токен выдан после регистрации для nickname='${createUserRequest.nickname}'")
         return jwtToken
@@ -35,15 +35,13 @@ class AuthController(
 
     @PostMapping("/quick-login")
     @PermitAll
-    fun quickLogin(@RequestBody @Valid authenticateUserRequestDto: AuthenticateUserRequestDto): JwtAuthenticationResponse {
+    fun quickLogin(
+        @RequestBody @Valid authenticateUserRequestDto: AuthenticateUserRequestDto
+    ): JwtAuthenticationResponse {
         logger.info("Запрос быстрого входа: id=${authenticateUserRequestDto.id}")
         val authenticateUserRequest = authenticateUserRequestDto.toDomain()
         val jwtToken = authService.quickLogin(authenticateUserRequest)
         logger.info("Токен выдан после входа для id=${authenticateUserRequest.id}")
         return jwtToken
     }
-
-
-
-
 }

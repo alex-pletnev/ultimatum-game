@@ -8,11 +8,9 @@ import org.springframework.security.authorization.AuthorizationManager
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager
 
-
 @Configuration
 @EnableWebSocketSecurity
 class WebSocketSecurityConfig {
-
 
     @Bean
     fun messageAuthorizationManager(
@@ -22,7 +20,6 @@ class WebSocketSecurityConfig {
         messages
             .simpDestMatchers("/app/session/*/offer.create").hasAnyRole("PLAYER", "ADMIN")
             .simpDestMatchers("/app/session/*/make.decision").hasAnyRole("PLAYER", "ADMIN")
-
             .simpDestMatchers("/app/session/*/start").hasRole("ADMIN")
             .simpDestMatchers("/app/session/*/close").hasRole("ADMIN")
             .simpDestMatchers("/app/session/*/open").hasRole("ADMIN")
@@ -55,5 +52,4 @@ class WebSocketSecurityConfig {
         // Возвращаем готовый AuthorizationManager
         return messages.build()
     }
-
 }

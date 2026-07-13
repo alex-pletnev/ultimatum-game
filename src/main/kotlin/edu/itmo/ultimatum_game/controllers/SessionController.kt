@@ -28,7 +28,9 @@ class SessionController(
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createSession(@RequestBody @Valid createSessionRequest: CreateSessionRequest): SessionWithTeamsAndMembersResponse {
+    fun createSession(
+        @RequestBody @Valid createSessionRequest: CreateSessionRequest
+    ): SessionWithTeamsAndMembersResponse {
         logger.info("Получен запрос на создание сессии: $createSessionRequest")
         val response = sessionService.createSession(createSessionRequest)
         logger.info("Создана сессия $response")
