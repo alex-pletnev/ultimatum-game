@@ -47,13 +47,32 @@ AC-отклонения при закрытии T-XXX:
 
 **Не оправдываться в `## Лог` постфактум.** Уведомление ДО commit'а — не после.
 
+### Часть 3. External review (только для high-stakes)
+
+**Триггер:** задача трогает high-stakes зону — DB миграции, security-конфиги, deletion (файлов/данных), prod-настройки, cross-cutting breaking API changes. Определение зон — то же, что для `pre-flight` (см. CLAUDE.md → Проактивные триггеры).
+
+Для не-high-stakes задач — пропускаем эту часть.
+
+**Механизм по типу high-stakes:**
+
+| Тип | Механизм review |
+|-----|-----------------|
+| Security-config, deletion, prod-настройки | **Explicit user-check.** Показать пользователю `git diff --cached` (или summary если diff большой), явно спросить: «Это high-stakes изменение. Проверил ли ты? Ок закрывать? (y/n)». Ждать `y`. |
+| DB миграции | **User-check + subagent code-reviewer.** Диспатчим subagent с prompt «review this DB migration for safety» (см. `superpowers:requesting-code-review` для формулировки), параллельно user'у. Оба должны дать «ok». |
+| Cross-cutting breaking API changes | **Subagent code-reviewer** (эксплуатационно чистая проверка impact analysis + consumers). Fallback на user'а если subagent недоступен. |
+
+**Что делать при возражении:**
+
+- Пользователь / subagent сказал «нет» / выявил проблему → `status` остаётся `in_progress`, зафиксировать в `## Лог` конкретное возражение. Задача не закрывается.
+- Пользователь молчит >5 минут (не подтвердил и не возразил) → **не** предполагать «ok»; переспросить один раз, затем оставить задачу в `in_progress` и завершить сессию через `session-end ritual`.
+
 ### Что делать при провале verification (любой части):
 
 - `status` НЕ меняется на `done`.
 - В `## Лог` — запись «verification блокировала закрытие: <что именно не сошлось>».
 - Сообщить пользователю. Задача остаётся `in_progress`.
 
-Только verification-passed (обе части) — переходим к шагу 4.
+Только verification-passed (все три части) — переходим к шагу 4.
 
 ## Шаги
 

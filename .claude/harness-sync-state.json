@@ -1,8 +1,8 @@
 {
-  "harness_sha": "79d7c93",
+  "harness_sha": "c22a7df",
   "files": {
     "task-add.md": "06b4880d061a211946e64793820717e1a28fda581babaa791b763314b1441706",
-    "task-done.md": "1d029303ade654af0e5ca9c2c1ab8c92e3c55a7a5e47457569e992eddd3455af",
+    "task-done.md": "427cce162e7be7c20b1c492876111aa254c7795ae904032d6df18079c1475e3f",
     "task-sync.md": "bccb8ee90b7d4576c701fe682bf6c446821b5e08185833c1ccc27adcf9e6ecca",
     "docs-sync.md": "64bbf56e06fd02ce00bd5eefce3d377925a5474990eba97f709d465d341cbbcb",
     "wheel-check.md": "0be166906a24bd58a0d82f4b9bdefaec9998dd6d7eb9cba9b16cc0c95439eafc",

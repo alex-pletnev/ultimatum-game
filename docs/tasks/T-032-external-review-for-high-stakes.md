@@ -1,7 +1,7 @@
 ---
 id: T-032
 title: External review (code-reviewer subagent) для high-stakes изменений
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -40,3 +40,4 @@ tags: [meta, agent-behavior, skills, safety]
 ## Лог
 
 - 2026-07-13: заведена по итогам анализа флоу (гэп H).
+- 2026-07-13: закрыта. task-done.md `Verification gate` теперь 3 части. Часть 3 (новая) — external review для high-stakes. Триггер: DB миграции, security-config, deletion, prod, cross-cutting breaking API. Механизм по типу high-stakes: security/deletion/prod → explicit user-check; DB migration → user-check + subagent code-reviewer; cross-cutting API → subagent (fallback user). При возражении/молчании — status остаётся in_progress. CLAUDE.md строка про high-stakes теперь упоминает и pre-flight (до кодинга), и external review (при task-done). Harness sha c22a7df. AC-check: 4/4 буквально.
