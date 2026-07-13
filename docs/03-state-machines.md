@@ -108,7 +108,7 @@ FINISHED
 | каждый `sendOffer` | `publishOfferCreated(offer)` | `/topic/session/{id}/offerCreated` |
 | `WAIT_OFFERS → OFFERS_SENT` | `publishOfferToPlayer(offer)` каждому responder + `publishRoundStatus(round)` | `/topic/session/{id}/player/{userId}/offer` + `/topic/session/{id}/roundStatus` |
 | каждый `makeDecision` | `publishDecisionMade(decision)` | `/topic/session/{id}/decisionMade` |
-| последнее decision | `publishRoundStatus(round)` | `/topic/session/{id}/roundStatus` |
+| последнее decision | `publishRoundStatus(round)` + `publishScoreUpdated(sessionScoreDto)` | `/topic/session/{id}/roundStatus` + `/topic/session/{id}/scoreUpdated` |
 | `startNextRound` | `publishRoundStatus(round)` | `/topic/session/{id}/roundStatus` |
 
 ## Ограничения / TODO

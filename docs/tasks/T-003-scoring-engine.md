@@ -1,10 +1,10 @@
 ---
 id: T-003
 title: Реализовать расчёт баллов игроков по итогам раундов
-status: pending
+status: done
 priority: high
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-07-13
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/services/PlayerGameplayService.kt
   - src/main/kotlin/edu/itmo/ultimatumgame/services/AdminGameplayService.kt
@@ -51,3 +51,4 @@ tags: [feature, gameplay, api, db]
 ## Лог
 
 - 2026-07-12: заведена из `docs/11-known-gaps.md`. Требуется предварительное обсуждение выбора модели (A vs B).
+- 2026-07-13: выбран вариант **A** (on-the-fly в `StatsService`). Реализовано: правила scoring'а `(offer, decision, roundSum) → (proposerScore, responderScore)`; per-player aggregate; TEAM_BATTLE per-team; расширение `SessionStatsDto` полем `score: SessionScoreDto`; расширение `OfferStatsDto` полями `proposerScore/responderScore`; CSV +2 колонки; новое WS-событие `/topic/session/{id}/scoreUpdated` (payload `SessionScoreDto`), публикуется в `PlayerGameplayService` при переходе в `ALL_DECISIONS_RECEIVED`; `WebSocketSecurityConfig` разрешил subscribe на роли ADMIN/PLAYER/OBSERVER. Docs `03-state-machines.md`, `04-services.md`, `06-websocket-api.md` обновлены. Api-snapshots регенерированы (`asyncapi.json` изменился). Тесты: расширен `StatsServiceTest` (accept/reject/no-decision/TEAM_BATTLE/FREE_FOR_ALL), `CsvServiceTest`, `EventPublisherServiceTest`, `PlayerGameplayServiceTest`. `./gradlew check` зелёный (17s).

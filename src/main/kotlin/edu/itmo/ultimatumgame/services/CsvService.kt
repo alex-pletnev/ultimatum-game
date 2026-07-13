@@ -27,6 +27,7 @@ class CsvService {
             "proposerTeamId", "proposerTeamName",
             "responderTeamId", "responderTeamName",
             "accepted",
+            "proposerScore", "responderScore",
             "timestamp"
         )
 
@@ -47,6 +48,7 @@ class CsvService {
                     o.proposerTeam?.id, o.proposerTeam?.name,
                     o.responderTeam?.id, o.responderTeam?.name,
                     o.accepted,
+                    o.proposerScore, o.responderScore,
                     o.timestamp
                 )
             }

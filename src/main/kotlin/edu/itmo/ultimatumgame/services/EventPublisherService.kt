@@ -5,6 +5,7 @@ package edu.itmo.ultimatumgame.services
 import edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse
 import edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
+import edu.itmo.ultimatumgame.dto.responses.SessionScoreDto
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatumgame.model.Decision
 import edu.itmo.ultimatumgame.model.Offer
@@ -94,6 +95,22 @@ class EventPublisherService(
             "Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})"
         )
         messagingTemplate.convertAndSend(destination, dto)
+    }
+
+    @AsyncPublisher(
+        operation = AsyncOperation(
+            channelName = "/topic/session/{sessionId}/scoreUpdated",
+            description = "Публикуется после закрытия раунда (ALL_DECISIONS_RECEIVED). Содержит per-player и per-team суммы баллов и roundSum.",
+            payloadType = SessionScoreDto::class
+        )
+    )
+    @StompAsyncOperationBinding
+    fun publishScoreUpdated(sessionId: UUID, score: SessionScoreDto) {
+        val destination = "/topic/session/$sessionId/scoreUpdated"
+        logger.info(
+            "Публикация события ScoreUpdated в $destination для сессии $sessionId (roundsCompleted=${score.roundsCompleted})"
+        )
+        messagingTemplate.convertAndSend(destination, score)
     }
 
     @AsyncPublisher(

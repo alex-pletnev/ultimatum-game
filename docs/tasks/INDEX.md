@@ -9,7 +9,6 @@
 | ID | Название | Статус | Приоритет | Обновлено | Файл |
 |----|----------|--------|-----------|-----------|------|
 | T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
-| T-003 | Реализовать расчёт баллов игроков по итогам раундов | pending | high | 2026-07-12 | [T-003](T-003-scoring-engine.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
@@ -18,6 +17,7 @@
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-045 | Сверить реализованные правила gameplay с канонической Ultimatum Game + многопользовательские адаптации | pending | medium | 2026-07-13 | [T-045](T-045-verify-game-rules-vs-canonical.md) |
+| T-046 | Оптимизировать время `./gradlew check` — сейчас порог 5 мин | pending | medium | 2026-07-13 | [T-046](T-046-optimize-gradle-check-time.md) |
 
 ## Закрытые задачи
 
@@ -58,6 +58,7 @@
 | T-038 | Привести проект под harness-конвенции — generic skills + SPECIFIC_RULES + отточить /harness-update | done | 2026-07-13 | [T-038](T-038-clean-project-under-harness-conventions.md) |
 | T-039 | /harness-update — синхронизировать .claude/settings.json с harness template | done | 2026-07-13 | [T-039](T-039-harness-update-sync-settings-json.md) |
 | T-040 | Починить Stop-hook — hookSpecificOutput не валиден для события Stop | done | 2026-07-13 | [T-040](T-040-fix-stop-hook-output-schema.md) |
+| T-003 | Реализовать расчёт баллов игроков по итогам раундов | done | 2026-07-13 | [T-003](T-003-scoring-engine.md) |
 
 ## Легенда статусов
 

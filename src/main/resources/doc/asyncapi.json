@@ -81,6 +81,14 @@
         }
       }
     },
+    "_topic_session_{sessionId}_scoreUpdated" : {
+      "address" : "/topic/session/{sessionId}/scoreUpdated",
+      "messages" : {
+        "edu.itmo.ultimatumgame.dto.responses.SessionScoreDto" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatumgame.dto.responses.SessionScoreDto"
+        }
+      }
+    },
     "_topic_session_{sessionId}_sessionStatus" : {
       "address" : "/topic/session/{sessionId}/sessionStatus",
       "messages" : {
@@ -172,6 +180,22 @@
         },
         "title" : "RoundResponse"
       },
+      "edu.itmo.ultimatumgame.dto.responses.SessionScoreDto" : {
+        "bindings" : {
+          "stomp" : { }
+        },
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "name" : "edu.itmo.ultimatumgame.dto.responses.SessionScoreDto",
+        "payload" : {
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionScoreDto"
+          },
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
+        },
+        "title" : "SessionScoreDto"
+      },
       "edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse" : {
         "bindings" : {
           "stomp" : { }
@@ -212,12 +236,6 @@
         "examples" : [ { } ],
         "properties" : { },
         "title" : "HeadersNotDocumented",
-        "type" : "object"
-      },
-      "SpringStompDefaultHeaders" : {
-        "examples" : [ { } ],
-        "properties" : { },
-        "title" : "SpringStompDefaultHeaders",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.requests.CreateOfferCmd" : {
@@ -459,6 +477,38 @@
         "title" : "OfferPrewResponse",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.responses.PlayerScoreDto" : {
+        "examples" : [ {
+          "nickname" : "string",
+          "score" : 0,
+          "teamId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "teamName" : "string",
+          "userId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        } ],
+        "properties" : {
+          "nickname" : {
+            "type" : "string"
+          },
+          "score" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "teamId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "teamName" : {
+            "type" : "string"
+          },
+          "userId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "nickname", "score", "userId" ],
+        "title" : "PlayerScoreDto",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse" : {
         "examples" : [ {
           "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -679,6 +729,49 @@
         "title" : "SessionPrewResponse",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.responses.SessionScoreDto" : {
+        "examples" : [ {
+          "players" : [ {
+            "nickname" : "string",
+            "score" : 0,
+            "teamId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "teamName" : "string",
+            "userId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          } ],
+          "roundSum" : 0,
+          "roundsCompleted" : 0,
+          "teams" : [ {
+            "name" : "string",
+            "score" : 0,
+            "teamId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          } ]
+        } ],
+        "properties" : {
+          "players" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.PlayerScoreDto"
+            },
+            "type" : "array"
+          },
+          "roundSum" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "roundsCompleted" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "teams" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.TeamScoreDto"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "players", "roundSum", "roundsCompleted", "teams" ],
+        "title" : "SessionScoreDto",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse" : {
         "examples" : [ {
           "admin" : {
@@ -811,6 +904,29 @@
         },
         "required" : [ "id", "members", "name" ],
         "title" : "TeamResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.TeamScoreDto" : {
+        "examples" : [ {
+          "name" : "string",
+          "score" : 0,
+          "teamId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        } ],
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "score" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "teamId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "score", "teamId" ],
+        "title" : "TeamScoreDto",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.responses.UserResponse" : {
@@ -994,6 +1110,20 @@
         "$ref" : "#/channels/_topic_session_{sessionId}_roundStatus/messages/edu.itmo.ultimatumgame.dto.responses.RoundResponse"
       } ],
       "title" : "_topic_session_{sessionId}_roundStatus_send"
+    },
+    "_topic_session_{sessionId}_scoreUpdated_send_publishScoreUpdated" : {
+      "action" : "send",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "channel" : {
+        "$ref" : "#/channels/_topic_session_{sessionId}_scoreUpdated"
+      },
+      "description" : "Публикуется после закрытия раунда (ALL_DECISIONS_RECEIVED). Содержит per-player и per-team суммы баллов и roundSum.",
+      "messages" : [ {
+        "$ref" : "#/channels/_topic_session_{sessionId}_scoreUpdated/messages/edu.itmo.ultimatumgame.dto.responses.SessionScoreDto"
+      } ],
+      "title" : "_topic_session_{sessionId}_scoreUpdated_send"
     },
     "_topic_session_{sessionId}_sessionStatus_send_publishSessionStatus" : {
       "action" : "send",

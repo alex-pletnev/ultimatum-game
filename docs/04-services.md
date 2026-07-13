@@ -173,7 +173,14 @@ Payload — соответствующий DTO (см. `docs/07-dto-and-mappers.m
 |-------|-----------|------------------|
 | `getSessionStats` | `(UUID) → SessionStatsDto` | read-only агрегация; `EntityNotFoundException` если сессии нет |
 
-Возвращает `SessionStatsDto` (см. `docs/07-dto-and-mappers.md`): все оффера/решения сессии с ссылками на пропонентов, респондентов и команды.
+Возвращает `SessionStatsDto` (см. `docs/07-dto-and-mappers.md`): все оффера/решения сессии с ссылками на пропонентов, респондентов и команды, плюс `score: SessionScoreDto` — per-player и (для TEAM_BATTLE) per-team суммы баллов.
+
+**Правила scoring'а (T-003):**
+- Accept: proposer получает `roundSum - offer.amount`, responder получает `offer.amount`.
+- Reject: обе стороны получают 0.
+- Нет решения (round ещё идёт) — оффер даёт 0/0, в итог не начисляется.
+- TEAM_BATTLE: team score = сумма scores всех членов команды.
+- `roundsCompleted` = кол-во раундов, где decisions.size == session.members.size.
 
 ---
 
@@ -183,7 +190,7 @@ Payload — соответствующий DTO (см. `docs/07-dto-and-mappers.m
 
 | Метод | Сигнатура | Комментарий |
 |-------|-----------|-------------|
-| `toCsv` | `(SessionStatsDto) → ByteArray` | UTF-8 CSV со столбцами: `offerId, roundNumber, amount, proposerId, proposerNickname, responderId, responderNickname, proposerTeamId, proposerTeamName, responderTeamId, responderTeamName, accepted, timestamp` |
+| `toCsv` | `(SessionStatsDto) → ByteArray` | UTF-8 CSV со столбцами: `offerId, roundNumber, amount, proposerId, proposerNickname, responderId, responderNickname, proposerTeamId, proposerTeamName, responderTeamId, responderTeamName, accepted, proposerScore, responderScore, timestamp` |
 
 ---
 

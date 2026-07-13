@@ -95,4 +95,19 @@ class EventPublisherServiceTest {
 
         verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/sessionStatus", dto) }
     }
+
+    @Test
+    fun `publishScoreUpdated шлёт SessionScoreDto в topic session_scoreUpdated`() {
+        val sessionId = UUID.randomUUID()
+        val score = edu.itmo.ultimatumgame.dto.responses.SessionScoreDto(
+            roundSum = 100,
+            roundsCompleted = 1,
+            players = emptyList(),
+            teams = emptyList()
+        )
+
+        service.publishScoreUpdated(sessionId, score)
+
+        verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/scoreUpdated", score) }
+    }
 }

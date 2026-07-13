@@ -34,6 +34,7 @@ class PlayerGameplayService(
     private val decisionRepository: DecisionRepository,
     private val userService: UserService,
     private val gameplayService: CoreGameplayService,
+    private val statsService: StatsService,
     private val domainEventLogger: DomainEventLogger,
 ) {
 
@@ -169,6 +170,14 @@ class PlayerGameplayService(
 
             eventPublisher.publishRoundStatus(sessionId, round)
             logger.info("Опубликован RoundStatus для сессии {} после получения всех решений", sessionId)
+
+            val score = statsService.getSessionStats(sessionId).score
+            eventPublisher.publishScoreUpdated(sessionId, score)
+            logger.info(
+                "Опубликован ScoreUpdated для сессии {} (roundsCompleted={})",
+                sessionId,
+                score.roundsCompleted
+            )
 
             domainEventLogger.emit(
                 RoundClosed(sessionId = sessionId, roundId = round.id!!, roundNumber = round.roundNumber)

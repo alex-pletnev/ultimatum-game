@@ -36,6 +36,7 @@ class PlayerGameplayServiceTest {
     private val decisionRepo = mockk<DecisionRepository>()
     private val userService = mockk<UserService>()
     private val coreGameplay = mockk<CoreGameplayService>(relaxUnitFun = true)
+    private val statsService = mockk<StatsService>()
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
 
     private val service = PlayerGameplayService(
@@ -47,6 +48,7 @@ class PlayerGameplayServiceTest {
         decisionRepo,
         userService,
         coreGameplay,
+        statsService,
         domainEventLogger,
     )
 
@@ -182,7 +184,7 @@ class PlayerGameplayServiceTest {
     }
 
     @Test
-    fun `makeDecision — последнее решение переводит round в ALL_DECISIONS_RECEIVED и публикует RoundStatus`() {
+    fun `makeDecision — последнее решение → RoundStatus + ScoreUpdated`() {
         val a = user()
         val b = user()
         val r = round(roundPhase = RoundPhase.OFFERS_SENT)
@@ -197,11 +199,29 @@ class PlayerGameplayServiceTest {
         stubDecisionSaveIdentity()
         stubRoundSave()
         stubSessionSave()
+        val score = edu.itmo.ultimatumgame.dto.responses.SessionScoreDto(
+            roundSum = 100,
+            roundsCompleted = 1,
+            players = emptyList(),
+            teams = emptyList()
+        )
+        every { statsService.getSessionStats(s.id!!) } returns edu.itmo.ultimatumgame.dto.responses.SessionStatsDto(
+            sessionId = s.id!!,
+            displayName = s.displayName,
+            state = s.state,
+            createdAt = s.createdAt,
+            totalRounds = 1,
+            decisionsCount = 2,
+            offers = emptyList(),
+            score = score,
+        )
+        every { eventPublisher.publishScoreUpdated(s.id!!, score) } returns Unit
 
         service.makeDecision(s.id!!, a.id!!, MakeDecisionCmd(offerId = offA.id.toString(), decision = false))
 
         assertEquals(RoundPhase.ALL_DECISIONS_RECEIVED, r.roundPhase)
         verify { eventPublisher.publishRoundStatus(s.id!!, r) }
+        verify { eventPublisher.publishScoreUpdated(s.id!!, score) }
     }
 
     @Test
