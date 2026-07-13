@@ -1,7 +1,6 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.SessionState
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -20,4 +19,4 @@ data class SessionWithTeamsAndMembersResponse(
     val teams: MutableSet<TeamResponse>,
     val members: MutableSet<UserResponse>,
     val observers: MutableSet<UserResponse>,
-) : Serializable
+)

@@ -32,26 +32,6 @@
     <ID>MaximumLineLength:User.kt$User$ </ID>
     <ID>NoNameShadowing:AdminGameplayService.kt$AdminGameplayService$sessionId</ID>
     <ID>ReturnCount:JwtStompChannelInterceptor.kt$JwtStompChannelInterceptor$override fun preSend(message: Message&lt;*&gt;, channel: MessageChannel): Message&lt;*&gt;?</ID>
-    <ID>SerialVersionUIDInSerializableClass:ApiErrorResponse.kt$ApiErrorResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:CreateOfferCmd.kt$CreateOfferCmd : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:CreateSessionRequest.kt$CreateSessionRequest : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:DecisionMadeResponse.kt$DecisionMadeResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:DecisionPrewResponse.kt$DecisionPrewResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:JwtAuthenticationResponse.kt$JwtAuthenticationResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:MakeDecisionCmd.kt$MakeDecisionCmd : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:OfferCreatedResponse.kt$OfferCreatedResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:OfferPrewResponse.kt$OfferPrewResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:RoundPrewResponse.kt$RoundPrewResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:RoundResponse.kt$RoundResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:SessionConfigDto.kt$SessionConfigDto : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:SessionConfigResponse.kt$SessionConfigResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:SessionPrewResponse.kt$SessionPrewResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:SessionResponse.kt$SessionResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:SessionWithTeamsAndMembersResponse.kt$SessionWithTeamsAndMembersResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TeamPrewResponse.kt$TeamPrewResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TeamResponse.kt$TeamResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:UserIdResponse.kt$UserIdResponse : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:UserResponse.kt$UserResponse : Serializable</ID>
     <ID>SpreadOperator:CsvService.kt$CsvService$(*header)</ID>
     <ID>SpreadOperator:UltimatumGameApplication.kt$(*args)</ID>
     <ID>SwallowedException:FieldMappers.kt$ex: IllegalArgumentException</ID>

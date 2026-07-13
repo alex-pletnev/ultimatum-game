@@ -1,7 +1,6 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.SessionState
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -16,4 +15,4 @@ data class SessionPrewResponse(
     val admin: UserResponse,
     val openToConnect: Boolean,
     val config: SessionConfigResponse,
-) : Serializable
+)

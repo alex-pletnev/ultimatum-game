@@ -5,7 +5,6 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import java.io.Serializable
 import java.util.UUID
 
 /**
@@ -19,4 +18,4 @@ data class CreateSessionRequest(
     val state: SessionState = SessionState.CREATED,
     @field:Valid @field:NotNull val config: SessionConfigDto? = null,
     val openToConnect: Boolean = true,
-) : Serializable
+)

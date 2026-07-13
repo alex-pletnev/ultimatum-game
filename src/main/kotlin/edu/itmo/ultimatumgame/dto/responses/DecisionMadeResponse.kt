@@ -1,6 +1,5 @@
 package edu.itmo.ultimatumgame.dto.responses
 
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -14,4 +13,4 @@ data class DecisionMadeResponse(
     val offer: OfferCreatedResponse,
     val decision: Boolean,
     val createdAt: Date,
-) : Serializable
+)

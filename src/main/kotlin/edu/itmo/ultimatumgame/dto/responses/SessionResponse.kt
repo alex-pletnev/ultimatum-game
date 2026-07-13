@@ -1,7 +1,6 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.SessionState
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -19,4 +18,4 @@ data class SessionResponse(
     val config: SessionConfigResponse,
     val teams: MutableSet<TeamPrewResponse>,
     val currentRound: RoundPrewResponse? = null,
-) : Serializable
+)

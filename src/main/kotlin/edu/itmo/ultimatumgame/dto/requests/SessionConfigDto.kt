@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
 import org.hibernate.validator.constraints.Range
-import java.io.Serializable
 
 /**
  * DTO for {@link edu.itmo.ultimatumgame.model.SessionConfig}
@@ -30,4 +29,4 @@ data class SessionConfigDto(
     val roundSum: Int? = null,
     @field:Range(message = "timeoutMoveSec это число от 10 и до 300", min = 10, max = 300)
     val timeoutMoveSec: Int? = null
-) : Serializable
+)

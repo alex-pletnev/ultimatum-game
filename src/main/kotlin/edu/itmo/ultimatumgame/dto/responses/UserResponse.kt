@@ -1,7 +1,6 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.Role
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -13,4 +12,4 @@ data class UserResponse(
     val nickname: String,
     val role: Role,
     val createdAt: Date,
-) : Serializable
+)

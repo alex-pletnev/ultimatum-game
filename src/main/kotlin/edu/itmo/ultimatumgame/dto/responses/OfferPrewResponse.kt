@@ -1,6 +1,5 @@
 package edu.itmo.ultimatumgame.dto.responses
 
-import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -13,4 +12,4 @@ data class OfferPrewResponse(
     val responder: UserResponse? = null,
     val offerValue: Int? = null,
     val createdAt: Date = Date()
-) : Serializable
+)

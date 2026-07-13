@@ -1,7 +1,6 @@
 package edu.itmo.ultimatumgame.dto.responses
 
 import edu.itmo.ultimatumgame.model.RoundPhase
-import java.io.Serializable
 import java.util.UUID
 
 /**
@@ -14,4 +13,4 @@ data class RoundResponse(
     val offers: MutableList<OfferPrewResponse>,
     val decisions: MutableList<DecisionPrewResponse>,
     val session: SessionPrewResponse,
-) : Serializable
+)
