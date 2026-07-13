@@ -1,7 +1,7 @@
 ---
 id: T-029
 title: Расширить wheel-check — read before write (docs pre-check) + impact analysis
-status: pending
+status: done
 priority: low
 created: 2026-07-13
 updated: 2026-07-13
@@ -30,3 +30,4 @@ tags: [meta, agent-behavior, skills]
 ## Лог
 
 - 2026-07-13: заведена по итогам анализа флоу.
+- 2026-07-13: закрыта. `wheel-check.md` в обеих сторонах (проект + harness) дополнен двумя новыми шагами: 5 «Docs pre-check» — читать `docs/*.md` для затронутой области, ловить противоречия с задокументированными инвариантами; 6 «Impact analysis» — grep по каллерам, оценка внешних API-контрактов, порог >5 каллеров как эскалация. Отчёт wheel-check теперь содержит явные строки «Docs: ...» и «Impact: N каллеров / API-контракт [да/нет]». AC-deviation check: 3 из 3 пунктов буквально.
