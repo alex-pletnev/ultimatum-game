@@ -57,3 +57,6 @@ Desktop.ini
 
 # harness backup files
 CLAUDE.md.bak-*
+
+# harness hook state (per-clone)
+.claude/last-committed-head.txt

@@ -13,7 +13,7 @@
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
-| T-030 | Hooks-based enforcement для критичных skill'ов | pending | low | 2026-07-13 | [T-030](T-030-hooks-based-enforcement.md) |
+| T-039 | /harness-update — синхронизировать .claude/settings.json с harness template | pending | low | 2026-07-13 | [T-039](T-039-harness-update-sync-settings-json.md) |
 
 ## Закрытые задачи
 
@@ -43,6 +43,7 @@
 | T-025 | Правило — при отклонении от буквы AC уведомить пользователя до commit'а | done | 2026-07-13 | [T-025](T-025-notify-before-ac-deviation.md) |
 | T-028 | Pre-flight check для non-trivial — assumptions/risks/reversibility | done | 2026-07-13 | [T-028](T-028-pre-flight-check-for-nontrivial.md) |
 | T-029 | Расширить wheel-check — read before write (docs + impact) | done | 2026-07-13 | [T-029](T-029-wheel-check-docs-and-impact.md) |
+| T-030 | Hooks-based enforcement для критичных skill'ов | done | 2026-07-13 | [T-030](T-030-hooks-based-enforcement.md) |
 | T-031 | Cadence-based checkpoint для mid-retro — тихие длинные задачи | done | 2026-07-13 | [T-031](T-031-mid-retro-cadence-checkpoint.md) |
 | T-032 | External review (code-reviewer subagent) для high-stakes | done | 2026-07-13 | [T-032](T-032-external-review-for-high-stakes.md) |
 | T-033 | Session-end handoff ritual — зеркало T-027 | done | 2026-07-13 | [T-033](T-033-session-end-handoff-ritual.md) |
