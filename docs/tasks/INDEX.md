@@ -23,6 +23,7 @@
 | T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | pending | medium | 2026-07-13 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
+| T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 
 ## Закрытые задачи
 
