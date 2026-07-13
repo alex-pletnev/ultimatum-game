@@ -34,6 +34,7 @@
 | T-017 | Стандарт логирования и observability — JSON, MDC, доменные события, Prometheus | done | 2026-07-13 | [T-017](T-017-observability-standard.md) |
 | T-019 | Правило для агента — не считать многоминутное ожидание нормой, эскалировать при аномалии | done | 2026-07-13 | [T-019](T-019-agent-command-duration-heuristics.md) |
 | T-021 | Skills для само-улучшения агента — wheel-check, mid-retro, self-review + правила в CLAUDE.md | done | 2026-07-13 | [T-021](T-021-agent-self-improvement-skills.md) |
+| T-022 | Расширить setup-agent-harness — включить wheel-check/mid-retro/self-review в bootstrap | done | 2026-07-13 | [T-022](T-022-setup-harness-add-self-improvement-skills.md) |
 
 ## Легенда статусов
 
