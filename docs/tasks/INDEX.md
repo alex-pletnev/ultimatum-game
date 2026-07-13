@@ -18,6 +18,7 @@
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-045 | Сверить реализованные правила gameplay с канонической Ultimatum Game + многопользовательские адаптации | pending | medium | 2026-07-13 | [T-045](T-045-verify-game-rules-vs-canonical.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
+| T-049 | Portability check — абсолютные пути и machine-specific настройки не коммитятся в общие файлы | pending | low | 2026-07-13 | [T-049](T-049-portability-check-in-committed-files.md) |
 
 ## Закрытые задачи
 
