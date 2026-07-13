@@ -14,6 +14,7 @@ import org.mapstruct.ReportingPolicy
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [UserMapper::class, UserMapper::class]
 )
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class OfferPrewMapper {
 
     abstract fun toDto(offer: Offer): OfferPrewResponse

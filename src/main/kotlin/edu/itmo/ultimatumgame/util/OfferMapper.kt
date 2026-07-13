@@ -16,6 +16,7 @@ import org.mapstruct.ReportingPolicy
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [RoundPrewMapper::class, UserMapper::class]
 )
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class OfferMapper {
 
     @Mapping(source = "amount", target = "offerValue")

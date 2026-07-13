@@ -11,6 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy
 import org.mapstruct.ReportingPolicy
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class SessionConfigMapper {
 
     abstract fun toEntity(sessionConfigDto: SessionConfigDto): SessionConfig

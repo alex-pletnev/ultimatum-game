@@ -11,6 +11,7 @@ import org.mapstruct.ReportingPolicy
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [SessionConfigMapper::class, RoundPrewMapper::class, UserMapper::class, TeamMapper::class]
 )
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class SessionWithTeamsAndMembersMapper {
 
     abstract fun toDto(session: Session): SessionWithTeamsAndMembersResponse

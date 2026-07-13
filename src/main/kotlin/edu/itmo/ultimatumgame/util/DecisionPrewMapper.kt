@@ -14,6 +14,7 @@ import org.mapstruct.ReportingPolicy
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = [UserMapper::class, OfferPrewMapper::class]
 )
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class DecisionPrewMapper {
 
     abstract fun toEntity(decisionPrewResponse: DecisionPrewResponse): Decision

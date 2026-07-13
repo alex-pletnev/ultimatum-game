@@ -7,6 +7,7 @@ import org.mapstruct.MappingConstants
 import org.mapstruct.ReportingPolicy
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Suppress("UnnecessaryAbstractClass") // MapStruct generates impl subclass via kapt
 abstract class TeamPrewMapper {
 
     abstract fun toDto(round: Team): TeamPrewResponse

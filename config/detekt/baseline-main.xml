@@ -40,18 +40,6 @@
     <ID>TooGenericExceptionCaught:JwtAuthenticationFilter.kt$JwtAuthenticationFilter$e: Exception</ID>
     <ID>TooManyFunctions:GlobalExceptionsHandler.kt$GlobalExceptionsHandler</ID>
     <ID>TooManyFunctions:SessionService.kt$SessionService</ID>
-    <ID>UnnecessaryAbstractClass:DecisionMapper.kt$DecisionMapper$DecisionMapper</ID>
-    <ID>UnnecessaryAbstractClass:DecisionPrewMapper.kt$DecisionPrewMapper$DecisionPrewMapper</ID>
-    <ID>UnnecessaryAbstractClass:OfferMapper.kt$OfferMapper$OfferMapper</ID>
-    <ID>UnnecessaryAbstractClass:OfferPrewMapper.kt$OfferPrewMapper$OfferPrewMapper</ID>
-    <ID>UnnecessaryAbstractClass:RoundPrewMapper.kt$RoundPrewMapper$RoundPrewMapper</ID>
-    <ID>UnnecessaryAbstractClass:SessionConfigMapper.kt$SessionConfigMapper$SessionConfigMapper</ID>
-    <ID>UnnecessaryAbstractClass:SessionMapper.kt$SessionMapper$SessionMapper</ID>
-    <ID>UnnecessaryAbstractClass:SessionPrewMapper.kt$SessionPrewMapper$SessionPrewMapper</ID>
-    <ID>UnnecessaryAbstractClass:SessionWithTeamsAndMembersMapper.kt$SessionWithTeamsAndMembersMapper$SessionWithTeamsAndMembersMapper</ID>
-    <ID>UnnecessaryAbstractClass:TeamMapper.kt$TeamMapper$TeamMapper</ID>
-    <ID>UnnecessaryAbstractClass:TeamPrewMapper.kt$TeamPrewMapper$TeamPrewMapper</ID>
-    <ID>UnnecessaryAbstractClass:UserMapper.kt$UserMapper$UserMapper</ID>
     <ID>UnnecessaryNotNullOperator:AuthService.kt$AuthService$authenticateUserRequest.id!!</ID>
     <ID>UnsafeCallOnNullableType:AdminGameplayService.kt$AdminGameplayService$session.currentRound!!</ID>
     <ID>UnsafeCallOnNullableType:AuthService.kt$AuthService$createUserRequest.nickname!!</ID>
