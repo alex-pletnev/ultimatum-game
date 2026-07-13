@@ -1,21 +1,23 @@
 ---
 name: harness-update
-description: Use когда пользователь просит `/harness-update` — обновить skill-файлы в текущем проекте свежими копиями из harness-репо (`~/.claude/skills/setup-agent-harness/references/skills/`). НЕ трогает `docs/`, `docs/tasks/`, `.claude/settings.local.json`, custom skill'ы вне списка. Не обновляет CLAUDE.md (см. T-036).
+description: Use когда пользователь просит `/harness-update` — обновить skill-файлы **и** CLAUDE.md в текущем проекте свежими копиями из harness-репо (`~/.claude/skills/setup-agent-harness/references/`). НЕ трогает `docs/`, `docs/tasks/`, `.claude/settings.local.json`, custom skill'ы вне списка.
 ---
 
 # harness-update
 
-Синхронизировать 8 skill-файлов в `.claude/skills/` текущего проекта с последней версией из harness-репо. Ничего больше.
+Синхронизировать harness-managed артефакты в проекте с последними версиями из harness-репо. Два раздела:
 
-**Область v1:** только `.claude/skills/*.md` из списка ниже.
-**НЕ входит в v1** (см. T-036): обновление CLAUDE.md с сохранением project-specific секций. Пока — руками через `/setup-agent-harness (b)`.
+- **Часть A** (v1): 8 skill-файлов в `.claude/skills/`.
+- **Часть B** (v2): CLAUDE.md с сохранением project-specific placeholder-values через `.claude/harness-config.json`.
+
+Если `.claude/harness-config.json` **отсутствует** — Часть B пропускается, предлагается bootstrap (см. ниже).
 
 ## Аргументы
 
 - **Explicit:** `/harness-update`.
-- **Auto-mode:** нет. Skill вызывается только по явной команде — обновление skill-файлов может изменить поведение агента, требует осознанного шага пользователя.
+- **Auto-mode:** нет. Skill вызывается только по явной команде — обновление skill-файлов и CLAUDE.md может изменить поведение агента, требует осознанного шага пользователя.
 
-## Шаги
+## Часть A — Sync .claude/skills/
 
 1. **Determine source.** Harness repo — `~/.claude/skills/setup-agent-harness/`. Проверить что директория существует и содержит `references/skills/`. Если нет — сказать пользователю «harness не установлен», остановиться.
 
@@ -61,14 +63,71 @@ description: Use когда пользователь просит `/harness-upda
    - Тело: список обновлённых файлов + версия harness (`git -C ~/.claude/skills/setup-agent-harness rev-parse --short HEAD`).
    - Push.
 
-8. **Отчёт пользователю:** одна строка — «Обновил N файлов, версия harness: `<sha>`. Полный CLAUDE.md-sync — в T-036».
+8. **Отчёт пользователю:** одна строка — «Часть A: обновил N файлов, версия harness: `<sha>`».
 
-## Что НЕ делает v1
+## Часть B — Sync CLAUDE.md (v2)
 
-- Не обновляет CLAUDE.md (backup + preserve project-specific — см. T-036).
+**Триггер выполнения Части B:** если файл `.claude/harness-config.json` существует в проекте.
+**Если отсутствует:** предложить пользователю bootstrap (см. подраздел ниже), затем — либо продолжить Часть B, либо skip.
+
+### Шаги Части B
+
+1. **Read config.** Прочитать `.claude/harness-config.json` — JSON-объект с placeholder-values.
+
+2. **Read template.** Прочитать `~/.claude/skills/setup-agent-harness/references/templates/claude-md.template.md`.
+
+3. **Detect missing keys.** Найти все `{{PLACEHOLDER}}` в template. Сравнить с ключами в config'е:
+   - Если keys есть в template, но нет в config → **stop**, спросить пользователя: «Template имеет новый placeholder `{{X}}`, значение не найдено в harness-config.json. Введи значение».
+   - Обновить config после ввода.
+
+4. **Render.** Substitute placeholders → получить новый CLAUDE.md текст.
+
+5. **Backup.** `cp CLAUDE.md CLAUDE.md.bak-YYYY-MM-DD-HHMMSS`.
+
+6. **Diff summary.** Сравнить backup и новый рендер. Показать пользователю (git diff-like):
+   ```
+   CLAUDE.md изменится: N+ строк добавлено, M- удалено.
+   Backup: CLAUDE.md.bak-YYYY-MM-DD-HHMMSS
+   Если у тебя были project-specific правки в CLAUDE.md вне `{{SPECIFIC_RULES}}` области — они будут потеряны. Перенеси их в SPECIFIC_RULES секцию harness-config.json.
+   Продолжить? (y/n)
+   ```
+
+7. **Wait for user.** `y` → apply; `n` → удалить backup, оставить CLAUDE.md как был.
+
+8. **Apply.** Записать новый рендер в `CLAUDE.md`.
+
+9. **Отчёт:** «Часть B: CLAUDE.md обновлён. Backup: `CLAUDE.md.bak-...`».
+
+### Bootstrap (для существующих проектов без harness-config.json)
+
+Если проект был настроен старой версией `setup-agent-harness` (до появления `harness-config.json`) — предложить создать config один раз.
+
+**Шаги bootstrap:**
+
+1. Спросить пользователя: «Проект не имеет `.claude/harness-config.json`. Bootstrap? (y/n) — v2 CLAUDE.md-sync без него невозможен».
+2. Если `y` → извлечь placeholder-values из current CLAUDE.md по эвристике:
+   - `PROJECT_NAME` — из первой строки секции `## Общие принципы` (шаблон «Проект: **{{PROJECT_NAME}}** — {{STACK}}»).
+   - `STACK` — оттуда же.
+   - `PRIMARY_BRANCH` — из секции `## Git-автоматизация` («Работает в ветке `{{PRIMARY_BRANCH}}`»).
+   - `BUILD_COMMAND` / `TEST_COMMAND` — из `## Запуск и проверки`.
+   - `LANGUAGE` — эвристика по тексту CLAUDE.md (наличие кириллицы → RU).
+   - `DURATION_BASELINES` — вся таблица из секции «Долгие команды — эвристика ожидания».
+   - `SPECIFIC_RULES` — оставить пустым, спросить пользователя.
+3. Показать extract'нутые значения пользователю: «Вот что нашёл. Правильно? (y/n или укажи ошибки)».
+4. Записать `.claude/harness-config.json` (не в .gitignore).
+5. Продолжить Часть B.
+
+## Общее (обе части)
+
+- **Commit.** По правилам git-автоматизации. Отдельный commit на Часть A, отдельный на Часть B (легче ревертить одну без другой). Или один атомарный — по решению пользователя.
+- **Push.** После commit'а.
+
+## Что НЕ делает
+
 - Не трогает `docs/`, `docs/tasks/`, `.claude/settings.local.json`.
 - Не добавляет новые skill'ы за пределами 8 harness-managed.
 - Не удаляет старые файлы, даже если harness убрал соответствующий template (это опасно; удаление — только с явного запроса).
+- **Не пытается сохранить custom-правки CLAUDE.md вне placeholder-областей.** Если у пользователя были кастомные секции — они пропадут при re-render. Правильное место для персистентной кастомизации — `SPECIFIC_RULES` в `harness-config.json`.
 
 ## Ограничения
 

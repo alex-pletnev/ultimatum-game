@@ -1,7 +1,7 @@
 ---
 id: T-036
 title: /harness-update v2 — sync CLAUDE.md с сохранением project-specific через harness-config.json
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -43,3 +43,4 @@ T-035 v1 закрыл минимальную часть `/harness-update` — sy
 ## Лог
 
 - 2026-07-13: заведена как follow-up T-035. v1 явно descope'ил CLAUDE.md; v2 (эта задача) закрывает недостаток через `.claude/harness-config.json` (вариант A выбран пользователем).
+- 2026-07-13: закрыта вместе с T-038 (обкатка выявила дизайн-ошибки, тот же коммит фиксит и v2). `harness-update.md` расширен Частью B (config → template → render → backup → diff → apply). Playbook Фаза 7.4 сохраняет `.claude/harness-config.json`. Формально описан JSON-объект с 8 ключами. Файл коммитится в git. Bootstrap для существующих проектов описан. End-to-end тест на этом проекте: Часть A — all 8 identical, Часть B — no diff. AC-deviation: 6/6 буквально.

@@ -54,3 +54,6 @@ Desktop.ini
 
 # Claude Code — локальные (per-machine) настройки
 .claude/settings.local.json
+
+# harness backup files
+CLAUDE.md.bak-*
