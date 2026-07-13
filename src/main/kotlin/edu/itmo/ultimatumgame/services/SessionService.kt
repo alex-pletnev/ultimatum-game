@@ -20,6 +20,7 @@ import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.Team
+import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.PlayerJoined
@@ -38,6 +39,7 @@ import java.util.UUID
 @Service
 class SessionService(
     private val sessionRepository: SessionRepository,
+    private val roundRepository: RoundRepository,
     private val sessionMapper: SessionMapper,
     private val sessionWithTeamsAndMembersMapper: SessionWithTeamsAndMembersMapper,
     private val roundMapper: RoundMapper,
@@ -117,12 +119,13 @@ class SessionService(
         return dto
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     fun getRounds(sessionId: UUID): List<RoundResponse> {
-        val session = sessionRepository.findById(sessionId)
-            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
-        logger.debug("getRounds — найдена сессия {}, раундов: {}", session.id, session.rounds.size)
-        return session.rounds
+        if (!sessionRepository.existsById(sessionId)) {
+            throw IdNotFoundException("Сессия с $sessionId не найдена")
+        }
+        val rounds = roundRepository.findAllBySessionIdWithRelations(sessionId)
+        logger.debug("getRounds — найдена сессия {}, раундов: {}", sessionId, rounds.size)
+        return rounds
             .sortedBy { it.roundNumber }
             .map { roundMapper.toDto(it) }
     }

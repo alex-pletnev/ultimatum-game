@@ -39,6 +39,7 @@ import kotlin.test.assertTrue
 class SessionServiceTest {
 
     private val sessionRepo = mockk<SessionRepository>()
+    private val roundRepo = mockk<edu.itmo.ultimatumgame.repositories.RoundRepository>()
     private val sessionMapper = mockk<SessionMapper>()
     private val sessionWithTeamsAndMembersMapper = mockk<SessionWithTeamsAndMembersMapper>()
     private val roundMapper = mockk<RoundMapper>()
@@ -47,6 +48,7 @@ class SessionServiceTest {
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
     private val service = SessionService(
         sessionRepo,
+        roundRepo,
         sessionMapper,
         sessionWithTeamsAndMembersMapper,
         roundMapper,
@@ -215,15 +217,15 @@ class SessionServiceTest {
         val r1 = Round(id = UUID.randomUUID(), session = s, roundNumber = 1)
         val r2 = Round(id = UUID.randomUUID(), session = s, roundNumber = 2)
         val r3 = Round(id = UUID.randomUUID(), session = s, roundNumber = 3)
-        // произвольный порядок в множестве rounds
-        s.rounds = mutableSetOf(r3, r1, r2)
         val d1 = mockk<RoundResponse>()
         every { d1.roundNumber } returns 1
         val d2 = mockk<RoundResponse>()
         every { d2.roundNumber } returns 2
         val d3 = mockk<RoundResponse>()
         every { d3.roundNumber } returns 3
-        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.existsById(s.id!!) } returns true
+        // repository возвращает произвольный порядок — сервис должен сортировать по roundNumber
+        every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r3, r1, r2)
         every { roundMapper.toDto(r1) } returns d1
         every { roundMapper.toDto(r2) } returns d2
         every { roundMapper.toDto(r3) } returns d3
@@ -236,7 +238,7 @@ class SessionServiceTest {
     @Test
     fun `getRounds — NotFound если сессии нет`() {
         val id = UUID.randomUUID()
-        every { sessionRepo.findById(id) } returns Optional.empty()
+        every { sessionRepo.existsById(id) } returns false
         assertThrows<IdNotFoundException> { service.getRounds(id) }
     }
 
