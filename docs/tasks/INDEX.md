@@ -16,6 +16,8 @@
 | T-041 | Часть C — warn при sha256-коллизии между recommended hook'ами | pending | low | 2026-07-13 | [T-041](T-041-sha-collision-warn-in-part-c.md) |
 | T-042 | Skill'ы, использующие sha/hash, обязать приводить input→expected-output пример | pending | medium | 2026-07-13 | [T-042](T-042-inline-hash-examples-in-skills.md) |
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
+| T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
+| T-045 | Сверить реализованные правила gameplay с канонической Ultimatum Game + многопользовательские адаптации | pending | medium | 2026-07-13 | [T-045](T-045-verify-game-rules-vs-canonical.md) |
 
 ## Закрытые задачи
 
