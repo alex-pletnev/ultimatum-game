@@ -60,3 +60,9 @@ CLAUDE.md.bak-*
 
 # harness hook state (per-clone)
 .claude/last-committed-head.txt
+
+# Claude runtime
+.claude/scheduled_tasks.lock
+
+# Kotlin compiler local cache
+.kotlin/

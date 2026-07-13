@@ -1,5 +1,5 @@
 {
-  "harness_sha": "1c8f07c",
+  "harness_sha": "60dca1c",
   "files": {
     "task-add.md": "06b4880d061a211946e64793820717e1a28fda581babaa791b763314b1441706",
     "task-done.md": "427cce162e7be7c20b1c492876111aa254c7795ae904032d6df18079c1475e3f",
@@ -7,7 +7,7 @@
     "docs-sync.md": "64bbf56e06fd02ce00bd5eefce3d377925a5474990eba97f709d465d341cbbcb",
     "wheel-check.md": "0be166906a24bd58a0d82f4b9bdefaec9998dd6d7eb9cba9b16cc0c95439eafc",
     "mid-retro.md": "3ae5282b1b4e68fd8246ced43b8937dbf1e1cea7b1b81a1a539c377513be88a2",
-    "self-review.md": "25847272168a2f24da1d9349fda3583d7970b896f1253120e9ae1cbb3db288dd",
+    "self-review.md": "3b620c187e09a45a4d598dc670a77ec3b3b09e570f2ac5c1365c493e8d292983",
     "pre-flight.md": "b160e60881ba820b4ecf38e35509edb5e2a6763c79171817208e5e590e4b6d26",
     "consolidate.md": "bd81a4463b6eb818ae6f6c23646597cb3ebdf629914f97fdbd48103304931240"
   },

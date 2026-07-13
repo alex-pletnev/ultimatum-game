@@ -136,7 +136,7 @@ Skills вызываются автоматически в перечисленн
 | Задача трогает high-stakes зону (DB migration, security-config, deletion, prod-настройки, cross-cutting breaking API) | `pre-flight` в Auto-mode + external review в `task-done` | `pre-flight` обязателен даже для formally-trivial. При закрытии — Часть 3 Verification gate (user-check и/или subagent code-reviewer, см. `task-done.md`) |
 | После task-done, если с прошлой consolidation закрылось ≥10 задач | `consolidate` в Auto-mode | Одной строкой предложить пользователю запустить `/consolidate`; не запускать без confirm'а |
 | Баг / упавший тест / неожиданное поведение | `superpowers:systematic-debugging` | Не пытаться сразу фиксить — гипотеза → эксперимент → вывод. Особенно важно если проблема сопротивляется дольше ~10 минут |
-| Новая фича с ясным acceptance criteria | `superpowers:test-driven-development` | До реализации — написать провальные тесты по каждому AC, потом реализация до зелёного. Отсекает «сделал и не проверил» |
+| Новая фича с ясным acceptance criteria | `superpowers:test-driven-development` | **RED→GREEN обязателен.** До реализации — написать провальные тесты по каждому AC и **прогнать их, увидеть FAIL** (сохранить в лог или ответе). Только потом — реализация до зелёного. Писать тесты «одним заходом» с impl'ом — считается нарушением: если impl и тест кривы согласованно, ошибка не будет замечена. Отсекает «сделал и не проверил» |
 | Многошаговый plan есть (`docs/superpowers/plans/*.md`) — начинаем прогон | `superpowers:executing-plans` | Дисциплинированный прогон с checkpoint'ами, а не «зачитал и побежал» |
 
 ## Проактивное заведение задач (Auto-mode для `task-add`)
@@ -243,7 +243,7 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 |---------|-----------------|--------------|
 | `./gradlew compileKotlin` | ~10s | >30s |
 | `./gradlew test` (unit-часть) | ~30s | >90s |
-| `./gradlew check` целиком | ~60s; первый запуск после новых зависимостей — до 3 min | >5 min |
+| `./gradlew check` целиком | fresh после `clean` ~25s; c warm cache ~1s (configuration-cache reused); первый после новых зависимостей — до 60s | >2 min |
 | `./gradlew bootRun` до READY | ~20s | >60s |
 | `@SpringBootTest` контекст-лоад | ~15s | >45s |
 | `docker-compose up -d postgres` | ~10s (пустой pull) | >2 min |

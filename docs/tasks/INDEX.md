@@ -17,8 +17,7 @@
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-045 | Сверить реализованные правила gameplay с канонической Ultimatum Game + многопользовательские адаптации | pending | medium | 2026-07-13 | [T-045](T-045-verify-game-rules-vs-canonical.md) |
-| T-046 | Оптимизировать время `./gradlew check` — сейчас порог 5 мин | pending | medium | 2026-07-13 | [T-046](T-046-optimize-gradle-check-time.md) |
-| T-047 | TDD discipline — сначала провальный тест, потом impl, а не одновременно | pending | low | 2026-07-13 | [T-047](T-047-invoke-tdd-skill-for-features.md) |
+| T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
 
 ## Закрытые задачи
 
@@ -60,6 +59,8 @@
 | T-039 | /harness-update — синхронизировать .claude/settings.json с harness template | done | 2026-07-13 | [T-039](T-039-harness-update-sync-settings-json.md) |
 | T-040 | Починить Stop-hook — hookSpecificOutput не валиден для события Stop | done | 2026-07-13 | [T-040](T-040-fix-stop-hook-output-schema.md) |
 | T-003 | Реализовать расчёт баллов игроков по итогам раундов | done | 2026-07-13 | [T-003](T-003-scoring-engine.md) |
+| T-046 | Оптимизировать время `./gradlew check` — сейчас порог 5 мин | done | 2026-07-13 | [T-046](T-046-optimize-gradle-check-time.md) |
+| T-047 | TDD discipline — сначала провальный тест, потом impl, а не одновременно | done | 2026-07-13 | [T-047](T-047-invoke-tdd-skill-for-features.md) |
 
 ## Легенда статусов
 

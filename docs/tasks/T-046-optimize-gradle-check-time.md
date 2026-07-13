@@ -1,7 +1,7 @@
 ---
 id: T-046
 title: Оптимизировать время `./gradlew check` — сейчас порог 5 мин, ощущение что можно быстрее
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
 updated: 2026-07-13
@@ -48,3 +48,4 @@ tags: [tech-debt, build, ci]
 ## Лог
 
 - 2026-07-13: заведено по замечанию пользователя во время T-003. Priority medium — не блокирует работу, но dev-loop-quality-of-life падает с ростом теста.
+- 2026-07-13: закрыто. Profile-run (subagent) показал baseline'ы: fresh после `clean` ~29s, repeat с daemon cache ~0.9s. Top-tasks: `:test` (12.5s), `:kaptGenerateStubsKotlin` (2.7s), `:detektMain` (2.7s), `:compileKotlin` (2.5s). Применено: `gradle.properties` с `org.gradle.configuration-cache=true` + `org.gradle.caching=true` + `org.gradle.java.home=/opt/homebrew/opt/openjdk@21/...` — сняло fresh до ~25s, repeat до ~0.8s (configuration cache reused). CLAUDE.md baseline'ы обновлены (было ~60s, теперь ~25s fresh / ~1s cached). Не применялось: parallel JUnit5, split integrationTest — заведено как T-048. Не рекомендуется Kapt→KSP (MapStruct не готов). Kotlin/kapt sync — уже отдельный T-016. Пользователю указана строка для добавления `JAVA_HOME` в `~/.zshrc`, чтобы не префиксить каждую команду.
