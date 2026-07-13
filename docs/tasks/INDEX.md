@@ -13,7 +13,6 @@
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
-| T-039 | /harness-update — синхронизировать .claude/settings.json с harness template | in_progress | low | 2026-07-13 | [T-039](T-039-harness-update-sync-settings-json.md) |
 | T-040 | Починить Stop-hook — hookSpecificOutput не валиден для события Stop | pending | high | 2026-07-13 | [T-040](T-040-fix-stop-hook-output-schema.md) |
 
 ## Закрытые задачи
@@ -53,6 +52,7 @@
 | T-034 | Periodic learning consolidation — сканирование закрытых задач на паттерны | done | 2026-07-13 | [T-034](T-034-periodic-learning-consolidation.md) |
 | T-037 | harness-update — предупреждать о потере кастомизации harness-managed skill'ов | done | 2026-07-13 | [T-037](T-037-harness-update-warn-customization-loss.md) |
 | T-038 | Привести проект под harness-конвенции — generic skills + SPECIFIC_RULES + отточить /harness-update | done | 2026-07-13 | [T-038](T-038-clean-project-under-harness-conventions.md) |
+| T-039 | /harness-update — синхронизировать .claude/settings.json с harness template | done | 2026-07-13 | [T-039](T-039-harness-update-sync-settings-json.md) |
 
 ## Легенда статусов
 
