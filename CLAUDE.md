@@ -259,11 +259,13 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 
 ### Правила запуска long-running Gradle команд
 
-Извлечены из инцидента 2026-07-13 в T-053 — три конкурирующих `./gradlew check` заблокировали друг друга через `.gradle/configuration-cache-*.lock`.
+Извлечены из инцидентов 2026-07-13 в T-053 — параллельные `./gradlew check` блокировали друг друга через `.gradle/configuration-cache-*.lock`.
 
 1. **Никогда не пайпить gradle через `| tail -N`.** Pipe буферизует stdout — тула считает команду висящей и переводит в фон, а gradle daemon / test executor продолжают жить. Правильно: `./gradlew check > /tmp/check.log 2>&1` + `tail -5 /tmp/check.log` отдельной командой в конце.
-2. **Проверить нет ли живого gradle до запуска нового:** `ps -eo pid,command | grep -E "gradlew|GradleWorker" | grep -v grep | wc -l`. Если > 0 — либо ждать завершения (`until grep -qE "BUILD SUCCESSFUL|BUILD FAILED" /tmp/check.log; do sleep 3; done`), либо спросить пользователя убить (нельзя kill'ать чужие процессы без разрешения).
-3. **Один активный gradle-запуск на repo одновременно.** Если запускаешь `run_in_background=true` — дождись `task-notification completed` до нового запуска, не наслаивай.
+2. **Ждать завершения только через `run_in_background=true` + task-notification.** НЕ использовать `until grep -qE ... ; do sleep N; done`-loops — они тоже без stdout и Bash-tool сам переводит их в фон, а ты продолжаешь poll'ить и снова наслаиваешь. Единственный надёжный wait: запустил в фоне → ждёшь completion-notification → потом читаешь log отдельным вызовом.
+3. **Проверить нет ли живого gradle до запуска нового:** `ps -eo pid,command | grep -E "gradlew|GradleWorker" | grep -v grep | wc -l`. Если > 0 — ждать (см. пункт 2) или спрашивать пользователя убить (нельзя kill'ать чужие процессы без разрешения).
+4. **Один активный gradle-запуск на repo одновременно.** Не запускать второй пока первый не отчитался completion-notification'ом.
+5. **Retro-мониторинг:** если по ходу выполнения задачи `ps grep gradlew` показывает >1 процесса — это уже нарушение правил. Остановиться, убить (с разрешения), не продолжать наслаивать.
 
 ## Что не делать
 

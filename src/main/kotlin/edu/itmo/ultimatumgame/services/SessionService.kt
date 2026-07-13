@@ -125,6 +125,7 @@ class SessionService(
         return enrichWithHints(dto, round, session.members)
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     fun getRounds(sessionId: UUID): List<RoundResponse> {
         if (!sessionRepository.existsById(sessionId)) {
             throw IdNotFoundException("Сессия с $sessionId не найдена")
@@ -144,14 +145,8 @@ class SessionService(
         round: Round,
         members: Set<User>,
     ): RoundResponse {
-        // Ловим только отсутствие user-context (broadcast / system-каналы);
-        // остальные ошибки должны пробрасываться, чтобы не маскировать баги.
-        val userId = try {
-            securityService.getCurrentUserId()
-        } catch (ex: IllegalStateException) {
-            logger.debug("enrichWithHints: no user context ({}), возвращаю dto без hints", ex.message)
-            return dto
-        }
+        // null — broadcast / system-каналы / anonymous; DTO возвращается без hints.
+        val userId = securityService.getCurrentUserIdOrNull() ?: return dto
         val role = computeMyRole(round, userId)
         val actions = computeMyPendingActions(round, userId, members)
         return dto.copy(myRole = role, myPendingActions = actions)

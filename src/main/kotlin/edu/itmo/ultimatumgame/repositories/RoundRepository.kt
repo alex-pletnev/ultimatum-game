@@ -10,7 +10,12 @@ import java.util.UUID
 @Repository
 interface RoundRepository : CrudRepository<Round, UUID> {
 
-    /** Берём сразу все офферы и решения раунда, чтобы избежать N+1 при обходе rounds. */
+    /**
+     * Берём сразу offers + participants раунда. Decisions намеренно НЕ fetch'им
+     * тем же запросом — Hibernate бросил бы MultipleBagFetchException при JOIN
+     * FETCH двух List-коллекций одновременно. Decisions ленятся; сервисный метод
+     * должен вызываться под @Transactional(readOnly = true) для их traverse'а.
+     */
     @Query(
         """
         select distinct r
@@ -18,8 +23,6 @@ interface RoundRepository : CrudRepository<Round, UUID> {
             left join fetch r.offers o
             left join fetch o.proposer
             left join fetch o.responder
-            left join fetch r.decisions d
-            left join fetch d.responder
         where r.session.id = :sessionId
         """
     )

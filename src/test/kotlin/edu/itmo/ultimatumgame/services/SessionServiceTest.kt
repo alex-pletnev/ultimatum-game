@@ -209,7 +209,7 @@ class SessionServiceTest {
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
         every { roundMapper.toDto(r) } returns dto
         // no user context — enrich returns dto as-is
-        every { securityService.getCurrentUserId() } throws IllegalStateException("no auth")
+        every { securityService.getCurrentUserIdOrNull() } returns null
 
         assertSame(dto, service.getCurrentRound(s.id!!))
     }
@@ -240,7 +240,7 @@ class SessionServiceTest {
         every { roundMapper.toDto(r2) } returns d2
         every { roundMapper.toDto(r3) } returns d3
         // no user context — enrich returns dto as-is
-        every { securityService.getCurrentUserId() } throws IllegalStateException("no auth")
+        every { securityService.getCurrentUserIdOrNull() } returns null
 
         val result = service.getRounds(s.id!!)
 
@@ -276,7 +276,7 @@ class SessionServiceTest {
         every { sessionRepo.existsById(s.id!!) } returns true
         every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
         every { roundMapper.toDto(r) } returns baseDto
-        every { securityService.getCurrentUserId() } returns me.id!!
+        every { securityService.getCurrentUserIdOrNull() } returns me.id!!
 
         val result = service.getRounds(s.id!!)
 
@@ -304,7 +304,7 @@ class SessionServiceTest {
         every { sessionRepo.existsById(s.id!!) } returns true
         every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
         every { roundMapper.toDto(r) } returns baseDto
-        every { securityService.getCurrentUserId() } returns me.id!!
+        every { securityService.getCurrentUserIdOrNull() } returns me.id!!
 
         val result = service.getRounds(s.id!!)
 
@@ -333,7 +333,7 @@ class SessionServiceTest {
         every { sessionRepo.existsById(s.id!!) } returns true
         every { roundRepo.findAllBySessionIdWithRelations(s.id!!) } returns listOf(r)
         every { roundMapper.toDto(r) } returns baseDto
-        every { securityService.getCurrentUserId() } returns observer.id!!
+        every { securityService.getCurrentUserIdOrNull() } returns observer.id!!
 
         val result = service.getRounds(s.id!!)
 

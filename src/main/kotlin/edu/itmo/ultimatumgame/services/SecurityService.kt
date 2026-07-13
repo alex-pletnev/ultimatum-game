@@ -16,4 +16,13 @@ class SecurityService {
         logger.info("Текущий пользователь с id=$userId получен из контекста безопасности")
         return userId
     }
+
+    /**
+     * Возвращает userId, если контекст безопасности содержит валидную аутентификацию;
+     * null иначе (broadcast / system-каналы / anonymous). Не бросает исключений.
+     */
+    fun getCurrentUserIdOrNull(): UUID? {
+        val name = SecurityContextHolder.getContext().authentication?.name ?: return null
+        return runCatching { UUID.fromString(name) }.getOrNull()
+    }
 }
