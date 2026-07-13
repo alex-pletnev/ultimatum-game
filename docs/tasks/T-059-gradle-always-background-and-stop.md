@@ -1,7 +1,7 @@
 ---
 id: T-059
 title: Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков
-status: pending
+status: done
 priority: high
 created: 2026-07-13
 updated: 2026-07-13
@@ -26,11 +26,11 @@ tags: [meta, harness, dx]
 
 ## Acceptance criteria
 
-- [ ] В CLAUDE.md: **любая** gradle-команда (`./gradlew check|test|build|clean|generateApiSnapshots`) вызывается через `run_in_background=true` c явным `> /tmp/*.log 2>&1`. Ждать — **только** через task-notification (не через polling / sleep-loops).
-- [ ] До подозрительных запусков (после kill'а, после долгого висения, после смены зависимостей) — прогонять `./gradlew --stop` для явного отпускания daemon lock'ов.
-- [ ] Убрать из CLAUDE.md все reactive-правила предыдущих итераций (три версии за одну сессию) — заменить одним общим блоком.
-- [ ] Портировать в harness template.
-- [ ] Пометить как повторяющийся паттерн E-категории в self-review — если наблюдение возникло дважды, приоритет правила поднимается.
+- [x] В CLAUDE.md: **любая** gradle-команда (`./gradlew check|test|build|clean|generateApiSnapshots`) вызывается через `run_in_background=true` c явным `> /tmp/*.log 2>&1`. Ждать — **только** через task-notification (не через polling / sleep-loops).
+- [x] До подозрительных запусков (после kill'а, после долгого висения, после смены зависимостей) — прогонять `./gradlew --stop` для явного отпускания daemon lock'ов.
+- [x] Убрать из CLAUDE.md все reactive-правила предыдущих итераций (три версии за одну сессию) — заменить одним общим блоком.
+- [x] Портировать в harness template.
+- [x] Пометить как повторяющийся паттерн E-категории в self-review — если наблюдение возникло дважды, приоритет правила поднимается.
 
 ## План
 
@@ -41,3 +41,4 @@ tags: [meta, harness, dx]
 ## Лог
 
 - 2026-07-13: заведено из self-review T-053 (commit 4ead791). Категория E — reactive fixing вместо системного диагноза. Priority high — паттерн блокирует dev-experience, каждая gradle-команда потенциально теряет 5+ минут.
+- 2026-07-13: закрыто. (1) В `CLAUDE.md` секция «Правила запуска long-running Gradle команд» переписана — 5 общих пунктов вместо 5 reactive: run_in_background=true + redirect в /tmp, wait только по task-notification, `./gradlew --stop` до подозрительных запусков, `ps grep` check, one active run at a time. (2) В `~/.claude/skills/setup-agent-harness/references/templates/claude-md.template.md` — универсальное правило переписано под тот же паттерн (gradle/docker/cargo/npm/sbt/mvn). (3) В `.claude/skills/self-review.md` (и в harness `references/skills/self-review.md`) — категория E расширена пунктом «Reactive patchwork внутри одной сессии» с автоматическим `high`-приоритетом и требованием зафиксировать цепочку итераций.

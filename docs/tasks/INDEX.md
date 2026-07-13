@@ -23,7 +23,6 @@
 | T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | pending | medium | 2026-07-13 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
-| T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | pending | high | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 
 ## Закрытые задачи
 
@@ -72,6 +71,7 @@
 | T-051 | Broadcast '/topic/offerCreated' должен содержать responder после shuffle | done | 2026-07-13 | [T-051](T-051-broadcast-offer-with-responder.md) |
 | T-052 | Endpoint для получения истории раундов сессии со всеми оффер'ами и решениями | done | 2026-07-13 | [T-052](T-052-rounds-history-endpoint.md) |
 | T-053 | Helper-поля 'myRole' и 'phase' в RoundResponse — фронт должен знать «мой ход» | done | 2026-07-13 | [T-053](T-053-my-turn-hints-in-responses.md) |
+| T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | done | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 
 ## Легенда статусов
 

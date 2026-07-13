@@ -259,13 +259,15 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 
 ### Правила запуска long-running Gradle команд
 
-Извлечены из инцидентов 2026-07-13 в T-053 — параллельные `./gradlew check` блокировали друг друга через `.gradle/configuration-cache-*.lock`.
+**Root cause** (три reactive итерации в T-053 закрыты одним общим правилом в T-059): Bash-tool не гарантирует foreground-выполнение для команд с редким stdout — `| tail`, `until sleep`-loops, «просто дождусь» — всё это молча уезжает в фон, gradle daemon продолжает держать `.gradle/configuration-cache-*.lock`, следующий запуск ждёт вечно.
 
-1. **Никогда не пайпить gradle через `| tail -N`.** Pipe буферизует stdout — тула считает команду висящей и переводит в фон, а gradle daemon / test executor продолжают жить. Правильно: `./gradlew check > /tmp/check.log 2>&1` + `tail -5 /tmp/check.log` отдельной командой в конце.
-2. **Ждать завершения только через `run_in_background=true` + task-notification.** НЕ использовать `until grep -qE ... ; do sleep N; done`-loops — они тоже без stdout и Bash-tool сам переводит их в фон, а ты продолжаешь poll'ить и снова наслаиваешь. Единственный надёжный wait: запустил в фоне → ждёшь completion-notification → потом читаешь log отдельным вызовом.
-3. **Проверить нет ли живого gradle до запуска нового:** `ps -eo pid,command | grep -E "gradlew|GradleWorker" | grep -v grep | wc -l`. Если > 0 — ждать (см. пункт 2) или спрашивать пользователя убить (нельзя kill'ать чужие процессы без разрешения).
-4. **Один активный gradle-запуск на repo одновременно.** Не запускать второй пока первый не отчитался completion-notification'ом.
-5. **Retro-мониторинг:** если по ходу выполнения задачи `ps grep gradlew` показывает >1 процесса — это уже нарушение правил. Остановиться, убить (с разрешения), не продолжать наслаивать.
+**Единственно правильный паттерн:**
+
+1. **Любая gradle-команда** (`./gradlew check | test | build | clean | generateApiSnapshots | bootRun | ...`) запускается через `Bash(run_in_background=true)` с редиректом в файл: `./gradlew <task> > /tmp/gradle-<task>.log 2>&1`. Никаких pipe'ов, никаких `tail -f`, никаких `until`-loops.
+2. **Wait — только по task-notification.** Дождался `completed` → отдельным вызовом `tail -N /tmp/gradle-<task>.log`. Ни при каких условиях не polling'ать через sleep.
+3. **Перед подозрительным запуском** (после kill'а, после долгого висения, после смены зависимостей / build.gradle, после падения непонятно почему) — прогнать `./gradlew --stop > /tmp/gradle-stop.log 2>&1` (тоже фоном + notification), чтобы явно отпустить daemon lock'и.
+4. **Проверять «есть ли живой gradle» до запуска нового:** `ps -eo pid,command | grep -E "gradlew|GradleWorker" | grep -v grep | wc -l`. Если > 0 — либо ждать текущий (см. п.2), либо `./gradlew --stop` (см. п.3), либо спрашивать пользователя killять чужой процесс.
+5. **Один активный gradle-запуск на repo одновременно.** Второй не наслаивать.
 
 ## Что не делать
 
