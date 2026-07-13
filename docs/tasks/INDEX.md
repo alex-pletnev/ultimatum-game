@@ -14,6 +14,10 @@
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
 | T-025 | Правило — при отклонении от буквы AC уведомить пользователя до commit'а | pending | medium | 2026-07-13 | [T-025](T-025-notify-before-ac-deviation.md) |
+| T-027 | Session-start ritual — чтение INDEX.md и синхронизация с in_progress тасками | pending | medium | 2026-07-13 | [T-027](T-027-triage-and-session-start-ritual.md) |
+| T-028 | Pre-flight check для non-trivial — assumptions/risks/reversibility | pending | medium | 2026-07-13 | [T-028](T-028-pre-flight-check-for-nontrivial.md) |
+| T-029 | Расширить wheel-check — read before write (docs + impact) | pending | low | 2026-07-13 | [T-029](T-029-wheel-check-docs-and-impact.md) |
+| T-030 | Hooks-based enforcement для критичных skill'ов | pending | low | 2026-07-13 | [T-030](T-030-hooks-based-enforcement.md) |
 
 ## Закрытые задачи
 
@@ -38,6 +42,7 @@
 | T-020 | Починить detekt-findings в тестах вместо @file:Suppress | done | 2026-07-13 | [T-020](T-020-fix-test-detekt-suppresses.md) |
 | T-023 | Интеграция superpowers-skills в наши skills — обкатка в этом проекте | done | 2026-07-13 | [T-023](T-023-superpowers-integration-in-project.md) |
 | T-024 | Перенести superpowers-integration в setup-agent-harness — после обкатки в T-023 | done | 2026-07-13 | [T-024](T-024-superpowers-integration-port-to-harness.md) |
+| T-026 | Триаж по типам задач в task-add — bug ≠ brainstorming, а systematic-debugging | done | 2026-07-13 | [T-026](T-026-fix-task-add-triage-vs-brainstorming.md) |
 
 ## Легенда статусов
 
