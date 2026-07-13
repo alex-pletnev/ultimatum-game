@@ -18,6 +18,10 @@
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
 | T-050 | Validation exceptions в service-слое должны отдаваться клиенту как HTTP 400 (не 500) | pending | low | 2026-07-13 | [T-050](T-050-validation-exception-http-mapping.md) |
+| T-051 | Broadcast '/topic/offerCreated' должен содержать responder после shuffle | pending | high | 2026-07-13 | [T-051](T-051-broadcast-offer-with-responder.md) |
+| T-052 | Endpoint для получения истории раундов сессии со всеми оффер'ами и решениями | pending | high | 2026-07-13 | [T-052](T-052-rounds-history-endpoint.md) |
+| T-053 | Helper-поля 'myRole' и 'phase' в RoundResponse — фронт должен знать «мой ход» | pending | high | 2026-07-13 | [T-053](T-053-my-turn-hints-in-responses.md) |
+| T-054 | Реализовать AdminGameplayService.abortCurrentRound и pauseRound (сейчас TODO) | pending | medium | 2026-07-13 | [T-054](T-054-implement-abort-and-pause-round.md) |
 
 ## Закрытые задачи
 
