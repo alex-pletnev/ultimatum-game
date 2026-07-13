@@ -17,6 +17,7 @@
 | T-032 | External review (code-reviewer subagent) для high-stakes | pending | low | 2026-07-13 | [T-032](T-032-external-review-for-high-stakes.md) |
 | T-034 | Periodic learning consolidation — сканирование закрытых задач на паттерны | pending | low | 2026-07-13 | [T-034](T-034-periodic-learning-consolidation.md) |
 | T-036 | /harness-update v2 — sync CLAUDE.md через harness-config.json | pending | medium | 2026-07-13 | [T-036](T-036-harness-update-claude-md.md) |
+| T-037 | harness-update — предупреждать о потере кастомизации harness-managed skill'ов | pending | low | 2026-07-13 | [T-037](T-037-harness-update-warn-customization-loss.md) |
 
 ## Закрытые задачи
 
