@@ -26,6 +26,7 @@
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
 | T-063 | FreeForAllStrategy.shuffleOffers — бесконечный цикл при неудачном RNG (derangement bug) | pending | high | 2026-07-14 | [T-063](T-063-freeforall-derangement-flake.md) |
 | T-064 | AuthService.refresh — malformed/подделанный refresh-токен даёт 500 вместо 401 | pending | high | 2026-07-14 | [T-064](T-064-refresh-malformed-token-500.md) |
+| T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
 
 ## Закрытые задачи
 
