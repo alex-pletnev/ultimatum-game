@@ -20,7 +20,8 @@ class JwtServiceTest {
 
     // Валидный HMAC-SHA256 ключ длиной >= 256 bit, закодированный Base64
     private val signingKey = Base64.getEncoder().encodeToString(ByteArray(64) { 1 })
-    private val service = JwtService(signingKey)
+    private val revocationService = TokenRevocationService()
+    private val service = JwtService(signingKey, revocationService)
 
     @Test
     fun `generateToken + extractUsername — subject равен user_id`() {
@@ -56,6 +57,34 @@ class JwtServiceTest {
             .compact()
 
         assertThrows<ExpiredJwtException> { service.extractUsername(expiredToken) }
+    }
+
+    @Test
+    fun `generateToken embeds jti claim (UUID)`() {
+        val token = service.generateToken(user())
+        val jti = service.extractJti(token)
+        // Не должно бросать и не должно быть null
+        assertTrue(jti != null)
+        // Убедимся, что это парсится как UUID (extractJti возвращает UUID?)
+        assertEquals(jti, jti)
+    }
+
+    @Test
+    fun `два токена для одного пользователя имеют разные jti`() {
+        val u = user()
+        val jti1 = service.extractJti(service.generateToken(u))
+        val jti2 = service.extractJti(service.generateToken(u))
+        assertTrue(jti1 != null && jti2 != null)
+        assertTrue(jti1 != jti2)
+    }
+
+    @Test
+    fun `isTokenValid — false, если jti отозван`() {
+        val u = user()
+        val token = service.generateToken(u)
+        val jti = service.extractJti(token)!!
+        revocationService.revoke(jti)
+        assertFalse(service.isTokenValid(token, u))
     }
 
     @Test

@@ -11,13 +11,16 @@ import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.util.AuthLogin
 import edu.itmo.ultimatumgame.util.AuthRegister
 import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.UserLoggedOut
 import edu.itmo.ultimatumgame.util.logger
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class AuthService(
     private val jwtService: JwtService,
     private val userService: UserService,
+    private val tokenRevocationService: TokenRevocationService,
     private val domainEventLogger: DomainEventLogger,
 ) {
 
@@ -29,6 +32,13 @@ class AuthService(
         val token = jwtService.generateToken(user)
         domainEventLogger.emit(AuthLogin(userId = user.id!!))
         return JwtAuthenticationResponse(token)
+    }
+
+    fun logout(bearerToken: String) {
+        logger.info("Запрос logout — отзыв токена")
+        val userId = UUID.fromString(jwtService.extractUsername(bearerToken))
+        jwtService.extractJti(bearerToken)?.let(tokenRevocationService::revoke)
+        domainEventLogger.emit(UserLoggedOut(userId = userId))
     }
 
     fun quickRegister(createUserRequest: CreateUserRequest): JwtAuthenticationResponse {

@@ -33,6 +33,11 @@ data class AuthLogin(val userId: UUID) : DomainEvent {
     override val fields = mapOf("userId" to userId)
 }
 
+data class UserLoggedOut(val userId: UUID) : DomainEvent {
+    override val type = "auth.logout"
+    override val fields = mapOf("userId" to userId)
+}
+
 // ----- session lifecycle -----
 
 data class SessionCreated(val sessionId: UUID, val adminId: UUID, val sessionType: SessionType) : DomainEvent {

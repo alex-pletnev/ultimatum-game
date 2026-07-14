@@ -1,5 +1,7 @@
 package edu.itmo.ultimatumgame.controllers
 
+import edu.itmo.ultimatumgame.configs.BEARER_PREFIX
+import edu.itmo.ultimatumgame.configs.HEADER_AUTHORIZATION
 import edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto
 import edu.itmo.ultimatumgame.dto.requests.CreateUserRequest
 import edu.itmo.ultimatumgame.dto.requests.toDomain
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
@@ -47,5 +50,13 @@ class AuthController(
         val jwtToken = authService.quickLogin(authenticateUserRequest)
         logger.info("Токен выдан после входа для id=${authenticateUserRequest.id}")
         return jwtToken
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun logout(@RequestHeader(HEADER_AUTHORIZATION) authorization: String) {
+        val bearer = authorization.removePrefix(BEARER_PREFIX)
+        authService.logout(bearer)
+        logger.info("Токен отозван")
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import java.security.Key
 import java.util.Date
 import java.util.HashMap
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 // username is user.id
@@ -20,7 +21,8 @@ import java.util.concurrent.TimeUnit
 @Service
 class JwtService(
     @Value("\${token.signing.key}")
-    private val jwtSigningKey: String
+    private val jwtSigningKey: String,
+    private val tokenRevocationService: TokenRevocationService,
 ) {
 
     private val logger = logger()
@@ -45,11 +47,23 @@ class JwtService(
         return extractClaim(token, Claims::getSubject)
     }
 
+    /**
+     * Возвращает `jti` claim токена или `null`, если claim отсутствует / не парсится.
+     * Nullable — на случай токенов, выпущенных до релиза jti.
+     */
+    fun extractJti(token: String): UUID? {
+        val raw = runCatching { extractClaim(token, Claims::getId) }.getOrNull() ?: return null
+        return runCatching { UUID.fromString(raw) }.getOrNull()
+    }
+
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         val isExpired = isTokenExpired(token)
         val usernameMatches = extractUsername(token) == userDetails.username
-        logger.info("Проверка валидности токена: isExpired=$isExpired, usernameMatches=$usernameMatches")
-        return !isExpired && usernameMatches
+        val isRevoked = extractJti(token)?.let(tokenRevocationService::isRevoked) ?: false
+        logger.info(
+            "Проверка валидности токена: isExpired=$isExpired, usernameMatches=$usernameMatches, isRevoked=$isRevoked"
+        )
+        return !isExpired && usernameMatches && !isRevoked
     }
 
     // extraction util
@@ -83,6 +97,7 @@ class JwtService(
     private fun generateToken(extraClaims: MutableMap<String, *>, userDetails: UserDetails): String {
         logger.info("Генерация JWT токена для username=${userDetails.username}")
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.username)
+            .setId(UUID.randomUUID().toString())
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(TOKEN_EXPIRATION_DAYS)))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact()

@@ -7,9 +7,11 @@ import edu.itmo.ultimatumgame.exceptions.UserRoleNotAllowedException
 import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.UserLoggedOut
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 import kotlin.test.Test
@@ -19,8 +21,9 @@ class AuthServiceTest {
 
     private val jwtService = mockk<JwtService>()
     private val userService = mockk<UserService>()
+    private val tokenRevocationService = mockk<TokenRevocationService>(relaxUnitFun = true)
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
-    private val service = AuthService(jwtService, userService, domainEventLogger)
+    private val service = AuthService(jwtService, userService, tokenRevocationService, domainEventLogger)
 
     // Держим ссылку на текущего "пользователя" для эмуляции getUserDetailService
     private var loginTarget: User? = null
@@ -58,6 +61,31 @@ class AuthServiceTest {
         assertThrows<UserRoleNotAllowedException> {
             service.quickRegister(CreateUserRequest(nickname = "NPC-guy", role = Role.NPC))
         }
+    }
+
+    @Test
+    fun `logout — извлекает jti, отзывает его и эмитит UserLoggedOut`() {
+        val userId = UUID.randomUUID()
+        val jti = UUID.randomUUID()
+        every { jwtService.extractUsername("bearer-token") } returns userId.toString()
+        every { jwtService.extractJti("bearer-token") } returns jti
+
+        service.logout("bearer-token")
+
+        verify { tokenRevocationService.revoke(jti) }
+        verify { domainEventLogger.emit(UserLoggedOut(userId = userId)) }
+    }
+
+    @Test
+    fun `logout — токен без jti не падает, событие всё равно эмитится`() {
+        val userId = UUID.randomUUID()
+        every { jwtService.extractUsername("legacy-token") } returns userId.toString()
+        every { jwtService.extractJti("legacy-token") } returns null
+
+        service.logout("legacy-token")
+
+        verify(exactly = 0) { tokenRevocationService.revoke(any()) }
+        verify { domainEventLogger.emit(UserLoggedOut(userId = userId)) }
     }
 
     @Test

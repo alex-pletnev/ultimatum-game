@@ -262,6 +262,12 @@
         "title" : "HeadersNotDocumented",
         "type" : "object"
       },
+      "SpringStompDefaultHeaders" : {
+        "examples" : [ { } ],
+        "properties" : { },
+        "title" : "SpringStompDefaultHeaders",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.requests.CreateOfferCmd" : {
         "examples" : [ {
           "amount" : 0

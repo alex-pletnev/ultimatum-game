@@ -70,6 +70,7 @@ class SomeService(private val domainEventLogger: DomainEventLogger) {
 |------|--------------|--------------|
 | `auth.register` | `AuthService.quickRegister` | userId, nickname, role |
 | `auth.login` | `AuthService.quickLogin` | userId |
+| `auth.logout` | `AuthService.logout` | userId |
 | `session.created` | `SessionService.createSession` | sessionId, adminId, sessionType |
 | `session.started` | `AdminGameplayService.startSession` | sessionId, playerCount |
 | `session.closed` | `AdminGameplayService.startNextRound` (когда раундов больше нет) | sessionId |

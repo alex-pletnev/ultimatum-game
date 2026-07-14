@@ -83,11 +83,27 @@ Endpoint `/csrf` не существует, заголовок `X-CSRF-TOKEN` н
 |----------|----------|--------|
 | Алгоритм | HS256 (HMAC SHA-256) | `:86` |
 | Ключ | base64-decoded `${token.signing.key}` (env `JWT_SIGNING_KEY`) | `:21-22`, `:91-92` |
-| TTL | 365 дней | `:85` |
-| Subject | `user.id` (UUID как строка) | `:83` |
-| Extra claims | `nickname`, `role`, `createdAt` | `:32-34` |
+| TTL | 365 дней | `:29` |
+| Subject | `user.id` (UUID как строка) | `:97-102` |
+| Extra claims | `nickname`, `role`, `createdAt` | `:36-39` |
+| `jti` | `UUID.randomUUID()` — идентификатор токена для revocation-check | `:100` |
 
-Валидация: `isTokenValid` (`:47-53`) — `!isTokenExpired && extractUsername == userDetails.username`.
+Валидация: `isTokenValid` (`:60-68`) — `!isTokenExpired && extractUsername == userDetails.username && !tokenRevocationService.isRevoked(jti)`.
+
+### Revocation — `services/TokenRevocationService.kt`
+
+In-memory `Set<UUID>` отозванных `jti`. Заполняется через `POST /auth/logout` (см. `services/AuthService.logout`).
+
+Ограничения MVP:
+- Хранится в памяти — рестарт приложения обнуляет revoked-list. Отозванный токен снова валиден до `exp`.
+- Для прода — заменить бэкенд на Redis/DB (сохранив интерфейс `revoke(jti)` / `isRevoked(jti)`).
+
+### POST `/auth/logout`
+
+- Header: `Authorization: Bearer <jwt>`.
+- 204 при валидном токене; отзывает `jti` и эмитит `UserLoggedOut(userId)`.
+- Токен без `jti` (issued до релиза этой фичи) — событие эмитится, но revocation-запись не заводится.
+- Auth-семантика ошибок унаследована от глобальных handler'ов проекта (403 через `RestAccessDeniedHandler`, 401 только для `ExpiredJwtException`); отдельного 401-entry-point'а не заведено.
 
 ### `application.properties`
 
