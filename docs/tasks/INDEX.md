@@ -23,6 +23,8 @@
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
+| T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
+| T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
 
 ## Закрытые задачи
 
