@@ -3,6 +3,7 @@ package edu.itmo.ultimatumgame.services
 import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequest
 import edu.itmo.ultimatumgame.dto.requests.CreateUserRequest
+import edu.itmo.ultimatumgame.exceptions.InvalidJwtException
 import edu.itmo.ultimatumgame.exceptions.UserRoleNotAllowedException
 import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.User
@@ -31,27 +32,35 @@ class AuthServiceTest {
         loginTarget?.takeIf { it.id == id } ?: error("miss")
 
     @Test
-    fun `quickLogin — находит пользователя и возвращает сгенерированный токен`() {
+    fun `quickLogin — возвращает access + refresh + expiresIn`() {
         val u = user()
         loginTarget = u
         every { userService.getUserDetailService() } returns ::lookupUserById
-        every { jwtService.generateToken(u) } returns "tok"
+        every { jwtService.generateAccessToken(u) } returns "access"
+        every { jwtService.generateRefreshToken(u) } returns "refresh"
+        every { jwtService.accessTokenTtlSeconds() } returns 900L
 
         val resp = service.quickLogin(AuthenticateUserRequest(u.id!!))
 
-        assertEquals("tok", resp.token)
+        assertEquals("access", resp.accessToken)
+        assertEquals("refresh", resp.refreshToken)
+        assertEquals(900L, resp.expiresIn)
     }
 
     @Test
-    fun `quickRegister — создаёт пользователя_PLAYER и возвращает токен`() {
+    fun `quickRegister — создаёт пользователя_PLAYER и возвращает access+refresh+expiresIn`() {
         val savedUser = user(role = Role.PLAYER)
         val userSlot = slot<User>()
         every { userService.create(capture(userSlot)) } returns savedUser
-        every { jwtService.generateToken(savedUser) } returns "new-tok"
+        every { jwtService.generateAccessToken(savedUser) } returns "new-access"
+        every { jwtService.generateRefreshToken(savedUser) } returns "new-refresh"
+        every { jwtService.accessTokenTtlSeconds() } returns 900L
 
         val resp = service.quickRegister(CreateUserRequest(nickname = "Alice", role = Role.PLAYER))
 
-        assertEquals("new-tok", resp.token)
+        assertEquals("new-access", resp.accessToken)
+        assertEquals("new-refresh", resp.refreshToken)
+        assertEquals(900L, resp.expiresIn)
         assertEquals("Alice", userSlot.captured.nickname)
         assertEquals(Role.PLAYER, userSlot.captured.role)
     }
@@ -89,12 +98,52 @@ class AuthServiceTest {
     }
 
     @Test
+    fun `refresh — валидный refresh-токен возвращает новый accessToken`() {
+        val u = user()
+        loginTarget = u
+        every { userService.getUserDetailService() } returns ::lookupUserById
+        every { jwtService.extractType("refresh-tok") } returns "REFRESH"
+        every { jwtService.extractUsername("refresh-tok") } returns u.id.toString()
+        every { jwtService.isRefreshTokenValid("refresh-tok", u) } returns true
+        every { jwtService.generateAccessToken(u) } returns "new-access"
+        every { jwtService.accessTokenTtlSeconds() } returns 900L
+
+        val resp = service.refresh("refresh-tok")
+
+        assertEquals("new-access", resp.accessToken)
+        assertEquals(900L, resp.expiresIn)
+        // refresh не ротируется в MVP
+        assertEquals(null, resp.refreshToken)
+    }
+
+    @Test
+    fun `refresh — access-токен вместо refresh бросает InvalidJwtException`() {
+        every { jwtService.extractType("access-tok") } returns "ACCESS"
+        assertThrows<InvalidJwtException> { service.refresh("access-tok") }
+    }
+
+    @Test
+    fun `refresh — невалидный refresh (истёк или подделка) бросает InvalidJwtException`() {
+        val u = user()
+        loginTarget = u
+        every { userService.getUserDetailService() } returns ::lookupUserById
+        every { jwtService.extractType("bad-refresh") } returns "REFRESH"
+        every { jwtService.extractUsername("bad-refresh") } returns u.id.toString()
+        every { jwtService.isRefreshTokenValid("bad-refresh", u) } returns false
+
+        assertThrows<InvalidJwtException> { service.refresh("bad-refresh") }
+    }
+
+    @Test
     fun `quickRegister — ADMIN разрешён`() {
         val savedUser = user(role = Role.ADMIN)
         every { userService.create(any()) } returns savedUser
-        every { jwtService.generateToken(savedUser) } returns "admin-tok"
+        every { jwtService.generateAccessToken(savedUser) } returns "admin-access"
+        every { jwtService.generateRefreshToken(savedUser) } returns "admin-refresh"
+        every { jwtService.accessTokenTtlSeconds() } returns 900L
 
         val resp = service.quickRegister(CreateUserRequest(nickname = "root", role = Role.ADMIN))
-        assertEquals("admin-tok", resp.token)
+        assertEquals("admin-access", resp.accessToken)
+        assertEquals("admin-refresh", resp.refreshToken)
     }
 }

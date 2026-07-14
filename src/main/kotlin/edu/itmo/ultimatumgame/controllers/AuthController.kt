@@ -4,6 +4,7 @@ import edu.itmo.ultimatumgame.configs.BEARER_PREFIX
 import edu.itmo.ultimatumgame.configs.HEADER_AUTHORIZATION
 import edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto
 import edu.itmo.ultimatumgame.dto.requests.CreateUserRequest
+import edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest
 import edu.itmo.ultimatumgame.dto.requests.toDomain
 import edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse
 import edu.itmo.ultimatumgame.services.AuthService
@@ -58,5 +59,12 @@ class AuthController(
         val bearer = authorization.removePrefix(BEARER_PREFIX)
         authService.logout(bearer)
         logger.info("Токен отозван")
+    }
+
+    @PostMapping("/refresh")
+    @PermitAll
+    fun refresh(@RequestBody @Valid request: RefreshTokenRequest): JwtAuthenticationResponse {
+        logger.info("Запрос refresh access-токена")
+        return authService.refresh(request.refreshToken)
     }
 }

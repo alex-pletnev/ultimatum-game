@@ -97,6 +97,16 @@
         "title" : "CreateUserRequest",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest" : {
+        "properties" : {
+          "refreshToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "refreshToken" ],
+        "title" : "RefreshTokenRequest",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.requests.SessionConfigDto" : {
         "description" : "Конфигурация сессии. Кросс-инвариант: для FREE_FOR_ALL numTeams=0; для TEAM_BATTLE numTeams>=2. Числовые поля не должны быть null (валидируется на уровне сервиса).",
         "properties" : {
@@ -182,11 +192,18 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse" : {
         "properties" : {
-          "token" : {
+          "accessToken" : {
+            "type" : "string"
+          },
+          "expiresIn" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "refreshToken" : {
             "type" : "string"
           }
         },
-        "required" : [ "token" ],
+        "required" : [ "accessToken", "expiresIn" ],
         "title" : "JwtAuthenticationResponse",
         "type" : "object"
       },
@@ -808,6 +825,94 @@
               }
             },
             "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/refresh" : {
+      "post" : {
+        "operationId" : "refresh",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
+                }
+              }
+            },
+            "description" : "OK"
           },
           "400" : {
             "content" : {

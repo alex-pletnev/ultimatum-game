@@ -24,16 +24,16 @@ class JwtServiceTest {
     private val service = JwtService(signingKey, revocationService)
 
     @Test
-    fun `generateToken + extractUsername — subject равен user_id`() {
+    fun `generateAccessToken + extractUsername — subject равен user_id`() {
         val u = user()
-        val token = service.generateToken(u)
+        val token = service.generateAccessToken(u)
         assertEquals(u.id.toString(), service.extractUsername(token))
     }
 
     @Test
     fun `isTokenValid — свежий токен для того же пользователя валиден`() {
         val u = user()
-        val token = service.generateToken(u)
+        val token = service.generateAccessToken(u)
         assertTrue(service.isTokenValid(token, u))
     }
 
@@ -41,7 +41,7 @@ class JwtServiceTest {
     fun `isTokenValid — токен от чужого username невалиден`() {
         val u1 = user(id = UUID.randomUUID())
         val u2 = user(id = UUID.randomUUID())
-        val token = service.generateToken(u1)
+        val token = service.generateAccessToken(u1)
         assertFalse(service.isTokenValid(token, u2))
     }
 
@@ -60,8 +60,8 @@ class JwtServiceTest {
     }
 
     @Test
-    fun `generateToken embeds jti claim (UUID)`() {
-        val token = service.generateToken(user())
+    fun `generateAccessToken embeds jti claim (UUID)`() {
+        val token = service.generateAccessToken(user())
         val jti = service.extractJti(token)
         // Не должно бросать и не должно быть null
         assertTrue(jti != null)
@@ -72,16 +72,58 @@ class JwtServiceTest {
     @Test
     fun `два токена для одного пользователя имеют разные jti`() {
         val u = user()
-        val jti1 = service.extractJti(service.generateToken(u))
-        val jti2 = service.extractJti(service.generateToken(u))
+        val jti1 = service.extractJti(service.generateAccessToken(u))
+        val jti2 = service.extractJti(service.generateAccessToken(u))
         assertTrue(jti1 != null && jti2 != null)
         assertTrue(jti1 != jti2)
     }
 
     @Test
+    fun `generateAccessToken помечает claim type=ACCESS`() {
+        val token = service.generateAccessToken(user())
+        assertEquals("ACCESS", service.extractType(token))
+    }
+
+    @Test
+    fun `generateRefreshToken помечает claim type=REFRESH`() {
+        val token = service.generateRefreshToken(user())
+        assertEquals("REFRESH", service.extractType(token))
+    }
+
+    @Test
+    fun `isTokenValid — false, если refresh-токен используется как access`() {
+        val u = user()
+        val refresh = service.generateRefreshToken(u)
+        assertFalse(service.isTokenValid(refresh, u))
+    }
+
+    @Test
+    fun `isTokenValid — true для access-токена`() {
+        val u = user()
+        val access = service.generateAccessToken(u)
+        assertTrue(service.isTokenValid(access, u))
+    }
+
+    @Test
+    fun `access-токен имеет короткий TTL (около 15 минут)`() {
+        val token = service.generateAccessToken(user())
+        val ttlSec = service.extractTtlSeconds(token)
+        // Допускаем зазор: >=14m, <=16m
+        assertTrue(ttlSec in (14 * 60L)..(16 * 60L), "actual TTL sec=$ttlSec")
+    }
+
+    @Test
+    fun `refresh-токен имеет длинный TTL (около 14 дней)`() {
+        val token = service.generateRefreshToken(user())
+        val ttlSec = service.extractTtlSeconds(token)
+        val day = 24 * 60 * 60L
+        assertTrue(ttlSec in (13 * day)..(15 * day), "actual TTL sec=$ttlSec")
+    }
+
+    @Test
     fun `isTokenValid — false, если jti отозван`() {
         val u = user()
-        val token = service.generateToken(u)
+        val token = service.generateAccessToken(u)
         val jti = service.extractJti(token)!!
         revocationService.revoke(jti)
         assertFalse(service.isTokenValid(token, u))

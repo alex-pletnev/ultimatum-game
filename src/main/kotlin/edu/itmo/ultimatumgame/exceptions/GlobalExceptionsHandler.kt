@@ -171,6 +171,20 @@ class GlobalExceptionsHandler {
             path = request.requestURI
         )
 
+    @ExceptionHandler(InvalidJwtException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleInvalidJwt(
+        ex: InvalidJwtException,
+        request: HttpServletRequest
+    ): ApiErrorResponse =
+        ApiErrorResponse(
+            timestamp = Date(),
+            status = HttpStatus.UNAUTHORIZED.value(),
+            error = "Unauthorized",
+            message = ex.message ?: "Невалидный JWT",
+            path = request.requestURI
+        )
+
     @ExceptionHandler(SessionJoinRejectedException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
     fun handleSessionJoinRejected(

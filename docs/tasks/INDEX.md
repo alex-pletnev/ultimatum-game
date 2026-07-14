@@ -19,12 +19,12 @@
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
 | T-050 | Validation exceptions в service-слое должны отдаваться клиенту как HTTP 400 (не 500) | pending | low | 2026-07-13 | [T-050](T-050-validation-exception-http-mapping.md) |
 | T-054 | Реализовать AdminGameplayService.abortCurrentRound и pauseRound (сейчас TODO) | pending | medium | 2026-07-13 | [T-054](T-054-implement-abort-and-pause-round.md) |
-| T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | pending | medium | 2026-07-13 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
+| T-063 | FreeForAllStrategy.shuffleOffers — бесконечный цикл при неудачном RNG (derangement bug) | pending | high | 2026-07-14 | [T-063](T-063-freeforall-derangement-flake.md) |
 
 ## Закрытые задачи
 
@@ -74,6 +74,7 @@
 | T-052 | Endpoint для получения истории раундов сессии со всеми оффер'ами и решениями | done | 2026-07-13 | [T-052](T-052-rounds-history-endpoint.md) |
 | T-053 | Helper-поля 'myRole' и 'phase' в RoundResponse — фронт должен знать «мой ход» | done | 2026-07-13 | [T-053](T-053-my-turn-hints-in-responses.md) |
 | T-055 | POST /auth/logout — invalidate JWT + audit event | done | 2026-07-14 | [T-055](T-055-logout-endpoint.md) |
+| T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | done | 2026-07-14 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | done | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 
 ## Легенда статусов

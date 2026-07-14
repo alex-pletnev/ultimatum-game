@@ -1,3 +1,7 @@
+// JWT lifecycle: генерация + валидация + claim extraction + revocation + type check —
+// естественная когезия, дробление на несколько сервисов не оправдано.
+@file:Suppress("TooManyFunctions")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.model.User
@@ -28,22 +32,34 @@ class JwtService(
     private val logger = logger()
 
     companion object {
-        private const val TOKEN_EXPIRATION_DAYS = 365L
+        private const val ACCESS_TOKEN_TTL_MINUTES = 15L
+        private const val REFRESH_TOKEN_TTL_DAYS = 14L
+        private const val MILLIS_PER_SECOND = 1000L
+        const val TYPE_ACCESS = "ACCESS"
+        const val TYPE_REFRESH = "REFRESH"
+        private const val CLAIM_TYPE = "type"
     }
 
-    fun generateToken(userDetails: UserDetails): String {
-        logger.info("dto to Map для пользователя с username=${userDetails.username}")
+    fun accessTokenTtlSeconds(): Long = TimeUnit.MINUTES.toSeconds(ACCESS_TOKEN_TTL_MINUTES)
+
+    fun generateAccessToken(userDetails: UserDetails): String {
         val claims = HashMap<String, Any>()
         if (userDetails is User) {
             claims["nickname"] = userDetails.nickname
             claims["role"] = userDetails.role
             claims["createdAt"] = userDetails.createdAt
         }
-        return generateToken(claims, userDetails)
+        claims[CLAIM_TYPE] = TYPE_ACCESS
+        return buildToken(claims, userDetails, TimeUnit.MINUTES.toMillis(ACCESS_TOKEN_TTL_MINUTES))
+    }
+
+    fun generateRefreshToken(userDetails: UserDetails): String {
+        val claims = HashMap<String, Any>()
+        claims[CLAIM_TYPE] = TYPE_REFRESH
+        return buildToken(claims, userDetails, TimeUnit.DAYS.toMillis(REFRESH_TOKEN_TTL_DAYS))
     }
 
     fun extractUsername(token: String): String {
-        logger.info("Извлечение username из токена")
         return extractClaim(token, Claims::getSubject)
     }
 
@@ -56,55 +72,80 @@ class JwtService(
         return runCatching { UUID.fromString(raw) }.getOrNull()
     }
 
+    /** Возвращает `type` claim или `null`, если отсутствует. */
+    fun extractType(token: String): String? =
+        runCatching { extractClaim(token) { it[CLAIM_TYPE] as? String } }.getOrNull()
+
+    /** Секунды до `exp`. Отрицательное значение = уже истёк. */
+    fun extractTtlSeconds(token: String): Long {
+        val expMillis = extractClaim(token, Claims::getExpiration).time
+        return (expMillis - System.currentTimeMillis()) / MILLIS_PER_SECOND
+    }
+
+    /**
+     * Валидность **access**-токена: не истёк, subject совпадает, не отозван,
+     * type == ACCESS. Refresh-токены отклоняются — их проверяем отдельно
+     * через [isRefreshTokenValid].
+     */
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         val isExpired = isTokenExpired(token)
         val usernameMatches = extractUsername(token) == userDetails.username
         val isRevoked = extractJti(token)?.let(tokenRevocationService::isRevoked) ?: false
-        logger.info(
-            "Проверка валидности токена: isExpired=$isExpired, usernameMatches=$usernameMatches, isRevoked=$isRevoked"
+        val isAccessType = extractType(token) == TYPE_ACCESS
+        logger.debug(
+            "Access-token check: expired=$isExpired, usernameOk=$usernameMatches, " +
+                "revoked=$isRevoked, accessType=$isAccessType"
         )
-        return !isExpired && usernameMatches && !isRevoked
+        return !isExpired && usernameMatches && !isRevoked && isAccessType
+    }
+
+    /** Валидность **refresh**-токена: не истёк, subject совпадает, не отозван, type == REFRESH. */
+    fun isRefreshTokenValid(token: String, userDetails: UserDetails): Boolean {
+        val isExpired = isTokenExpired(token)
+        val usernameMatches = extractUsername(token) == userDetails.username
+        val isRevoked = extractJti(token)?.let(tokenRevocationService::isRevoked) ?: false
+        val isRefreshType = extractType(token) == TYPE_REFRESH
+        logger.debug(
+            "Refresh-token check: expired=$isExpired, usernameOk=$usernameMatches, " +
+                "revoked=$isRevoked, refreshType=$isRefreshType"
+        )
+        return !isExpired && usernameMatches && !isRevoked && isRefreshType
     }
 
     // extraction util
-    private fun isTokenExpired(token: String): Boolean {
-        val expired = extractExpiration(token).before(Date())
-        logger.info("Проверка истечения срока действия токена: expired=$expired")
-        return expired
-    }
-
-    private fun extractExpiration(token: String): Date {
-        logger.info("Извлечение срока действия токена")
-        return extractClaim(token, Claims::getExpiration)
-    }
+    private fun isTokenExpired(token: String): Boolean =
+        extractClaim(token, Claims::getExpiration).before(Date())
 
     private fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
-        logger.info("Извлечение claim из токена")
         val claims = extractAllClaims(token)
         return claimsResolver(claims)
     }
 
-    private fun extractAllClaims(token: String): Claims {
-        logger.info("Извлечение всех claims из токена")
-        return Jwts.parserBuilder()
+    private fun extractAllClaims(token: String): Claims =
+        Jwts.parserBuilder()
             .setSigningKey(getSigningKey())
             .build()
             .parseClaimsJws(token)
             .body
-    }
 
     // generation util
-    private fun generateToken(extraClaims: MutableMap<String, *>, userDetails: UserDetails): String {
-        logger.info("Генерация JWT токена для username=${userDetails.username}")
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.username)
+    private fun buildToken(
+        extraClaims: MutableMap<String, *>,
+        userDetails: UserDetails,
+        ttlMillis: Long,
+    ): String {
+        val now = System.currentTimeMillis()
+        return Jwts.builder()
+            .setClaims(extraClaims)
+            .setSubject(userDetails.username)
             .setId(UUID.randomUUID().toString())
-            .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(TOKEN_EXPIRATION_DAYS)))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact()
+            .setIssuedAt(Date(now))
+            .setExpiration(Date(now + ttlMillis))
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact()
     }
 
     private fun getSigningKey(): Key {
-        logger.info("Получение ключа для подписи JWT токена")
         val keyBytes = Decoders.BASE64.decode(jwtSigningKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
