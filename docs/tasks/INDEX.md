@@ -76,6 +76,7 @@
 | T-053 | Helper-поля 'myRole' и 'phase' в RoundResponse — фронт должен знать «мой ход» | done | 2026-07-13 | [T-053](T-053-my-turn-hints-in-responses.md) |
 | T-055 | POST /auth/logout — invalidate JWT + audit event | done | 2026-07-14 | [T-055](T-055-logout-endpoint.md) |
 | T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | done | 2026-07-14 | [T-056](T-056-jwt-refresh-endpoint.md) |
+| T-065 | setup-agent-harness — аргумент со свободным описанием контекста проекта → SPECIFIC_RULES | done | 2026-07-14 | [T-065](T-065-setup-harness-project-context-arg.md) |
 | T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | done | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 
 ## Легенда статусов
