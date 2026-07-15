@@ -38,13 +38,23 @@ CorsConfiguration().apply {
 
 Регистрируется на `/**`. Отдельно для STOMP: `setAllowedOrigins("*")` в `WebSocketConfig.kt`.
 
-### CSRF — отключён
+### CSRF — отключён (в двух местах, T-070)
 
+**HTTP-чейн** — `SecurityConfiguration`:
 ```kotlin
 .csrf { it.disable() }
 ```
 
-Endpoint `/csrf` не существует, заголовок `X-CSRF-TOKEN` не требуется, mutating-запросы принимаются с одним `Authorization: Bearer <jwt>`.
+**STOMP-канал** — `WebSocketSecurityConfig`. `@EnableWebSocketSecurity` в Spring Security 6 регистрирует свой `CsrfChannelInterceptor` в `clientInboundChannel` (отдельная цепочка, не покрывается HTTP `.csrf().disable()`). Мы подменяем его на no-op через:
+
+```kotlin
+@Bean(name = ["csrfChannelInterceptor"])
+fun noOpCsrfChannelInterceptor(): ChannelInterceptor = object : ChannelInterceptor {}
+```
+
+`WebSocketMessageBrokerSecurityConfiguration` резолвит бин по имени через `getBeanOrNull()`. Без этого overrida `@stomp/stompjs` (из не-same-origin dev-фронта) не может подключиться — CONNECT падает с `MissingCsrfTokenException` (CloseStatus 1002). См. T-070.
+
+Endpoint `/csrf` не существует, заголовок `X-CSRF-TOKEN` не требуется, mutating-запросы (HTTP и STOMP) принимаются с одним `Authorization: Bearer <jwt>`.
 
 ### JwtAuthenticationFilter — `configs/JwtAuthenticationFilter.kt`
 
@@ -160,9 +170,10 @@ token.signing.key=${JWT_SIGNING_KEY}
 | Destination | Роли |
 |-------------|------|
 | `/app/session/*/offer.create`, `/app/session/*/make.decision` | PLAYER, ADMIN |
-| `/app/session/*/start`, `/close`, `/open`, `/round.start` | ADMIN |
-| `/topic/session/*/sessionStatus`, `/roundStatus`, `/offerCreated`, `/decisionMade` | PLAYER, OBSERVER, ADMIN |
+| `/app/session/*/start`, `/close`, `/open`, `/round.start`, `/round.abort` | ADMIN |
+| `/topic/session/*/sessionStatus`, `/roundStatus`, `/offerCreated`, `/decisionMade`, `/scoreUpdated`, `/offersShuffled` | PLAYER, OBSERVER, ADMIN |
 | `/topic/session/*/player/*/offer` | PLAYER, ADMIN |
+| `/user/queue/errors` (SUBSCRIBE — персональная очередь ошибок из T-050) | PLAYER, OBSERVER, ADMIN |
 | `CONNECT`, `HEARTBEAT`, `UNSUBSCRIBE`, `DISCONNECT` | permitAll |
 
 Никакой проверки, что `userId` в пути `/player/{userId}/offer` совпадает с текущим пользователем, **нет**. Достаточно роли.
