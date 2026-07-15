@@ -38,6 +38,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -194,27 +195,66 @@ class SessionService(
         }
     }
 
-    fun getAllSessions(page: Int, pageSize: Int, s: String): Page<SessionResponse> {
-//        val pageable = createPageable(page, pageSize)
-        val sessions: Page<Session> =
-            if (s.isBlank()) {
-                sessionRepository.findAll(
-                    PageRequest.of(
-                        page,
-                        pageSize,
-                        Sort.by("createdAt").descending()
-                    )
-                )
-            } else {
-                sessionRepository.searchByNameTrgm(
-                    s,
-                    "%$s%",
-                    PageRequest.of(page, pageSize, Sort.by("created_at").descending())
-                )
-            }
+    fun getAllSessions(
+        page: Int,
+        pageSize: Int,
+        s: String,
+        state: SessionState? = null,
+        sessionType: SessionType? = null,
+        openToConnect: Boolean? = null,
+    ): Page<SessionResponse> {
+        val pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending())
+        val hasFilters = state != null || sessionType != null || openToConnect != null
+
+        // Backwards-compatible: если фильтры не заданы и есть search — сохраняем pg_trgm-путь
+        // с ранжированием по similarity (T-057).
+        val sessions: Page<Session> = when {
+            !hasFilters && s.isBlank() -> sessionRepository.findAll(pageable)
+            !hasFilters && s.isNotBlank() -> sessionRepository.searchByNameTrgm(
+                s,
+                "%$s%",
+                PageRequest.of(page, pageSize, Sort.by("created_at").descending())
+            )
+            else -> sessionRepository.findAll(
+                buildSessionFilterSpec(s, state, sessionType, openToConnect),
+                pageable,
+            )
+        }
         val response = sessions.map { sessionMapper.toDto(it) }
-        logger.info("По запросу '$s' найдено ${response.size} сессий")
+        logger.info(
+            "Search '{}', filters state={} type={} openToConnect={} → {} сессий",
+            s,
+            state,
+            sessionType,
+            openToConnect,
+            response.numberOfElements,
+        )
         return response
+    }
+
+    /**
+     * Собирает [Specification] по опциональным фильтрам (T-057). Все условия AND.
+     * Search по displayName — ILIKE (без pg_trgm ranking, потому что Specification API это не даёт;
+     * pg_trgm сохраняем только когда фильтров нет — см. [getAllSessions]).
+     */
+    private fun buildSessionFilterSpec(
+        s: String,
+        state: SessionState?,
+        sessionType: SessionType?,
+        openToConnect: Boolean?,
+    ): Specification<Session> = Specification { root, _, cb ->
+        val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
+        if (s.isNotBlank()) {
+            predicates += cb.like(cb.lower(root.get("displayName")), "%${s.lowercase()}%")
+        }
+        state?.let { predicates += cb.equal(root.get<SessionState>("state"), it) }
+        openToConnect?.let { predicates += cb.equal(root.get<Boolean>("openToConnect"), it) }
+        sessionType?.let {
+            predicates += cb.equal(root.get<Any>("config").get<SessionType>("sessionType"), it)
+        }
+        // toTypedArray()+spread — единственный способ передать varargs в CriteriaBuilder.and().
+        @Suppress("SpreadOperator")
+        cb.and(*predicates.toTypedArray())
     }
 
     @Transactional

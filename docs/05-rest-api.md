@@ -68,9 +68,13 @@
 
 ### `GET /session` — список сессий
 - **Query:**
-  - `s: String` — фильтр по названию (≤100 символов, default `""`); pg_trgm ranking
+  - `s: String` — фильтр по названию (≤100 символов, default `""`); pg_trgm ranking если ни один из filter'ов ниже не задан, иначе fallback на ILIKE.
   - `page: Int` — default `0`
   - `pageSize: Int` — default `30`
+  - `state: SessionState?` — опциональный фильтр по состоянию сессии (`CREATED`, `RUNNING`, `FINISHED`, `ABORTED`). (T-057)
+  - `sessionType: SessionType?` — опциональный фильтр по режиму (`FREE_FOR_ALL`, `TEAM_BATTLE`). (T-057)
+  - `openToConnect: Boolean?` — опциональный фильтр «открыта для присоединения». (T-057)
+  - Все фильтры комбинируются AND.
 - **Response 200:** `Page<SessionResponse>`
 
 ### `GET /session/{id}` — детали сессии

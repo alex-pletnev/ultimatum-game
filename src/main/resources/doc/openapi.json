@@ -1009,6 +1009,29 @@
             "format" : "int32",
             "type" : "integer"
           }
+        }, {
+          "in" : "query",
+          "name" : "state",
+          "required" : false,
+          "schema" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "sessionType",
+          "required" : false,
+          "schema" : {
+            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "openToConnect",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
         } ],
         "responses" : {
           "200" : {

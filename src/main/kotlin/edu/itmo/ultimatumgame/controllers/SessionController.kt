@@ -4,6 +4,8 @@ import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
+import edu.itmo.ultimatumgame.model.SessionState
+import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.services.SessionService
 import edu.itmo.ultimatumgame.util.logger
 import edu.itmo.ultimatumgame.util.toUuidOrThrow
@@ -82,6 +84,7 @@ class SessionController(
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
+    @Suppress("LongParameterList")
     fun getSessions(
         @RequestParam(required = false, defaultValue = "")
         @Size(max = 100, message = "Размер поискового запроса должен быть меньше 100 символов")
@@ -90,10 +93,23 @@ class SessionController(
         page: Int,
         @RequestParam(required = false, defaultValue = "30")
         pageSize: Int,
+        @RequestParam(required = false)
+        state: SessionState?,
+        @RequestParam(required = false)
+        sessionType: SessionType?,
+        @RequestParam(required = false)
+        openToConnect: Boolean?,
     ): Page<SessionResponse> {
-        logger.info("Получен запрос на получение сессий s=$s, page=$page, pageSize=$pageSize")
-        val response = sessionService.getAllSessions(page, pageSize, s)
-        return response
+        logger.info(
+            "GET /session s='{}' page={} pageSize={} state={} sessionType={} openToConnect={}",
+            s,
+            page,
+            pageSize,
+            state,
+            sessionType,
+            openToConnect,
+        )
+        return sessionService.getAllSessions(page, pageSize, s, state, sessionType, openToConnect)
     }
 
     @PostMapping("/{sessionId}/join")

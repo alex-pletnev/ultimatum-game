@@ -3,6 +3,7 @@ package edu.itmo.ultimatumgame.repositories
 import edu.itmo.ultimatumgame.model.Session
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface SessionRepository : CrudRepository<Session, UUID> {
+interface SessionRepository : CrudRepository<Session, UUID>, JpaSpecificationExecutor<Session> {
 
     fun findAll(pageable: Pageable): Page<Session>
 
