@@ -1,10 +1,10 @@
 ---
 id: T-058
 title: Отдельный DTO для персональной доставки оффера (/topic/…/player/{userId}/offer)
-status: pending
+status: done
 priority: low
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-15
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/services/EventPublisherService.kt
   - src/main/kotlin/edu/itmo/ultimatumgame/dto/responses/OfferCreatedResponse.kt
@@ -21,11 +21,11 @@ tags: [feature, api, ws]
 
 ## Acceptance criteria
 
-- [ ] Новый DTO `AssignedOfferResponse { offerId, roundNumber, proposer: UserInfo, amount, offeredAt }` — семантика «этот оффер адресован тебе, решай».
-- [ ] `publishOfferToPlayer` использует новый DTO.
-- [ ] Backwards compat: broadcast `/topic/offerCreated` продолжает `OfferCreatedResponse`.
-- [ ] Обновить `docs/06-websocket-api.md`, regenerate `asyncapi.json`.
-- [ ] Тесты — `EventPublisherServiceTest.publishOfferToPlayer` проверяет payload-type.
+- [x] Новый DTO `AssignedOfferResponse { offerId, round: RoundPrewResponse, proposer, amount, offeredAt }` — семантика «этот оффер адресован тебе, решай».
+- [x] `publishOfferToPlayer` использует новый DTO (маппер `OfferMapper.toAssignedDto`).
+- [x] Backwards compat: broadcast `/topic/offerCreated` продолжает `OfferCreatedResponse`.
+- [x] Обновить `docs/06-websocket-api.md`, regenerate `asyncapi.json`.
+- [x] Тесты — `EventPublisherServiceTest.publishOfferToPlayer` проверяет payload-type (mock на `toAssignedDto`).
 
 ## План
 
@@ -36,3 +36,4 @@ tags: [feature, api, ws]
 ## Лог
 
 - 2026-07-13: заведено из frontend-readiness audit'а. Priority low — фронт может работать со старым DTO, но явный контракт «assigned to me» проще для UI-кода.
+- 2026-07-15: закрыто. Создан DTO `AssignedOfferResponse` (offerId/round/proposer/amount/offeredAt). Добавлен `OfferMapper.toAssignedDto(offer)`. `EventPublisherService.publishOfferToPlayer` использует новый DTO + fix naming параметра `proposerId → responderId` (semantic bug — persist сам факт что `{userId}` в destination это respondent). Broadcast `/topic/offerCreated` не тронут (backwards-compat). `EventPublisherServiceTest` обновлён. AsyncAPI перегенерирован — `AssignedOfferResponse` попал в snapshot. `./gradlew check` зелёный.

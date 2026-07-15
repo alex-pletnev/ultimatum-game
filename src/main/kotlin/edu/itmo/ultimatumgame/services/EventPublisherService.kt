@@ -2,6 +2,7 @@
 
 package edu.itmo.ultimatumgame.services
 
+import edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse
 import edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse
 import edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse
 import edu.itmo.ultimatumgame.dto.responses.OffersShuffledResponse
@@ -54,15 +55,16 @@ class EventPublisherService(
     @AsyncPublisher(
         operation = AsyncOperation(
             channelName = "/topic/session/{sessionId}/player/{userId}/offer",
-            description = "Персональная доставка оффера конкретному респонденту (userId). Используется в режиме shuffle.",
-            payloadType = OfferCreatedResponse::class
+            description = "Персональная доставка оффера респонденту после shuffle. " +
+                "Payload — AssignedOfferResponse (T-058), явная семантика «assigned to me».",
+            payloadType = AssignedOfferResponse::class
         )
     )
     @StompAsyncOperationBinding
-    fun publishOfferToPlayer(sessionId: UUID, proposerId: UUID, offer: Offer) {
-        val dto = offerMapper.toDto(offer)
-        val destination = "/topic/session/$sessionId/player/$proposerId/offer"
-        logger.info("Публикация события offer в $destination для offer=$dto")
+    fun publishOfferToPlayer(sessionId: UUID, responderId: UUID, offer: Offer) {
+        val dto = offerMapper.toAssignedDto(offer)
+        val destination = "/topic/session/$sessionId/player/$responderId/offer"
+        logger.info("Публикация assigned-offer в $destination для offer={}", dto)
         messagingTemplate.convertAndSend(destination, dto)
     }
 

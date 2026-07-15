@@ -4,6 +4,7 @@ import edu.itmo.ultimatumgame.TestFixtures.offer
 import edu.itmo.ultimatumgame.TestFixtures.round
 import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.user
+import edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse
 import edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse
 import edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
@@ -48,16 +49,16 @@ class EventPublisherServiceTest {
     }
 
     @Test
-    fun `publishOfferToPlayer шлёт DTO в персональный топик player_userId_offer`() {
+    fun `publishOfferToPlayer шлёт AssignedOfferResponse в персональный топик player_userId_offer (T-058)`() {
         val sessionId = UUID.randomUUID()
-        val proposerId = UUID.randomUUID()
+        val responderId = UUID.randomUUID()
         val o = offer(proposer = user())
-        val dto = mockk<OfferCreatedResponse>()
-        every { offerMapper.toDto(o) } returns dto
+        val dto = mockk<AssignedOfferResponse>()
+        every { offerMapper.toAssignedDto(o) } returns dto
 
-        service.publishOfferToPlayer(sessionId, proposerId, o)
+        service.publishOfferToPlayer(sessionId, responderId, o)
 
-        verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/player/$proposerId/offer", dto) }
+        verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/player/$responderId/offer", dto) }
     }
 
     @Test

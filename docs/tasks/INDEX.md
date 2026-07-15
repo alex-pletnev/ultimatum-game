@@ -17,7 +17,6 @@
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
-| T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
@@ -79,6 +78,7 @@
 | T-050 | Stack-trace leak fix + STOMP WebSocketExceptionAdvice → /user/queue/errors | done | 2026-07-15 | [T-050](T-050-validation-exception-http-mapping.md) |
 | T-054 | abortCurrentRound + RoundPhase.ABORTED + phase-checks в PlayerGameplayService | done | 2026-07-15 | [T-054](T-054-implement-abort-and-pause-round.md) |
 | T-057 | GET /session — Specification-based фильтры state/sessionType/openToConnect | done | 2026-07-15 | [T-057](T-057-session-list-filters.md) |
+| T-058 | AssignedOfferResponse — отдельный DTO для персональной доставки оффера | done | 2026-07-15 | [T-058](T-058-personal-offer-dto.md) |
 
 ## Легенда статусов
 

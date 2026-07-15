@@ -56,7 +56,7 @@
 | `/topic/session/{sessionId}/roundStatus` | `RoundResponse` | смена фазы раунда |
 | `/topic/session/{sessionId}/offerCreated` | `OfferCreatedResponse` / `OfferPrewResponse` | каждый новый оффер |
 | `/topic/session/{sessionId}/decisionMade` | `DecisionMadeResponse` / `DecisionPrewResponse` | каждое решение |
-| `/topic/session/{sessionId}/player/{userId}/offer` | `OfferCreatedResponse` / `OfferPrewResponse` | shuffle: персональная доставка оффера respondent'у (`{userId}` = ID респондента) |
+| `/topic/session/{sessionId}/player/{userId}/offer` | `AssignedOfferResponse` (T-058) | shuffle: персональная доставка оффера respondent'у (`{userId}` = ID респондента). До T-058 использовался `OfferCreatedResponse` — теперь отдельный DTO с семантикой «assigned to me» (без ответчика в payload'е). |
 | `/topic/session/{sessionId}/scoreUpdated` | `SessionScoreDto` | после закрытия раунда (ALL_DECISIONS_RECEIVED); per-player и per-team суммы + roundSum |
 | `/topic/session/{sessionId}/offersShuffled` | `OffersShuffledResponse` | после `initWaitDecisionsPhase` (переход ALL_OFFERS_RECEIVED → OFFERS_SENT); mapping offerId → (proposerId, responderId) для визуализации pairing (T-051) |
 

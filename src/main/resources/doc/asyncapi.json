@@ -95,8 +95,8 @@
     "_topic_session_{sessionId}_player_{userId}_offer" : {
       "address" : "/topic/session/{sessionId}/player/{userId}/offer",
       "messages" : {
-        "edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse" : {
-          "$ref" : "#/components/messages/edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse"
+        "edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse"
         }
       }
     },
@@ -174,6 +174,22 @@
           "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
         },
         "title" : "ApiErrorResponse"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse" : {
+        "bindings" : {
+          "stomp" : { }
+        },
+        "headers" : {
+          "$ref" : "#/components/schemas/HeadersNotDocumented"
+        },
+        "name" : "edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse",
+        "payload" : {
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse"
+          },
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
+        },
+        "title" : "AssignedOfferResponse"
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse" : {
         "bindings" : {
@@ -362,6 +378,47 @@
         },
         "required" : [ "error", "message", "path", "status", "timestamp" ],
         "title" : "ApiErrorResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse" : {
+        "examples" : [ {
+          "amount" : 0,
+          "offerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "offeredAt" : "2015-07-20T15:49:04-07:00",
+          "proposer" : {
+            "createdAt" : "2015-07-20T15:49:04-07:00",
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "nickname" : "string",
+            "role" : "ADMIN"
+          },
+          "round" : {
+            "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "roundNumber" : 0,
+            "roundPhase" : "CREATED"
+          }
+        } ],
+        "properties" : {
+          "amount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "offerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "offeredAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "proposer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "round" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
+          }
+        },
+        "required" : [ "amount", "offerId", "offeredAt", "proposer", "round" ],
+        "title" : "AssignedOfferResponse",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse" : {
@@ -1298,9 +1355,9 @@
       "channel" : {
         "$ref" : "#/channels/_topic_session_{sessionId}_player_{userId}_offer"
       },
-      "description" : "Персональная доставка оффера конкретному респонденту (userId). Используется в режиме shuffle.",
+      "description" : "Персональная доставка оффера респонденту после shuffle. Payload — AssignedOfferResponse (T-058), явная семантика «assigned to me».",
       "messages" : [ {
-        "$ref" : "#/channels/_topic_session_{sessionId}_player_{userId}_offer/messages/edu.itmo.ultimatumgame.dto.responses.OfferCreatedResponse"
+        "$ref" : "#/channels/_topic_session_{sessionId}_player_{userId}_offer/messages/edu.itmo.ultimatumgame.dto.responses.AssignedOfferResponse"
       } ],
       "title" : "_topic_session_{sessionId}_player_{userId}_offer_send"
     },
