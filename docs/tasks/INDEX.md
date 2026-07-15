@@ -20,6 +20,8 @@
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
 | T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
+| T-067 | TDD-skip 2 задачи подряд в infrastructure — приоритезировать «как я это протестирую» до кодинга | pending | medium | 2026-07-15 | [T-067](T-067-tdd-skip-in-infrastructure-tasks.md) |
+| T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо ручного split(';') | pending | low | 2026-07-15 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
 
 ## Закрытые задачи
 
