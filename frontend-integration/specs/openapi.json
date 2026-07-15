@@ -1,0 +1,1972 @@
+{
+  "components" : {
+    "schemas" : {
+      "PageableObject" : {
+        "properties" : {
+          "offset" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageNumber" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "paged" : {
+            "type" : "boolean"
+          },
+          "sort" : {
+            "$ref" : "#/components/schemas/SortObject"
+          },
+          "unpaged" : {
+            "type" : "boolean"
+          }
+        },
+        "title" : "Pageable",
+        "type" : "object"
+      },
+      "SortObject" : {
+        "properties" : {
+          "empty" : {
+            "type" : "boolean"
+          },
+          "sorted" : {
+            "type" : "boolean"
+          },
+          "unsorted" : {
+            "type" : "boolean"
+          }
+        },
+        "title" : "Sort",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id" ],
+        "title" : "AuthenticateUserRequestDto",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest" : {
+        "properties" : {
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.SessionConfigDto"
+          },
+          "displayName" : {
+            "maxLength" : 100,
+            "minLength" : 3,
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "state" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "config", "displayName", "openToConnect", "state" ],
+        "title" : "CreateSessionRequest",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.requests.CreateUserRequest" : {
+        "properties" : {
+          "nickname" : {
+            "maxLength" : 42,
+            "minLength" : 3,
+            "type" : "string"
+          },
+          "role" : {
+            "default" : "PLAYER",
+            "description" : "Роль пользователя. NPC на этом endpoint запрещена (403 UserRoleNotAllowedException).",
+            "enum" : [ "ADMIN", "PLAYER", "OBSERVER", "NPC", "ADMIN", "PLAYER", "OBSERVER" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "nickname" ],
+        "title" : "CreateUserRequest",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest" : {
+        "properties" : {
+          "refreshToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "refreshToken" ],
+        "title" : "RefreshTokenRequest",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.requests.SessionConfigDto" : {
+        "description" : "Конфигурация сессии. Кросс-инвариант: для FREE_FOR_ALL numTeams=0; для TEAM_BATTLE numTeams>=2. Числовые поля не должны быть null (валидируется на уровне сервиса).",
+        "properties" : {
+          "numPlayers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "numRounds" : {
+            "format" : "int32",
+            "maximum" : 10,
+            "minimum" : 1,
+            "type" : "integer"
+          },
+          "numTeams" : {
+            "format" : "int32",
+            "maximum" : 5,
+            "type" : "integer"
+          },
+          "roundSum" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "sessionType" : {
+            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ],
+            "type" : "string"
+          },
+          "timeoutMoveSec" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "numTeams", "sessionType" ],
+        "title" : "SessionConfigDto",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse" : {
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "timestamp" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "required" : [ "error", "message", "path", "status", "timestamp" ],
+        "title" : "ApiErrorResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse" : {
+        "properties" : {
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "decision" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "offer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          }
+        },
+        "required" : [ "createdAt" ],
+        "title" : "DecisionPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse" : {
+        "properties" : {
+          "accessToken" : {
+            "type" : "string"
+          },
+          "expiresIn" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "refreshToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessToken", "expiresIn" ],
+        "title" : "JwtAuthenticationResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse" : {
+        "properties" : {
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "offerValue" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "proposer" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "responder" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          }
+        },
+        "required" : [ "createdAt" ],
+        "title" : "OfferPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.PendingAction" : {
+        "properties" : {
+          "offerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [ "SEND_OFFER", "MAKE_DECISION" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "type" ],
+        "title" : "PendingAction",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse" : {
+        "properties" : {
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "roundNumber" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "roundPhase" : {
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "roundNumber", "roundPhase" ],
+        "title" : "RoundPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.RoundResponse" : {
+        "properties" : {
+          "decisions" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse"
+            },
+            "type" : "array"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "myPendingActions" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.PendingAction"
+            },
+            "type" : "array"
+          },
+          "myRole" : {
+            "enum" : [ "PROPOSER", "RESPONDER", "BOTH", "NONE" ],
+            "type" : "string"
+          },
+          "offers" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse"
+            },
+            "type" : "array"
+          },
+          "roundNumber" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "roundPhase" : {
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          },
+          "session" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse"
+          }
+        },
+        "required" : [ "decisions", "id", "myPendingActions", "myRole", "offers", "roundNumber", "roundPhase", "session" ],
+        "title" : "RoundResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse" : {
+        "properties" : {
+          "numPlayers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "numRounds" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "numTeams" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "roundSum" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "sessionType" : {
+            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ],
+            "type" : "string"
+          },
+          "timeoutMoveSec" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
+        "title" : "SessionConfigResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.SessionPrewResponse" : {
+        "properties" : {
+          "admin" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "state" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "admin", "config", "createdAt", "displayName", "id", "openToConnect", "state" ],
+        "title" : "SessionPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.SessionResponse" : {
+        "properties" : {
+          "admin" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "currentRound" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "rounds" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "state" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          },
+          "teams" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.TeamPrewResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          }
+        },
+        "required" : [ "admin", "config", "createdAt", "displayName", "openToConnect", "rounds", "state", "teams" ],
+        "title" : "SessionResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse" : {
+        "properties" : {
+          "admin" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "currentRound" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundPrewResponse"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "members" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "observers" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "openToConnect" : {
+            "type" : "boolean"
+          },
+          "state" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          },
+          "teams" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.TeamResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          }
+        },
+        "required" : [ "admin", "config", "createdAt", "displayName", "id", "members", "observers", "openToConnect", "state", "teams" ],
+        "title" : "SessionWithTeamsAndMembersResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.TeamPrewResponse" : {
+        "properties" : {
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ],
+        "title" : "TeamPrewResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.TeamResponse" : {
+        "properties" : {
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "members" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "members", "name" ],
+        "title" : "TeamResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.UserIdResponse" : {
+        "properties" : {
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "id" ],
+        "title" : "UserIdResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.UserResponse" : {
+        "properties" : {
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "nickname" : {
+            "type" : "string"
+          },
+          "role" : {
+            "enum" : [ "ADMIN", "PLAYER", "OBSERVER", "NPC" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "nickname", "role" ],
+        "title" : "UserResponse",
+        "type" : "object"
+      },
+      "io.github.springwolf.core.controller.UiConfigController$UiConfig" : {
+        "properties" : {
+          "groups" : {
+            "items" : {
+              "$ref" : "#/components/schemas/io.github.springwolf.core.controller.UiConfigController$UiConfig$UiConfigGroup"
+            },
+            "type" : "array"
+          },
+          "initialConfig" : {
+            "$ref" : "#/components/schemas/io.github.springwolf.core.controller.UiConfigController$UiConfig$InitialConfig"
+          }
+        },
+        "title" : "UiConfig",
+        "type" : "object"
+      },
+      "io.github.springwolf.core.controller.UiConfigController$UiConfig$InitialConfig" : {
+        "properties" : {
+          "showBindings" : {
+            "type" : "boolean"
+          },
+          "showHeaders" : {
+            "type" : "boolean"
+          }
+        },
+        "title" : "InitialConfig",
+        "type" : "object"
+      },
+      "io.github.springwolf.core.controller.UiConfigController$UiConfig$UiConfigGroup" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "title" : "UiConfigGroup",
+        "type" : "object"
+      },
+      "org.springframework.data.domain.PageEdu.itmo.ultimatumgame.dto.responses.SessionResponse" : {
+        "properties" : {
+          "content" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionResponse"
+            },
+            "type" : "array"
+          },
+          "empty" : {
+            "type" : "boolean"
+          },
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
+          },
+          "number" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "numberOfElements" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "pageable" : {
+            "$ref" : "#/components/schemas/PageableObject"
+          },
+          "size" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "sort" : {
+            "$ref" : "#/components/schemas/SortObject"
+          },
+          "totalElements" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "title" : "Page",
+        "type" : "object"
+      }
+    }
+  },
+  "info" : {
+    "description" : "REST API of Ultimatum Game. Generated from source annotations.",
+    "title" : "Ultimatum Game API",
+    "version" : "v1"
+  },
+  "openapi" : "3.0.1",
+  "paths" : {
+    "/auth/logout" : {
+      "post" : {
+        "operationId" : "logout",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/quick-login" : {
+      "post" : {
+        "operationId" : "quickLogin",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.AuthenticateUserRequestDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/quick-register" : {
+      "post" : {
+        "operationId" : "quickRegister",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.CreateUserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/refresh" : {
+      "post" : {
+        "operationId" : "refresh",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.JwtAuthenticationResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/session" : {
+      "get" : {
+        "operationId" : "getSessions",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "s",
+          "required" : false,
+          "schema" : {
+            "default" : "",
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "default" : 0,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "required" : false,
+          "schema" : {
+            "default" : 30,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "state",
+          "required" : false,
+          "schema" : {
+            "enum" : [ "CREATED", "RUNNING", "FINISHED", "ABORTED" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "sessionType",
+          "required" : false,
+          "schema" : {
+            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "openToConnect",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/org.springframework.data.domain.PageEdu.itmo.ultimatumgame.dto.responses.SessionResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      },
+      "post" : {
+        "operationId" : "createSession",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{id}" : {
+      "get" : {
+        "operationId" : "getSession",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{id}/current-round" : {
+      "get" : {
+        "operationId" : "getCurrentRound",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{id}/rounds" : {
+      "get" : {
+        "operationId" : "getRounds",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.RoundResponse"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{id}/with-teams-and-members" : {
+      "get" : {
+        "operationId" : "getSessionWithTeamsAndMembers",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{sessionId}/join" : {
+      "post" : {
+        "operationId" : "joinSession",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "teamId",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{sessionId}/join/observer" : {
+      "post" : {
+        "operationId" : "joinSessionAsObserver",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/statistics/{sessionId}/csv" : {
+      "get" : {
+        "operationId" : "downloadCsv",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "statistic-controller" ]
+      }
+    },
+    "/user" : {
+      "get" : {
+        "operationId" : "getCurrentUser",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/user/id" : {
+      "get" : {
+        "operationId" : "getCurrentUserId",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserIdResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    }
+  },
+  "servers" : [ {
+    "description" : "Generated server url",
+    "url" : "http://localhost"
+  } ]
+}
