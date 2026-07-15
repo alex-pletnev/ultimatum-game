@@ -8,7 +8,11 @@ enum class RoundPhase {
     ALL_OFFERS_RECEIVED,
     OFFERS_SENT,
     ALL_DECISIONS_RECEIVED,
-    FINISHED;
+    FINISHED,
+
+    // Раунд принудительно прерван админом до нормального завершения (T-054).
+    // Дальнейшие offers/decisions игнорируются; startNextRound переводит в следующий раунд.
+    ABORTED;
 
     companion object {
         @JvmStatic

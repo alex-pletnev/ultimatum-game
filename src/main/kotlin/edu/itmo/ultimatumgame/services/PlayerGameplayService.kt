@@ -60,6 +60,11 @@ class PlayerGameplayService(
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
         logger.debug("Текущий раунд {} для сессии {}", round.roundNumber, session.id)
 
+        // Раунд принимает офферы только в фазе WAIT_OFFERS (T-054, T-050 контракт).
+        check(round.roundPhase == RoundPhase.WAIT_OFFERS) {
+            "Оффер нельзя отправить в фазе ${round.roundPhase}, требуется WAIT_OFFERS"
+        }
+
         if (round.offers.any { it.proposer?.id == user.id }) {
             logger.warn("Повторная попытка отправить оффер пользователем {} в раунде {}", user.id, round.roundNumber)
             throw DuplicateIdException("Вы уже отправили offer для этого раунда")
@@ -126,6 +131,11 @@ class PlayerGameplayService(
 
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
         logger.debug("Текущий раунд {} для сессии {}", round.roundNumber, session.id)
+
+        // Раунд принимает решения только в фазе OFFERS_SENT (T-054).
+        check(round.roundPhase == RoundPhase.OFFERS_SENT) {
+            "Решение нельзя отправить в фазе ${round.roundPhase}, требуется OFFERS_SENT"
+        }
 
         if (round.decisions.any { it.responder?.id == user.id }) {
             logger.warn("Повторная попытка отправить решение пользователем {} в раунде {}", user.id, round.roundNumber)

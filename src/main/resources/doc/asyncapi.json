@@ -33,6 +33,14 @@
         }
       }
     },
+    "_app_session_{sessionId}_round.abort" : {
+      "address" : "/app/session/{sessionId}/round.abort",
+      "messages" : {
+        "java.lang.String" : {
+          "$ref" : "#/components/messages/java.lang.String"
+        }
+      }
+    },
     "_app_session_{sessionId}_round.start" : {
       "address" : "/app/session/{sessionId}/round.start",
       "messages" : {
@@ -681,7 +689,7 @@
             "type" : "integer"
           },
           "roundPhase" : {
-            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ],
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
             "type" : "string"
           }
         },
@@ -798,7 +806,7 @@
             "type" : "integer"
           },
           "roundPhase" : {
-            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ],
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
             "type" : "string"
           },
           "session" : {
@@ -1197,6 +1205,20 @@
         "$ref" : "#/channels/_app_session_{sessionId}_open/messages/java.lang.String"
       } ],
       "title" : "_app_session_{sessionId}_open_receive"
+    },
+    "_app_session_{sessionId}_round.abort_receive_abortCurrentRound" : {
+      "action" : "receive",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "channel" : {
+        "$ref" : "#/channels/_app_session_{sessionId}_round.abort"
+      },
+      "description" : "ADMIN: прерывание текущего раунда без завершения сессии (T-054). Пустой payload. Роль ADMIN. После abort'а — startNextRound переводит в следующий раунд.",
+      "messages" : [ {
+        "$ref" : "#/channels/_app_session_{sessionId}_round.abort/messages/java.lang.String"
+      } ],
+      "title" : "_app_session_{sessionId}_round.abort_receive"
     },
     "_app_session_{sessionId}_round.start_receive_startNextRound" : {
       "action" : "receive",

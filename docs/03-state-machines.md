@@ -49,17 +49,21 @@ Enum: `model/RoundPhase.kt:5-22`.
 CREATED
    │ (session start / startNextRound)
    ▼
-WAIT_OFFERS
-   │ (собран последний Offer в PlayerGameplayService.sendOffer)
-   ▼
-ALL_OFFERS_RECEIVED
-   │ (CoreGameplayService.initWaitDecisionsPhase → shuffleOffers)
-   ▼
-OFFERS_SENT
-   │ (собрано последнее Decision в PlayerGameplayService.makeDecision)
-   ▼
-ALL_DECISIONS_RECEIVED
-   │ (AdminGameplayService.startNextRound)
+WAIT_OFFERS ─────────────┐
+   │                     │
+   │                     │ AdminGameplayService.abortCurrentRound()
+   ▼                     │
+ALL_OFFERS_RECEIVED      │
+   │                     │
+   ▼                     │
+OFFERS_SENT ─────────────┤
+   │                     │
+   ▼                     │
+ALL_DECISIONS_RECEIVED   │
+   │                     ▼
+   │                 ┌──────────┐
+   │                 │ ABORTED  │  ← startNextRound переходит к следующему
+   │                 └──────────┘     без переписывания фазы
    ▼
 FINISHED
 ```
@@ -71,6 +75,7 @@ FINISHED
 | `ALL_OFFERS_RECEIVED → OFFERS_SENT` | `CoreGameplayService.initWaitDecisionsPhase()` после `shuffleOffers()` | `services/CoreGameplayService.kt:30` |
 | `OFFERS_SENT → ALL_DECISIONS_RECEIVED` | `PlayerGameplayService.makeDecision()` когда `round.decisions.size == session.members.size` | `services/PlayerGameplayService.kt:131` |
 | `ALL_DECISIONS_RECEIVED → FINISHED` | `AdminGameplayService.startNextRound()` (закрытие текущего раунда) | `services/AdminGameplayService.kt:90` |
+| `WAIT_OFFERS/ALL_OFFERS_RECEIVED/OFFERS_SENT/ALL_DECISIONS_RECEIVED → ABORTED` | `AdminGameplayService.abortCurrentRound(sessionId)` (T-054) — только для сессии в состоянии RUNNING; после abort'а startNextRound переводит в следующий раунд сохраняя фазу ABORTED для истории | `services/AdminGameplayService.kt` |
 
 ## Полный цикл сессии (последовательность вызовов)
 
@@ -97,6 +102,7 @@ FINISHED
 | `OFFERS_SENT` | все `Offer.responder != null`; `round.decisions.size < session.members.size` |
 | `ALL_DECISIONS_RECEIVED` | `round.decisions.size == session.members.size`; каждое `Decision.offer.responder == Decision.responder` |
 | `FINISHED` | раунд immutable для новых `Offer`/`Decision` |
+| `ABORTED` | раунд immutable для новых `Offer`/`Decision` (PlayerGameplayService.sendOffer / makeDecision отклоняют с IllegalStateException → 409) |
 
 ## Что публикуется в WebSocket на переходах
 
@@ -144,6 +150,5 @@ FINISHED
 
 ## Ограничения / TODO
 
-- `AdminGameplayService.abortCurrentRound()` — заглушка (`services/AdminGameplayService.kt`).
-- `AdminGameplayService.pauseRound()` — TODO.
+- `AdminGameplayService.pauseRound()` — не реализован (нет endpoint'а, метод удалён из сервиса — T-054). Заводить если реально понадобится клиенту.
 - `timeoutMoveSec` из `SessionConfig` не используется — нет автоматических переходов по таймауту.

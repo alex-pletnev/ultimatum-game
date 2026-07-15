@@ -74,9 +74,8 @@
 | `closeSession` | `(sessionId: UUID) → Unit` | `openToConnect=false`; publish `sessionStatus` |
 | `openSession` | `(sessionId: UUID) → Unit` | `openToConnect=true`; publish `sessionStatus` |
 | `abortSession` | `(sessionId: UUID) → Unit` | `state=ABORTED`, `openToConnect=false`; publish `roundStatus` |
-| `startNextRound` | `(sessionId: UUID) → Unit` | `currentRound.phase=FINISHED`. Если есть следующий: `nextRound.phase=WAIT_OFFERS`, `currentRound=nextRound`. Иначе: `state=FINISHED`; publish `roundStatus` |
-| `abortCurrentRound` | — | **TODO**, не реализован |
-| `pauseRound` | — | **TODO** |
+| `startNextRound` | `(sessionId: UUID) → Unit` | Если `currentRound.phase != ABORTED` → `phase=FINISHED` (иначе ABORTED сохраняется — T-054). Если есть следующий: `nextRound.phase=WAIT_OFFERS`, `currentRound=nextRound`. Иначе: `state=FINISHED`; publish `roundStatus` |
+| `abortCurrentRound` | `(sessionId: UUID) → Unit` | `currentRound.phase=ABORTED`; publish `roundStatus`; emit `RoundAborted`. Проверки: session должна быть RUNNING; currentRound не null; фаза не FINISHED/ABORTED (T-054) |
 
 ---
 
@@ -249,4 +248,4 @@ StatisticController.exportCsv
 
 - `docs/03-state-machines.md` — какие переходы триггерят методы этих сервисов.
 - `docs/06-websocket-api.md` — где эти сервисы вызываются из WS-контроллеров.
-- `docs/11-known-gaps.md` — что ещё не реализовано (баллы, таймауты, `abortCurrentRound`).
+- `docs/11-known-gaps.md` — что ещё не реализовано (таймауты, pauseRound как отдельная фича).

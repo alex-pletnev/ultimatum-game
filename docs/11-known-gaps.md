@@ -14,8 +14,8 @@
 - Раунд «зависает» в `WAIT_OFFERS` / `OFFERS_SENT`, пока не соберутся все оффера/решения.
 
 ### Заглушки в AdminGameplayService
-- `abortCurrentRound()` — не реализован.
-- `pauseRound()` — TODO / bonus, не реализован.
+- ~~`abortCurrentRound()`~~ — реализован в T-054 (WS endpoint `/app/session/{id}/round.abort`, phase→ABORTED).
+- `pauseRound()` — удалён как dead code (не было endpoint'а). Заводить если реально нужно клиенту.
 - Файл: `services/AdminGameplayService.kt`.
 
 ### Роль NPC

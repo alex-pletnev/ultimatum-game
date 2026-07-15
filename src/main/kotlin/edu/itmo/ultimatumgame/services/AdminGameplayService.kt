@@ -6,6 +6,7 @@ import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.RoundAborted
 import edu.itmo.ultimatumgame.util.RoundClosed
 import edu.itmo.ultimatumgame.util.RoundStarted
 import edu.itmo.ultimatumgame.util.SessionAborted
@@ -106,7 +107,11 @@ class AdminGameplayService(
         val currentRound = session.currentRound ?: error("Текущий раунд не должен быть null на данном этапе")
         logger.debug("Завершение раунда {} для сессии {}", currentRound.roundNumber, session.id)
 
-        currentRound.roundPhase = RoundPhase.FINISHED
+        // Раунд, прерванный админом, сохраняет фазу ABORTED — не переписываем в FINISHED,
+        // чтобы история раундов отражала реальное закрытие (T-054).
+        if (currentRound.roundPhase != RoundPhase.ABORTED) {
+            currentRound.roundPhase = RoundPhase.FINISHED
+        }
         val closedRoundId = currentRound.id!!
         val closedRoundNumber = currentRound.roundNumber
         val nextRoundNumber = currentRound.roundNumber + 1
@@ -138,13 +143,37 @@ class AdminGameplayService(
         }
     }
 
-    fun abortCurrentRound() {
-        logger.info("Вызван метод abortCurrentRound")
-        TODO()
-    }
+    /**
+     * Прерывает текущий раунд без перехода к следующему (T-054).
+     * После abort'а — новые offers/decisions отклоняются PlayerGameplayService'ом
+     * (см. проверку phase внутри sendOffer/makeDecision). Админ вызывает `startNextRound`
+     * когда решит продолжить игру.
+     *
+     * Ошибки:
+     * - сессия не RUNNING → IllegalStateException (409 через WebSocketExceptionAdvice)
+     * - нет активного раунда → IllegalStateException
+     * - раунд уже FINISHED / ABORTED → IllegalStateException
+     */
+    @Transactional
+    fun abortCurrentRound(sessionId: UUID) = withSessionMdc(sessionId) {
+        logger.info("Вызван метод abortCurrentRound c sessionId={}", sessionId)
+        val session = sessionService.getSessionEntity(sessionId)
+        check(session.state == SessionState.RUNNING) {
+            "Прерывание раунда возможно только для сессии в состоянии RUNNING, текущее: ${session.state}"
+        }
+        val currentRound = session.currentRound
+            ?: error("Нет активного раунда, который можно прервать")
+        check(currentRound.roundPhase != RoundPhase.FINISHED && currentRound.roundPhase != RoundPhase.ABORTED) {
+            "Раунд ${currentRound.roundNumber} уже завершён (${currentRound.roundPhase}), прерывать нечего"
+        }
 
-    fun pauseRound() {
-        logger.info("Вызван метод pauseRound (бонус)")
-        TODO("бонусом")
+        currentRound.roundPhase = RoundPhase.ABORTED
+        sessionRepository.save(session)
+        logger.info("Раунд {} сессии {} переведён в ABORTED", currentRound.roundNumber, session.id)
+
+        eventPublisherService.publishRoundStatus(sessionId, currentRound)
+        domainEventLogger.emit(
+            RoundAborted(sessionId = sessionId, roundId = currentRound.id!!, roundNumber = currentRound.roundNumber)
+        )
     }
 }

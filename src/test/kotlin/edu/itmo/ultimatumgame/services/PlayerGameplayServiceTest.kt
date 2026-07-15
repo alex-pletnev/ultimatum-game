@@ -123,7 +123,7 @@ class PlayerGameplayServiceTest {
     fun `sendOffer — DuplicateIdException если игрок уже отправил offer в этом раунде`() {
         val a = user()
         val b = user()
-        val r = round()
+        val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
         r.offers += offer(proposer = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
@@ -266,7 +266,7 @@ class PlayerGameplayServiceTest {
     fun `makeDecision — DuplicateIdException если игрок уже принимал решение в этом раунде`() {
         val a = user()
         val b = user()
-        val r = round()
+        val r = round(roundPhase = RoundPhase.OFFERS_SENT)
         val offB = offer(proposer = b, responder = a, round = r)
         r.offers += offB
         r.decisions += Decision(id = UUID.randomUUID(), round = r, responder = a, offer = offB, decision = true)
@@ -283,7 +283,7 @@ class PlayerGameplayServiceTest {
     fun `makeDecision — IdNotFoundException если offerId не из этого раунда`() {
         val a = user()
         val b = user()
-        val r = round()
+        val r = round(roundPhase = RoundPhase.OFFERS_SENT)
         r.offers += offer(proposer = b, responder = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a

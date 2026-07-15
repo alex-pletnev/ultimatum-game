@@ -258,7 +258,7 @@
             "type" : "integer"
           },
           "roundPhase" : {
-            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ],
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
             "type" : "string"
           }
         },
@@ -299,7 +299,7 @@
             "type" : "integer"
           },
           "roundPhase" : {
-            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED" ],
+            "enum" : [ "CREATED", "WAIT_OFFERS", "ALL_OFFERS_RECEIVED", "OFFERS_SENT", "ALL_DECISIONS_RECEIVED", "FINISHED", "ABORTED" ],
             "type" : "string"
           },
           "session" : {

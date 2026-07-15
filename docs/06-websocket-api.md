@@ -33,6 +33,7 @@
 | `/app/session/{sessionId}/close` | ADMIN | — | `AdminGameplayService.closeSession` | `:32-42` |
 | `/app/session/{sessionId}/open` | ADMIN | — | `AdminGameplayService.openSession` | `:44-54` |
 | `/app/session/{sessionId}/round.start` | ADMIN | — | `AdminGameplayService.startNextRound` | `:57-66` |
+| `/app/session/{sessionId}/round.abort` | ADMIN | — | `AdminGameplayService.abortCurrentRound` (T-054) — прерывает текущий раунд, phase→ABORTED; startNextRound после abort переходит к следующему | `SessionAdminWsController.kt` |
 
 ### Player
 

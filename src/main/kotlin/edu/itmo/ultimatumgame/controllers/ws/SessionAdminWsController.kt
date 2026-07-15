@@ -99,4 +99,25 @@ class SessionAdminWsController(
         val sessionUuid = sessionId.toUuidOrThrow()
         adminGameplayService.startNextRound(sessionUuid)
     }
+
+    @AsyncListener(
+        operation = AsyncOperation(
+            channelName = "/app/session/{sessionId}/round.abort",
+            description = "ADMIN: прерывание текущего раунда без завершения сессии (T-054). Пустой payload. " +
+                "Роль ADMIN. После abort'а — startNextRound переводит в следующий раунд.",
+            payloadType = String::class
+        )
+    )
+    @StompAsyncOperationBinding
+    @PreAuthorize("hasRole('ADMIN')")
+    @MessageMapping("session/{sessionId}/round.abort")
+    @Transactional
+    fun abortCurrentRound(
+        @DestinationVariable sessionId: String,
+        principal: Principal
+    ) {
+        logger.info("получена запрос на session/{sessionId}/round.abort от $principal")
+        val sessionUuid = sessionId.toUuidOrThrow()
+        adminGameplayService.abortCurrentRound(sessionUuid)
+    }
 }

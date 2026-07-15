@@ -138,12 +138,66 @@ class AdminGameplayServiceTest {
     }
 
     @Test
-    fun `abortCurrentRound — TODO, бросает NotImplementedError`() {
-        assertThrows<NotImplementedError> { service.abortCurrentRound() }
+    fun `abortCurrentRound — переводит фазу в ABORTED, публикует roundStatus, эмитит RoundAborted`() {
+        val r = round(roundNumber = 1, roundPhase = RoundPhase.WAIT_OFFERS)
+        val s = session(state = SessionState.RUNNING, currentRound = r)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+        stubSaveIdentity()
+
+        service.abortCurrentRound(s.id!!)
+
+        assertEquals(RoundPhase.ABORTED, r.roundPhase)
+        verify { eventPublisher.publishRoundStatus(s.id!!, r) }
     }
 
     @Test
-    fun `pauseRound — TODO, бросает NotImplementedError`() {
-        assertThrows<NotImplementedError> { service.pauseRound() }
+    fun `abortCurrentRound — бросает если сессия не RUNNING`() {
+        val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
+        val s = session(state = SessionState.CREATED, currentRound = r)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+
+        assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
+    }
+
+    @Test
+    fun `abortCurrentRound — бросает если нет активного раунда`() {
+        val s = session(state = SessionState.RUNNING, currentRound = null)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+
+        assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
+    }
+
+    @Test
+    fun `abortCurrentRound — бросает если раунд уже FINISHED`() {
+        val r = round(roundPhase = RoundPhase.FINISHED)
+        val s = session(state = SessionState.RUNNING, currentRound = r)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+
+        assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
+    }
+
+    @Test
+    fun `abortCurrentRound — бросает если раунд уже ABORTED (идемпотентность)`() {
+        val r = round(roundPhase = RoundPhase.ABORTED)
+        val s = session(state = SessionState.RUNNING, currentRound = r)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+
+        assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
+    }
+
+    @Test
+    fun `startNextRound после ABORTED — сохраняет фазу ABORTED, переходит к следующему раунду`() {
+        val r1 = round(roundNumber = 1, roundPhase = RoundPhase.ABORTED)
+        val r2 = round(roundNumber = 2, roundPhase = RoundPhase.CREATED)
+        val s = session(state = SessionState.RUNNING, currentRound = r1)
+        s.rounds = mutableSetOf(r1, r2)
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+        stubSaveIdentity()
+
+        service.startNextRound(s.id!!)
+
+        assertEquals(RoundPhase.ABORTED, r1.roundPhase, "ABORTED сохраняется, не переписывается")
+        assertSame(r2, s.currentRound)
+        assertEquals(RoundPhase.WAIT_OFFERS, r2.roundPhase)
     }
 }

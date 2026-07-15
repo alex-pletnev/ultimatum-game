@@ -84,6 +84,11 @@ data class RoundClosed(val sessionId: UUID, val roundId: UUID, val roundNumber: 
     override val fields = mapOf("sessionId" to sessionId, "roundId" to roundId, "roundNumber" to roundNumber)
 }
 
+data class RoundAborted(val sessionId: UUID, val roundId: UUID, val roundNumber: Int) : DomainEvent {
+    override val type = "round.aborted"
+    override val fields = mapOf("sessionId" to sessionId, "roundId" to roundId, "roundNumber" to roundNumber)
+}
+
 // ----- gameplay -----
 
 data class OfferSubmitted(
