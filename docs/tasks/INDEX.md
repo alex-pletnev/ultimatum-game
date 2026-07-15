@@ -8,7 +8,6 @@
 
 | ID | Название | Статус | Приоритет | Обновлено | Файл |
 |----|----------|--------|-----------|-----------|------|
-| T-001 | Применять `index.sql` при старте приложения | pending | medium | 2026-07-12 | [T-001](T-001-apply-index-sql-on-startup.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-12 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
@@ -79,6 +78,7 @@
 | T-054 | abortCurrentRound + RoundPhase.ABORTED + phase-checks в PlayerGameplayService | done | 2026-07-15 | [T-054](T-054-implement-abort-and-pause-round.md) |
 | T-057 | GET /session — Specification-based фильтры state/sessionType/openToConnect | done | 2026-07-15 | [T-057](T-057-session-list-filters.md) |
 | T-058 | AssignedOfferResponse — отдельный DTO для персональной доставки оффера | done | 2026-07-15 | [T-058](T-058-personal-offer-dto.md) |
+| T-001 | Автоматическое применение index.sql на ApplicationReadyEvent (IndexSqlInitializer) | done | 2026-07-15 | [T-001](T-001-apply-index-sql-on-startup.md) |
 
 ## Легенда статусов
 

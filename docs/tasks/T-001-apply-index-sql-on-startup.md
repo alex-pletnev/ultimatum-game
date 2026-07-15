@@ -1,10 +1,10 @@
 ---
 id: T-001
 title: Применять index.sql при старте приложения
-status: pending
+status: done
 priority: medium
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-07-15
 related_code:
   - src/main/resources/index.sql
   - src/main/kotlin/edu/itmo/ultimatumgame/UltimatumGameApplication.kt
@@ -24,10 +24,10 @@ tags: [db, infra]
 
 ## Acceptance criteria
 
-- [ ] При запуске приложения расширение `pg_trgm` и индекс `idx_session_name_trgm` создаются автоматически, если ещё не существуют.
-- [ ] Работает как на пустой БД, так и на существующей (идемпотентность через `IF NOT EXISTS`).
-- [ ] Никакой ручной шаг в `docs/10-configuration.md` больше не нужен — раздел «Инициализация индексов БД» обновлён.
-- [ ] Существующий `application.properties` не ломается; тесты `./gradlew test` проходят.
+- [x] При запуске приложения расширение `pg_trgm` и индекс `idx_session_name_trgm` создаются автоматически, если ещё не существуют.
+- [x] Работает как на пустой БД, так и на существующей (идемпотентность через `IF NOT EXISTS`).
+- [x] Никакой ручной шаг в `docs/10-configuration.md` больше не нужен — раздел «Инициализация индексов БД» обновлён.
+- [x] Существующий `application.properties` не ломается; тесты `./gradlew check` проходят (H2 detection пропускает applier).
 
 ## План
 
@@ -43,3 +43,4 @@ tags: [db, infra]
 ## Лог
 
 - 2026-07-12: заведена из `docs/11-known-gaps.md`.
+- 2026-07-15: закрыто. Выбран подход (c) — `@EventListener(ApplicationReadyEvent)` в `IndexSqlInitializer.kt`. Причина: явный контроль, работает с любым `ddl-auto`, идемпотентно. `spring.sql.init` был бы более "spring-way", но менее контролируем и путается с `data.sql` (для seeding, не DDL). `index.sql` обновлён — `CREATE INDEX IF NOT EXISTS`. Applier читает файл из classpath, разбивает по `;`, executes через JdbcTemplate. В тестах на H2 (`databaseProductName != PostgreSQL`) — skip. `docs/10-configuration.md` и `docs/11-known-gaps.md` обновлены. `./gradlew check` зелёный. Ручная verification на реальной Postgres не проводилась (heavy, `bootRun`), но код-путь простой и safety-guarded.

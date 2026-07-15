@@ -121,11 +121,13 @@ export JWT_SIGNING_KEY="$(openssl rand -base64 32)"
 
 ### Инициализация индексов БД
 
-`src/main/resources/index.sql` **не применяется автоматически** — нужно выполнить вручную (или добавить в миграции):
+`src/main/resources/index.sql` применяется автоматически при `ApplicationReadyEvent` (T-001, `configs/IndexSqlInitializer.kt`) — расширение `pg_trgm` и GIN-индекс `idx_session_name_trgm` создаются идемпотентно (`IF NOT EXISTS`). Тесты на H2 пропускают applier — детектится по `databaseProductName`.
+
+Ручного шага не требуется. Файл `index.sql`:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX idx_session_name_trgm
+CREATE INDEX IF NOT EXISTS idx_session_name_trgm
     ON session USING gin (display_name gin_trgm_ops);
 ```
 

@@ -23,9 +23,8 @@
 
 ## Персистентность
 
-### `index.sql` не применяется автоматически
-- Файл `src/main/resources/index.sql` — не запускается через Hibernate. Нужно либо вручную, либо добавить Flyway/Liquibase, либо `@EventListener` на `ApplicationReadyEvent`.
-- Без этого `SessionRepository.searchByNameTrgm` будет работать, но без ускорения индексом.
+### ~~`index.sql` не применяется автоматически~~ — устранено (T-001)
+- `configs/IndexSqlInitializer.kt` применяет `index.sql` при `ApplicationReadyEvent`. Идемпотентно (`IF NOT EXISTS`). На H2 (тесты) пропускается по `databaseProductName`.
 
 ### `ddl-auto=update`
 - Автомиграция удобна для dev, но опасна для prod (не удаляет колонки, ловит edge-cases при переименованиях). Для prod — Flyway/Liquibase.
