@@ -24,6 +24,7 @@
 | T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо ручного split(';') | pending | low | 2026-07-15 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
 | T-069 | Автокопирование openapi/asyncapi.json в frontend-integration/specs после generateApiSnapshots | pending | low | 2026-07-15 | [T-069](T-069-auto-copy-specs-to-frontend-integration.md) |
 | T-070 | STOMP CONNECT: CloseStatus 1002 из-за MissingCsrfTokenException — disable через no-op csrfChannelInterceptor | done | 2026-07-15 | [T-070](T-070-disable-websocket-csrf-for-stomp.md) |
+| T-071 | Аудит security-matcher completeness при добавлении @MessageMapping / @SendToUser | pending | medium | 2026-07-15 | [T-071](T-071-security-matcher-completeness-check.md) |
 
 ## Закрытые задачи
 
