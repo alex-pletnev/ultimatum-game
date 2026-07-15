@@ -43,7 +43,7 @@
 | `/app/session/{sessionId}/offer.create` | PLAYER, ADMIN | `CreateOfferCmd` `{ amount: Int ≥0 }` | `PlayerGameplayService.sendOffer` | `:25-35` |
 | `/app/session/{sessionId}/make.decision` | PLAYER, ADMIN | `MakeDecisionCmd` `{ offerId: String, decision: Boolean }` | `PlayerGameplayService.makeDecision` | `:38-48` |
 
-Ошибки в обработчиках `SEND` не возвращаются напрямую клиенту как STOMP-фреймы; исключения из бизнес-логики (`DuplicateIdException`, `IdNotFoundException`, `IllegalStateException`) логируются и обрабатываются на уровне обработчика ошибок Spring.
+Ошибки в обработчиках `SEND` доставляются клиенту через `/user/queue/errors` (T-050 — `WebSocketExceptionAdvice`). Клиент должен подписаться на эту очередь чтобы получать `ApiErrorResponse` с корректным status. Матрица маппинга и полный список исключений — `docs/09-error-handling.md` (раздел «STOMP-ошибки»).
 
 ## Топики сервер → клиент (`SUBSCRIBE` на `/topic/...`)
 
@@ -70,6 +70,7 @@
 | `/topic/session/*/scoreUpdated` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/offersShuffled` | ADMIN, PLAYER, OBSERVER |
 | `/topic/session/*/player/*/offer` | ADMIN, PLAYER — `userId` в пути **не проверяется** (anti-impersonation отсутствует by design, см. `docs/08-security.md`) |
+| `/user/queue/errors` | authenticated — персональная очередь ошибок из STOMP-контроллеров (T-050) |
 
 ## Авторизация STOMP
 

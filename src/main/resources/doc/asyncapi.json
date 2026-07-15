@@ -49,6 +49,17 @@
         }
       }
     },
+    "_queue_errors" : {
+      "address" : "/queue/errors",
+      "bindings" : {
+        "stomp" : { }
+      },
+      "messages" : {
+        "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse" : {
+          "$ref" : "#/components/messages/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+        }
+      }
+    },
     "_topic_session_{sessionId}_decisionMade" : {
       "address" : "/topic/session/{sessionId}/decisionMade",
       "messages" : {
@@ -139,6 +150,22 @@
           "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
         },
         "title" : "MakeDecisionCmd"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse" : {
+        "bindings" : {
+          "stomp" : { }
+        },
+        "headers" : {
+          "$ref" : "#/components/schemas/SpringStompDefaultHeaders"
+        },
+        "name" : "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse",
+        "payload" : {
+          "schema" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+          },
+          "schemaFormat" : "application/vnd.aai.asyncapi+json;version=3.0.0"
+        },
+        "title" : "ApiErrorResponse"
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse" : {
         "bindings" : {
@@ -296,6 +323,37 @@
         },
         "required" : [ "decision", "offerId" ],
         "title" : "MakeDecisionCmd",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse" : {
+        "examples" : [ {
+          "error" : "string",
+          "message" : "string",
+          "path" : "string",
+          "status" : 0,
+          "timestamp" : "2015-07-20T15:49:04-07:00"
+        } ],
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "timestamp" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "required" : [ "error", "message", "path", "status", "timestamp" ],
+        "title" : "ApiErrorResponse",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionMadeResponse" : {

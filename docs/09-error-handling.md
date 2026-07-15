@@ -31,7 +31,7 @@
 | `IdNotFoundException` | 404 | сообщение исключения | `:93-105` |
 | `DuplicateIdException` | 409 | сообщение исключения | `:79-91` |
 | `SessionJoinRejectedException` | 409 | сообщение исключения | `:171-183` |
-| `Exception` (catch-all) | 500 | сообщение + stacktrace в логи | `:65-77` |
+| `Exception` (catch-all) | 500 | «Внутренняя ошибка сервера» (stack-trace только в лог, не в ответе — T-050) | `GlobalExceptionsHandler.kt` |
 
 ## Кастомные исключения
 
@@ -55,7 +55,20 @@
 
 ### STOMP-ошибки
 
-`InvalidJwtException` не проходит через `GlobalExceptionsHandler` (тот работает только для HTTP MVC). Логируется и приводит к STOMP `ERROR`-фрейму.
+`InvalidJwtException` на `CONNECT` не проходит через `GlobalExceptionsHandler` (тот работает только для HTTP MVC). Логируется и приводит к STOMP `ERROR`-фрейму.
+
+Исключения из `@MessageMapping`-контроллеров ловит `WebSocketExceptionAdvice` (T-050, `@ControllerAdvice` + `@MessageExceptionHandler`). Payload — `ApiErrorResponse` со стандартным status, доставляется в персональную очередь `/user/queue/errors` (клиент подписывается — Spring роутит по principal).
+
+Матрица маппинга (симметрично REST):
+
+| Исключение | HTTP status в payload |
+|-----------|-----------------------|
+| `InvalidJwtException` / `ExpiredJwtException` / `SignatureException` / `MalformedJwtException` | 401 |
+| `UserRoleNotAllowedException` | 403 |
+| `IdNotFoundException` | 404 |
+| `IllegalArgumentException` / `InvalidUuidFormatException` / `InvalidOfferException` | 400 |
+| `DuplicateIdException` / `SessionJoinRejectedException` / `IllegalStateException` | 409 |
+| прочее | 500 (без stack-trace в payload'е) |
 
 ## Валидация полей — краткая таблица
 

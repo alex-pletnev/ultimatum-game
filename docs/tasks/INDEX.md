@@ -17,7 +17,6 @@
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | medium | 2026-07-13 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
-| T-050 | Validation exceptions в service-слое должны отдаваться клиенту как HTTP 400 (не 500) | pending | low | 2026-07-13 | [T-050](T-050-validation-exception-http-mapping.md) |
 | T-054 | Реализовать AdminGameplayService.abortCurrentRound и pauseRound (сейчас TODO) | pending | medium | 2026-07-13 | [T-054](T-054-implement-abort-and-pause-round.md) |
 | T-057 | Фильтры state/sessionType/openToConnect в GET /session | pending | low | 2026-07-13 | [T-057](T-057-session-list-filters.md) |
 | T-058 | Отдельный DTO для персональной доставки оффера | pending | low | 2026-07-13 | [T-058](T-058-personal-offer-dto.md) |
@@ -79,6 +78,7 @@
 | T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | done | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
 | T-063 | FreeForAllStrategy.shuffleOffers — bounded-retry Fisher-Yates вместо do-while | done | 2026-07-15 | [T-063](T-063-freeforall-derangement-flake.md) |
 | T-064 | AuthService.refresh — handler'ы SignatureException/MalformedJwtException → 401 | done | 2026-07-15 | [T-064](T-064-refresh-malformed-token-500.md) |
+| T-050 | Stack-trace leak fix + STOMP WebSocketExceptionAdvice → /user/queue/errors | done | 2026-07-15 | [T-050](T-050-validation-exception-http-mapping.md) |
 
 ## Легенда статусов
 

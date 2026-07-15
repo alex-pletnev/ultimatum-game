@@ -3,6 +3,7 @@
 package edu.itmo.ultimatumgame.exceptions
 
 import edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse
+import edu.itmo.ultimatumgame.util.logger
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.security.SignatureException
@@ -18,6 +19,8 @@ import java.util.Date
 
 @RestControllerAdvice
 class GlobalExceptionsHandler {
+
+    private val log = logger()
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -63,19 +66,23 @@ class GlobalExceptionsHandler {
             path = request.requestURI
         )
 
+    // Fallback: не отдавать stack-trace клиенту (T-050 security concern) — только generic сообщение.
+    // Полный трейс уходит в лог для расследования.
     @ExceptionHandler(Exception::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     fun handleAllExceptions(
         ex: Exception,
         request: HttpServletRequest
-    ): ApiErrorResponse =
-        ApiErrorResponse(
+    ): ApiErrorResponse {
+        log.error("Необработанное исключение по пути ${request.requestURI}", ex)
+        return ApiErrorResponse(
             timestamp = Date(),
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             error = "Internal Server Error",
-            message = (ex.message + "; st: -> " + ex.stackTraceToString()),
+            message = "Внутренняя ошибка сервера",
             path = request.requestURI
         )
+    }
 
     @ExceptionHandler(DuplicateIdException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
