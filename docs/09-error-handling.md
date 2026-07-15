@@ -23,6 +23,8 @@
 | `InvalidUuidFormatException` | 400 | «Неверный формат UUID» | `:119-129` |
 | `HttpMessageNotReadableException` | 400 | «Некорректное тело запроса» | `:131-141` |
 | `ExpiredJwtException` | 401 | «JWT токен истёк» | `:157-169` |
+| `io.jsonwebtoken.security.SignatureException` | 401 | «Некорректная подпись JWT» | `GlobalExceptionsHandler.kt` |
+| `io.jsonwebtoken.MalformedJwtException` | 401 | «Некорректный JWT» | `GlobalExceptionsHandler.kt` |
 | `AccessDeniedException` | 403 | «Доступ запрещён» | `:35-47` |
 | `AuthorizationDeniedException` | 403 | «Доступ запрещён» | `:143-155` |
 | `UserRoleNotAllowedException` | 403 | сообщение исключения | `:50-62` |

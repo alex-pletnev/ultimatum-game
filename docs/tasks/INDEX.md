@@ -24,8 +24,6 @@
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
-| T-063 | FreeForAllStrategy.shuffleOffers — бесконечный цикл при неудачном RNG (derangement bug) | pending | high | 2026-07-14 | [T-063](T-063-freeforall-derangement-flake.md) |
-| T-064 | AuthService.refresh — malformed/подделанный refresh-токен даёт 500 вместо 401 | pending | high | 2026-07-14 | [T-064](T-064-refresh-malformed-token-500.md) |
 | T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
 
 ## Закрытые задачи
@@ -79,6 +77,8 @@
 | T-056 | POST /auth/refresh — refresh JWT для long-lived sessions | done | 2026-07-14 | [T-056](T-056-jwt-refresh-endpoint.md) |
 | T-065 | setup-agent-harness — аргумент со свободным описанием контекста проекта → SPECIFIC_RULES | done | 2026-07-14 | [T-065](T-065-setup-harness-project-context-arg.md) |
 | T-059 | Gradle-команды всегда через run_in_background=true; `./gradlew --stop` до подозрительных запусков | done | 2026-07-13 | [T-059](T-059-gradle-always-background-and-stop.md) |
+| T-063 | FreeForAllStrategy.shuffleOffers — bounded-retry Fisher-Yates вместо do-while | done | 2026-07-15 | [T-063](T-063-freeforall-derangement-flake.md) |
+| T-064 | AuthService.refresh — handler'ы SignatureException/MalformedJwtException → 401 | done | 2026-07-15 | [T-064](T-064-refresh-malformed-token-500.md) |
 
 ## Легенда статусов
 

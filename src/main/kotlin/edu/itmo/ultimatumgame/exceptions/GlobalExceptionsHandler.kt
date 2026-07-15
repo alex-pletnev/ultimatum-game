@@ -4,6 +4,8 @@ package edu.itmo.ultimatumgame.exceptions
 
 import edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -182,6 +184,39 @@ class GlobalExceptionsHandler {
             status = HttpStatus.UNAUTHORIZED.value(),
             error = "Unauthorized",
             message = ex.message ?: "Невалидный JWT",
+            path = request.requestURI
+        )
+
+    // jjwt может «уронить» подделанный или структурно-повреждённый токен через SignatureException /
+    // MalformedJwtException в путях, которые не оборачивают parseClaimsJws в runCatching (см. T-064).
+    // Без этих handler'ов клиент получал 500 вместо 401 в security-critical пути.
+    @ExceptionHandler(SignatureException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @Suppress("UnusedParameter")
+    fun handleJwtSignature(
+        ex: SignatureException,
+        request: HttpServletRequest
+    ): ApiErrorResponse =
+        ApiErrorResponse(
+            timestamp = Date(),
+            status = HttpStatus.UNAUTHORIZED.value(),
+            error = "Unauthorized",
+            message = "Некорректная подпись JWT",
+            path = request.requestURI
+        )
+
+    @ExceptionHandler(MalformedJwtException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @Suppress("UnusedParameter")
+    fun handleMalformedJwt(
+        ex: MalformedJwtException,
+        request: HttpServletRequest
+    ): ApiErrorResponse =
+        ApiErrorResponse(
+            timestamp = Date(),
+            status = HttpStatus.UNAUTHORIZED.value(),
+            error = "Unauthorized",
+            message = "Некорректный JWT",
             path = request.requestURI
         )
 

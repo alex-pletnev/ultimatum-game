@@ -1,10 +1,10 @@
 ---
 id: T-064
 title: AuthService.refresh — malformed/подделанный refresh-токен даёт 500 вместо 401
-status: pending
+status: done
 priority: high
 created: 2026-07-14
-updated: 2026-07-14
+updated: 2026-07-15
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/services/AuthService.kt
   - src/main/kotlin/edu/itmo/ultimatumgame/services/JwtService.kt
@@ -50,3 +50,4 @@ Self-review T-056 (commit 5387ef7) — мой mockk-тест `refresh — нев
 ## Лог
 
 - 2026-07-14: заведено из self-review T-056 (commit 5387ef7), категория B. Priority high — API отдаёт 500 в security-critical пути; клиенту невозможно отличить «свой refresh истёк» от «баг сервера». Прямая security-hygiene.
+- 2026-07-15: закрыто. Добавлены `@ExceptionHandler(SignatureException)` и `@ExceptionHandler(MalformedJwtException)` в `GlobalExceptionsHandler` → 401. Добавлен unit-тест в `AuthServiceTest`: реально подделанный (чужим ключом) refresh-токен → `InvalidJwtException` (текущий путь через `runCatching` в `extractType`) ИЛИ `SignatureException` (защита handler'ом). `./gradlew check` зелёный. Замечание: описанный в контексте путь через прямой `extractUsername` в `refresh` не срабатывает — `extractType` с `runCatching` перехватывает `SignatureException` первым и превращает в `InvalidJwtException`. Handler'ы всё равно важны как defence-in-depth для других путей (напр. `JwtAuthenticationFilter.extractUsername` — вне runCatching).

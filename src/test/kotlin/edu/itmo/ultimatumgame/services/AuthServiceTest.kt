@@ -9,11 +9,16 @@ import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.UserLoggedOut
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.security.Keys
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
+import java.util.Base64
+import java.util.Date
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -132,6 +137,29 @@ class AuthServiceTest {
         every { jwtService.isRefreshTokenValid("bad-refresh", u) } returns false
 
         assertThrows<InvalidJwtException> { service.refresh("bad-refresh") }
+    }
+
+    @Test
+    fun `refresh — реально подделанный refresh-токен (чужой ключ) не даёт 500 (T-064)`() {
+        // Real JwtService с ключом A; атакующий подписывает токен ключом B.
+        val signingKeyA = Base64.getEncoder().encodeToString(ByteArray(64) { 1 })
+        val realJwt = JwtService(signingKeyA, TokenRevocationService())
+        val svc = AuthService(realJwt, userService, tokenRevocationService, domainEventLogger)
+
+        val u = user()
+        val otherKey = Keys.hmacShaKeyFor(ByteArray(64) { 9 })
+        val forged = Jwts.builder()
+            .setSubject(u.id.toString())
+            .setIssuedAt(Date())
+            .setExpiration(Date(System.currentTimeMillis() + 60_000))
+            .claim("type", "REFRESH")
+            .signWith(otherKey, SignatureAlgorithm.HS256)
+            .compact()
+
+        // Оба варианта дают 401 через GlobalExceptionsHandler; любое другое = регрессия (напр. 500).
+        val ex = assertThrows<Exception> { svc.refresh(forged) }
+        val ok = ex is InvalidJwtException || ex is io.jsonwebtoken.security.SignatureException
+        assertEquals(true, ok, "Ожидался InvalidJwt|SignatureException, получен ${ex::class.simpleName}")
     }
 
     @Test

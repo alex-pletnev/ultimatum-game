@@ -4,6 +4,7 @@ import edu.itmo.ultimatumgame.TestFixtures.offer
 import edu.itmo.ultimatumgame.TestFixtures.round
 import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.user
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -90,5 +91,32 @@ class FreeForAllTest {
             assertNotNull(o.responder)
             assertTrue(o.responder!!.id in memberIds, "responder ${o.responder!!.id} должен быть из members")
         }
+    }
+
+    // T-063 regression: bounded-retry Fisher-Yates должен детерминированно
+    // завершаться и всегда давать корректный derangement, а не крутиться в do-while.
+    @RepeatedTest(100)
+    fun `derangement детерминирован — за 100 подряд запусков ни один не зависает и не даёт коллизии`() {
+        val members = (1..4).map { user(nickname = "P$it") }.toMutableSet()
+        val round = round(offers = members.map { offer(proposer = it) }.toMutableList())
+        val session = session(members = members, currentRound = round)
+
+        strategy.shuffleOffers(session)
+
+        round.offers.forEach { o ->
+            assertNotNull(o.responder)
+            assertNotEquals(o.proposer?.id, o.responder?.id)
+        }
+        assertEquals(round.offers.size, round.offers.map { it.responder?.id }.toSet().size)
+    }
+
+    @Test
+    fun `n=1 — shuffleOffers падает с IllegalStateException (derangement невозможен)`() {
+        val a = user()
+        val members = mutableSetOf(a)
+        val round = round(offers = mutableListOf(offer(proposer = a)))
+        val session = session(members = members, currentRound = round)
+
+        assertThrows<IllegalStateException> { strategy.shuffleOffers(session) }
     }
 }

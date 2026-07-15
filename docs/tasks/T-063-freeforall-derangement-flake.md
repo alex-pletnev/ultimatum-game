@@ -1,10 +1,10 @@
 ---
 id: T-063
 title: FreeForAllStrategy.shuffleOffers — бесконечный цикл при неудачном RNG (derangement bug)
-status: pending
+status: done
 priority: high
 created: 2026-07-14
-updated: 2026-07-14
+updated: 2026-07-15
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/model/ShuffleStrategy.kt
   - src/test/kotlin/edu/itmo/ultimatumgame/model/FreeForAllTest.kt
@@ -48,3 +48,4 @@ round.offers.forEach {
 ## Лог
 
 - 2026-07-14: заведено во время T-056. Обнаружено thread dump'ом застрявшего test worker'а. Priority high — блокирует dev-experience, любой прогон `./gradlew check` может нарваться на flake и повесить CI/локальную сессию на 10+ минут.
+- 2026-07-15: закрыто. Алгоритм переписан на bounded-retry Fisher-Yates (`shuffled()` + проверка derangement, max 100 попыток, expected ~e ≈ 2.71). Добавлен `@RepeatedTest(100)` для регресс-защиты и `n=1` кейс с explicit-check → IllegalStateException. Баг реально проявился во время работы над T-064: test worker застрял на 3:40 при 99% CPU (в стеке — `ShuffleStrategy.random()`), убил и пофиксил. `TeamBattleStrategy` проверил — там `filter+random` без do-while, аналогичного бага нет. `./gradlew check` зелёный.
