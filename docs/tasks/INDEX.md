@@ -28,6 +28,14 @@
 | T-073 | Аудит DTO на MapStruct-safety — починен пустой Prew-mapping для OfferPrew/DecisionPrew | done | 2026-07-16 | [T-073](T-073-audit-dto-mapstruct-nullable-safety.md) |
 | T-074 | Расширить WebSocketSecurityMatcherAuditTest — block-комментарии + dead-matcher detection | pending | low | 2026-07-16 | [T-074](T-074-audit-test-block-comments-and-dead-matchers.md) |
 | T-075 | CLAUDE.md — configuration-cache-safe паттерн для file-ops в gradle-тасках | pending | low | 2026-07-16 | [T-075](T-075-cc-safe-gradle-file-ops.md) |
+| T-076 | SessionConfig.autoAdvanceRounds — additive поле для all-NPC симуляции | pending | medium | 2026-07-16 | [T-076](T-076-session-config-auto-advance.md) |
+| T-077 | NpcProfile entity + repository + JSONB params | pending | medium | 2026-07-16 | [T-077](T-077-npc-profile-entity.md) |
+| T-078 | NpcStrategyPlayer interface + Fair / Selfish / Random стратегии | pending | medium | 2026-07-16 | [T-078](T-078-basic-npc-strategies.md) |
+| T-079 | Vengeful + Adaptive memory-стратегии NPC | pending | medium | 2026-07-16 | [T-079](T-079-memory-npc-strategies.md) |
+| T-080 | NpcService — оркестратор стратегий + hooks в start/init-decisions + fallback | pending | medium | 2026-07-16 | [T-080](T-080-npc-service-and-hooks.md) |
+| T-081 | autoAdvanceRounds — hook в makeDecision + NpcService.playDecisions | pending | medium | 2026-07-16 | [T-081](T-081-auto-advance-rounds-hook.md) |
+| T-082 | REST — POST/GET/DELETE /npc + валидация strategy/params | pending | medium | 2026-07-16 | [T-082](T-082-npc-crud-endpoints.md) |
+| T-083 | POST /session/{id}/join-npc + POST /session/{id}/npcs (bulk) + integration finalize | pending | medium | 2026-07-16 | [T-083](T-083-session-join-npc-and-bulk.md) |
 
 ## Закрытые задачи
 
