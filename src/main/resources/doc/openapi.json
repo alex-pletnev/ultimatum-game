@@ -186,7 +186,6 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
-        "required" : [ "createdAt" ],
         "title" : "DecisionPrewResponse",
         "type" : "object"
       },
@@ -228,7 +227,6 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
-        "required" : [ "createdAt" ],
         "title" : "OfferPrewResponse",
         "type" : "object"
       },

@@ -4,12 +4,14 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * DTO for {@link edu.itmo.ultimatumgame.model.Decision}
+ * DTO for {@link edu.itmo.ultimatumgame.model.Decision}.
+ *
+ * T-073: defaults убраны из первичного конструктора (см. пояснение в OfferPrewResponse).
  */
 data class DecisionPrewResponse(
-    val id: UUID? = null,
-    val responder: UserResponse? = null,
-    val offer: OfferPrewResponse? = null,
-    val decision: Boolean? = null,
-    val createdAt: Date = Date()
+    val id: UUID?,
+    val responder: UserResponse?,
+    val offer: OfferPrewResponse?,
+    val decision: Boolean?,
+    val createdAt: Date?,
 )

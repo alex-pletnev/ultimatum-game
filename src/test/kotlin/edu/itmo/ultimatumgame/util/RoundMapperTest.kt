@@ -1,10 +1,13 @@
 package edu.itmo.ultimatumgame.util
 
+import edu.itmo.ultimatumgame.TestFixtures.offer
 import edu.itmo.ultimatumgame.TestFixtures.round
 import edu.itmo.ultimatumgame.TestFixtures.session
+import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.dto.responses.MyRole
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -78,5 +81,29 @@ class RoundMapperTest {
         assertTrue(dto.myPendingActions.isEmpty())
         assertEquals(r.id, dto.id)
         assertEquals(r.roundPhase, dto.roundPhase)
+    }
+
+    @Test
+    fun `toDto — offers и decisions заполнены реальными значениями (T-073 regression)`() {
+        val alice = user(nickname = "alice")
+        val bob = user(nickname = "bob")
+        val s = session()
+        val r = round(session = s)
+        r.offers += offer(proposer = alice, responder = bob, round = r, offerValue = 40)
+
+        val dto = mapper.toDto(r)
+
+        // До T-073 fix'а Prew-мапперы возвращали пустой DTO (все поля null,
+        // кроме createdAt = Date()). MapStruct 1.6.3 при nullable defaults в
+        // Kotlin data class предпочитал no-arg конструктор и ничего не мапил.
+        assertEquals(1, dto.offers.size)
+        val offerDto = dto.offers[0]
+        assertNotNull(offerDto.id, "offerDto.id должен быть заполнен")
+        assertNotNull(offerDto.proposer, "offerDto.proposer должен быть заполнен")
+        assertEquals("alice", offerDto.proposer!!.nickname)
+        assertNotNull(offerDto.responder, "offerDto.responder должен быть заполнен")
+        assertEquals("bob", offerDto.responder!!.nickname)
+        assertEquals(40, offerDto.offerValue)
+        assertNotNull(offerDto.createdAt)
     }
 }
