@@ -27,6 +27,7 @@
 | T-071 | Audit-тест WebSocketSecurityMatcherAuditTest — enforce покрытия matcher'ами | done | 2026-07-16 | [T-071](T-071-security-matcher-completeness-check.md) |
 | T-072 | GET /current-round 500 NPE — myRole/myPendingActions вынесены из primary constructor RoundResponse | done | 2026-07-16 | [T-072](T-072-roundresponse-npe-mapstruct-nullable-hints.md) |
 | T-073 | Аудит DTO на MapStruct-safety — починен пустой Prew-mapping для OfferPrew/DecisionPrew | done | 2026-07-16 | [T-073](T-073-audit-dto-mapstruct-nullable-safety.md) |
+| T-074 | Расширить WebSocketSecurityMatcherAuditTest — block-комментарии + dead-matcher detection | pending | low | 2026-07-16 | [T-074](T-074-audit-test-block-comments-and-dead-matchers.md) |
 
 ## Закрытые задачи
 
