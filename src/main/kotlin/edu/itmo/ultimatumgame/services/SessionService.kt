@@ -9,8 +9,11 @@
 
 package edu.itmo.ultimatumgame.services
 
+import edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest
 import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatumgame.dto.responses.BulkNpcsResponse
 import edu.itmo.ultimatumgame.dto.responses.MyRole
+import edu.itmo.ultimatumgame.dto.responses.NpcProfileResponse
 import edu.itmo.ultimatumgame.dto.responses.PendingAction
 import edu.itmo.ultimatumgame.dto.responses.PendingActionType
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
@@ -18,6 +21,10 @@ import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
+import edu.itmo.ultimatumgame.model.NpcParams
+import edu.itmo.ultimatumgame.model.NpcProfile
+import edu.itmo.ultimatumgame.model.NpcStrategy
+import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
@@ -25,9 +32,12 @@ import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.Team
 import edu.itmo.ultimatumgame.model.User
+import edu.itmo.ultimatumgame.repositories.NpcProfileRepository
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.repositories.UserRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
+import edu.itmo.ultimatumgame.util.NpcJoined
 import edu.itmo.ultimatumgame.util.PlayerJoined
 import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionCreated
@@ -53,6 +63,8 @@ class SessionService(
     private val securityService: SecurityService,
     private val eventPublisherService: EventPublisherService,
     private val domainEventLogger: DomainEventLogger,
+    private val npcProfileRepository: NpcProfileRepository,
+    private val userRepository: UserRepository,
 ) {
 
     private val logger = logger()
@@ -299,6 +311,92 @@ class SessionService(
         domainEventLogger.emit(PlayerJoined(sessionId = sessionId, userId = user.id!!, role = user.role))
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
         return dto
+    }
+
+    @Transactional
+    fun addNpcMember(sessionId: UUID, npcId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
+        val session = getSessionEntity(sessionId)
+        val config = session.config
+            ?: error("Session.config не должен быть null к этому моменту")
+        check(session.state == SessionState.CREATED && session.openToConnect) {
+            "join-npc доступен только для сессий CREATED + openToConnect"
+        }
+        val profile = npcProfileRepository.findById(npcId)
+            .orElseThrow { IdNotFoundException("NPC $npcId не найден") }
+        if (session.members.contains(profile.user)) {
+            return sessionWithTeamsAndMembersMapper.toDto(session)
+        }
+        require(session.members.size < config.numPlayers) {
+            "В сессии $sessionId достигнуто максимальное количество игроков"
+        }
+        if (config.sessionType == SessionType.TEAM_BATTLE) {
+            val tId = teamId ?: error("Для TEAM_BATTLE обязательно указывать teamId")
+            val team: Team = session.teams.find { it.id == tId }
+                ?: error("В сессии $sessionId не найдена команда $tId")
+            team.members += profile.user
+        }
+        session.members += profile.user
+        sessionRepository.save(session)
+        eventPublisherService.publishSessionStatus(sessionId, session)
+        domainEventLogger.emit(NpcJoined(sessionId, profile.user.id!!, profile.strategy.name))
+        return sessionWithTeamsAndMembersMapper.toDto(session)
+    }
+
+    @Transactional
+    fun bulkCreateAndJoinNpcs(sessionId: UUID, req: BulkNpcsRequest): BulkNpcsResponse {
+        val session = getSessionEntity(sessionId)
+        val config = session.config
+            ?: error("Session.config не должен быть null к этому моменту")
+        check(session.state == SessionState.CREATED && session.openToConnect) {
+            "bulk-npcs доступен только для сессий CREATED + openToConnect"
+        }
+        require(req.count in 1..MAX_BULK_NPC_COUNT) { "count должен быть в [1..$MAX_BULK_NPC_COUNT]" }
+        require(session.members.size + req.count <= config.numPlayers) {
+            "count + members больше numPlayers"
+        }
+        require(paramsMatchStrategy(req.strategy, req.params)) {
+            "params не соответствуют strategy=${req.strategy}"
+        }
+        val created = (0 until req.count).map { i ->
+            val nick = "NPC-${req.strategy}-${UUID.randomUUID().toString().take(BULK_NICK_SUFFIX_LEN)}"
+            val user = userRepository.save(User(nickname = nick, role = Role.NPC))
+            val seed = req.seedBase?.plus(i.toLong())
+            npcProfileRepository.save(
+                NpcProfile(user = user, strategy = req.strategy, params = req.params, seed = seed)
+            )
+        }
+        created.forEach {
+            session.members += it.user
+            domainEventLogger.emit(NpcJoined(sessionId, it.user.id!!, it.strategy.name))
+        }
+        sessionRepository.save(session)
+        eventPublisherService.publishSessionStatus(sessionId, session)
+        val sessionDto = sessionWithTeamsAndMembersMapper.toDto(session)
+        val npcs = created.map { p ->
+            NpcProfileResponse(
+                id = p.id!!,
+                userId = p.user.id!!,
+                nickname = p.user.nickname,
+                strategy = p.strategy,
+                params = p.params,
+                seed = p.seed,
+                createdAt = p.createdAt.toInstant(),
+            )
+        }
+        return BulkNpcsResponse(sessionDto, npcs)
+    }
+
+    private fun paramsMatchStrategy(strategy: NpcStrategy, p: NpcParams): Boolean = when (strategy) {
+        NpcStrategy.FAIR -> p is NpcParams.Fair
+        NpcStrategy.SELFISH -> p is NpcParams.Selfish
+        NpcStrategy.RANDOM -> p is NpcParams.Random
+        NpcStrategy.VENGEFUL -> p is NpcParams.Vengeful
+        NpcStrategy.ADAPTIVE -> p is NpcParams.Adaptive
+    }
+
+    private companion object {
+        const val MAX_BULK_NPC_COUNT = 100
+        const val BULK_NICK_SUFFIX_LEN = 6
     }
 
     @Transactional

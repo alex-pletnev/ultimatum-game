@@ -1,6 +1,9 @@
 package edu.itmo.ultimatumgame.controllers
 
+import edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest
 import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatumgame.dto.requests.JoinNpcRequest
+import edu.itmo.ultimatumgame.dto.responses.BulkNpcsResponse
 import edu.itmo.ultimatumgame.dto.responses.RoundResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
@@ -55,8 +58,8 @@ class SessionController(
         return response
     }
 
+    // T-086: публичный read-only endpoint — заголовок летописи (displayName + roundSum) без JWT.
     @GetMapping("/{id}/with-teams-and-members")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER', 'OBSERVER')")
     fun getSessionWithTeamsAndMembers(@PathVariable id: String): SessionWithTeamsAndMembersResponse {
         logger.info("Получен запрос на получение сессии(с командами и игроками) с id: $id")
         val response = sessionService.getSessionWithTeamsAndMembers(id.toUuidOrThrow())
@@ -132,5 +135,27 @@ class SessionController(
         logger.info("Запрос на подключение к сессии (как observer)")
         val response = sessionService.joinSessionAsObserver(sessionUuid)
         return response
+    }
+
+    @PostMapping("/{sessionId}/join-npc")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun joinNpc(
+        @PathVariable sessionId: String,
+        @Valid @RequestBody req: JoinNpcRequest,
+    ): SessionWithTeamsAndMembersResponse {
+        val sessionUuid = sessionId.toUuidOrThrow()
+        logger.info("POST /session/{}/join-npc npcId={}", sessionId, req.npcId)
+        return sessionService.addNpcMember(sessionUuid, req.npcId, req.teamId)
+    }
+
+    @PostMapping("/{sessionId}/npcs")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun bulkNpcs(
+        @PathVariable sessionId: String,
+        @Valid @RequestBody req: BulkNpcsRequest,
+    ): BulkNpcsResponse {
+        val sessionUuid = sessionId.toUuidOrThrow()
+        logger.info("POST /session/{}/npcs count={} strategy={}", sessionId, req.count, req.strategy)
+        return sessionService.bulkCreateAndJoinNpcs(sessionUuid, req)
     }
 }

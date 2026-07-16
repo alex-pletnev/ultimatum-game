@@ -53,6 +53,8 @@ class SessionServiceTest {
     private val securityService = mockk<SecurityService>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
+    private val npcProfileRepository = mockk<edu.itmo.ultimatumgame.repositories.NpcProfileRepository>(relaxed = true)
+    private val userRepository = mockk<edu.itmo.ultimatumgame.repositories.UserRepository>(relaxed = true)
     private val service = SessionService(
         sessionRepo,
         roundRepo,
@@ -63,6 +65,8 @@ class SessionServiceTest {
         securityService,
         eventPublisher,
         domainEventLogger,
+        npcProfileRepository,
+        userRepository,
     )
 
     // ---------- createSession ----------

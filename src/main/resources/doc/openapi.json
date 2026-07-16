@@ -53,6 +53,39 @@
         "title" : "AuthenticateUserRequestDto",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest" : {
+        "description" : "Bulk-создание NPC для сессии.",
+        "properties" : {
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "params" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.model.NpcParams$Adaptive"
+            }, {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.model.NpcParams$Fair"
+            }, {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.model.NpcParams$Random"
+            }, {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.model.NpcParams$Selfish"
+            }, {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.model.NpcParams$Vengeful"
+            } ]
+          },
+          "seedBase" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "strategy" : {
+            "enum" : [ "FAIR", "SELFISH", "RANDOM", "VENGEFUL", "ADAPTIVE" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "count", "params", "strategy" ],
+        "title" : "BulkNpcsRequest",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.requests.CreateNpcRequest" : {
         "description" : "Создание NPC-игрока с выбранной стратегией и её параметрами.",
         "properties" : {
@@ -131,6 +164,22 @@
         "title" : "CreateUserRequest",
         "type" : "object"
       },
+      "edu.itmo.ultimatumgame.dto.requests.JoinNpcRequest" : {
+        "description" : "Подключение существующего NPC к сессии.",
+        "properties" : {
+          "npcId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "teamId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "npcId" ],
+        "title" : "JoinNpcRequest",
+        "type" : "object"
+      },
       "edu.itmo.ultimatumgame.dto.requests.RefreshTokenRequest" : {
         "properties" : {
           "refreshToken" : {
@@ -202,6 +251,22 @@
         },
         "required" : [ "error", "message", "path", "status", "timestamp" ],
         "title" : "ApiErrorResponse",
+        "type" : "object"
+      },
+      "edu.itmo.ultimatumgame.dto.responses.BulkNpcsResponse" : {
+        "properties" : {
+          "npcs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.NpcProfileResponse"
+            },
+            "type" : "array"
+          },
+          "session" : {
+            "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+          }
+        },
+        "required" : [ "npcs", "session" ],
+        "title" : "BulkNpcsResponse",
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse" : {
@@ -2152,6 +2217,102 @@
         "tags" : [ "session-controller" ]
       }
     },
+    "/session/{sessionId}/join-npc" : {
+      "post" : {
+        "operationId" : "joinNpc",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.JoinNpcRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
     "/session/{sessionId}/join/observer" : {
       "post" : {
         "operationId" : "joinSessionAsObserver",
@@ -2169,6 +2330,102 @@
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Conflict"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.ApiErrorResponse"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "session-controller" ]
+      }
+    },
+    "/session/{sessionId}/npcs" : {
+      "post" : {
+        "operationId" : "bulkNpcs",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.BulkNpcsResponse"
                 }
               }
             },

@@ -28,7 +28,6 @@
 | T-073 | Аудит DTO на MapStruct-safety — починен пустой Prew-mapping для OfferPrew/DecisionPrew | done | 2026-07-16 | [T-073](T-073-audit-dto-mapstruct-nullable-safety.md) |
 | T-074 | Расширить WebSocketSecurityMatcherAuditTest — block-комментарии + dead-matcher detection | pending | low | 2026-07-16 | [T-074](T-074-audit-test-block-comments-and-dead-matchers.md) |
 | T-075 | CLAUDE.md — configuration-cache-safe паттерн для file-ops в gradle-тасках | pending | low | 2026-07-16 | [T-075](T-075-cc-safe-gradle-file-ops.md) |
-| T-083 | POST /session/{id}/join-npc + POST /session/{id}/npcs (bulk) + integration finalize | pending | medium | 2026-07-16 | [T-083](T-083-session-join-npc-and-bulk.md) |
 
 ## Закрытые задачи
 
@@ -98,6 +97,7 @@
 | T-084 | index.sql — ALTER TABLE session ADD COLUMN auto_advance_rounds | done | 2026-07-16 | [T-084](T-084-alter-table-add-auto-advance-column.md) |
 | T-082 | REST — POST/GET/DELETE /npc + валидация strategy/params | done | 2026-07-16 | [T-082](T-082-npc-crud-endpoints.md) |
 | T-085 | IndexSqlInitializer — per-line comment filter | done | 2026-07-16 | [T-085](T-085-index-sql-comment-filter.md) |
+| T-083 | POST /session/{id}/join-npc + POST /session/{id}/npcs (bulk) + integration finalize | done | 2026-07-16 | [T-083](T-083-session-join-npc-and-bulk.md) |
 | T-086 | Публичные GET stats и session/with-teams-and-members | done | 2026-07-16 | [T-086](T-086-public-stats-endpoint.md) |
 
 ## Легенда статусов

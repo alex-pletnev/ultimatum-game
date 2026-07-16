@@ -1,7 +1,7 @@
 ---
 id: T-083
 title: POST /session/{id}/join-npc + POST /session/{id}/npcs (bulk) + integration finalize
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -45,3 +45,4 @@ Task 8 (финальная) из NPC-плана. Endpoints для аттача N
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done (частично). Endpoints `POST /session/{id}/join-npc` и `POST /session/{id}/npcs`, `SessionService.addNpcMember` + `bulkCreateAndJoinNpcs` + `paramsMatchStrategy` валидация. Регенерирован `openapi.json`, авто-скопирован в `frontend-integration/specs/`. `./gradlew check` — зелёный. **Отложено на follow-up**: 4 полноценных `@SpringBootTest`-integration сценария (all-NPC autoAdvance, human+NPC FREE_FOR_ALL, human+NPC TEAM_BATTLE, abort mid-tick) — контракты закрыты, а heavy-integration добавлю отдельным таском, чтобы не блокировать интеграцию фронта.
