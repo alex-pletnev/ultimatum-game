@@ -22,12 +22,18 @@ Authorization: Bearer <accessToken>
 | POST | `/session` | ADMIN | Создать сессию |
 | GET | `/session` | any auth | Список сессий (пагинация + фильтры) |
 | GET | `/session/{id}` | any auth | Детали сессии |
-| GET | `/session/{id}/with-teams-and-members` | any auth | Сессия + команды + участники + наблюдатели |
+| GET | `/session/{id}/with-teams-and-members` | permitAll | Сессия + команды + участники + наблюдатели (публично, T-086) |
 | GET | `/session/{id}/current-round` | any auth | Текущий раунд сессии |
 | GET | `/session/{id}/rounds` | any auth | История всех раундов + офферы + решения |
 | POST | `/session/{sessionId}/join` | ADMIN, PLAYER | Присоединиться как игрок |
 | POST | `/session/{sessionId}/join/observer` | any auth | Присоединиться как наблюдатель |
-| GET | `/statistics/{sessionId}/csv` | any auth | Экспорт статистики сессии в CSV |
+| GET | `/statistics/{sessionId}/csv` | permitAll | Экспорт статистики сессии в CSV (публично, T-086) |
+| POST | `/npc` | ADMIN | Создать NPC-профиль (см. [10-npc.md](10-npc.md)) |
+| GET | `/npc` | ADMIN | Список NPC-профилей |
+| GET | `/npc/{id}` | ADMIN | Один NPC-профиль |
+| DELETE | `/npc/{id}` | ADMIN | Удалить NPC |
+| POST | `/session/{sessionId}/join-npc` | ADMIN | Приаттачить существующего NPC к сессии |
+| POST | `/session/{sessionId}/npcs` | ADMIN | Bulk: создать N NPC + сразу приаттачить |
 
 ---
 
