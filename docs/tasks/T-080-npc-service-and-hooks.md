@@ -1,7 +1,7 @@
 ---
 id: T-080
 title: NpcService — оркестратор стратегий + hooks в start/init-decisions + fallback
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -36,3 +36,4 @@ Task 5 из NPC-плана. Центральный класс механизма
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done. `NpcService.playOffers/playDecisions` — синхронные хуки. Триггеры: `AdminGameplayService.startSession` (первый WAIT_OFFERS), `AdminGameplayService.startNextRound` (все последующие), `CoreGameplayService.initWaitDecisionsPhase` (после shuffle). Все офферы NPC собраны → auto `initWaitDecisionsPhase` → playDecisions. Все decisions собраны → ALL_DECISIONS_RECEIVED → publishScoreUpdated + `RoundClosed`. Circular `NpcService ↔ CoreGameplayService` — через `@Lazy`. Fallback `FairStrategy` при exception + `NpcStrategyFailed`. Seed: `Random(seed XOR round.id.msb XOR phaseTag)`. `NpcServiceTest` — 5 сценариев. `./gradlew check` — зелёный.

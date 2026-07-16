@@ -125,6 +125,38 @@ data class OfferShuffled(
     )
 }
 
+// ----- NPC -----
+
+data class NpcJoined(
+    val sessionId: UUID,
+    val userId: UUID,
+    val strategy: String,
+) : DomainEvent {
+    override val type = "npc.joined"
+    override val fields = mapOf(
+        "sessionId" to sessionId,
+        "userId" to userId,
+        "strategy" to strategy,
+    )
+}
+
+data class NpcStrategyFailed(
+    val sessionId: UUID,
+    val roundId: UUID,
+    val userId: UUID,
+    val strategy: String,
+    val phase: String,
+) : DomainEvent {
+    override val type = "npc.strategy.failed"
+    override val fields = mapOf(
+        "sessionId" to sessionId,
+        "roundId" to roundId,
+        "userId" to userId,
+        "strategy" to strategy,
+        "phase" to phase,
+    )
+}
+
 data class DecisionMade(
     val sessionId: UUID,
     val roundId: UUID,

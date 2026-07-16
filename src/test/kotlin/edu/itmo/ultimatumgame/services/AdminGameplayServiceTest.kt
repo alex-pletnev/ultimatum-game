@@ -22,7 +22,14 @@ class AdminGameplayServiceTest {
     private val sessionRepository = mockk<SessionRepository>()
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
-    private val service = AdminGameplayService(sessionService, sessionRepository, eventPublisher, domainEventLogger)
+    private val npcService = mockk<NpcService>(relaxUnitFun = true)
+    private val service = AdminGameplayService(
+        sessionService,
+        sessionRepository,
+        eventPublisher,
+        domainEventLogger,
+        npcService,
+    )
 
     private fun stubSaveIdentity() {
         every { sessionRepository.save(any<Session>()) } answers { firstArg() }

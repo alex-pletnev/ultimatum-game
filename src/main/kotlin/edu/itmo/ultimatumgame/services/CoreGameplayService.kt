@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service
 class CoreGameplayService(
     private val eventPublisherService: EventPublisherService,
     private val domainEventLogger: DomainEventLogger,
+    @org.springframework.context.annotation.Lazy private val npcService: NpcService,
 ) {
 
     private val logger = logger()
@@ -43,6 +44,7 @@ class CoreGameplayService(
                     round.roundPhase,
                     session.id,
                 )
+                npcService.playDecisions(round)
             }
         }
     }

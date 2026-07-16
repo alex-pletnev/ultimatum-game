@@ -17,7 +17,8 @@ class CoreGameplayServiceTest {
 
     private val eventPublisher = mockk<EventPublisherService>(relaxUnitFun = true)
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
-    private val service = CoreGameplayService(eventPublisher, domainEventLogger)
+    private val npcService = mockk<NpcService>(relaxUnitFun = true)
+    private val service = CoreGameplayService(eventPublisher, domainEventLogger, npcService)
 
     @Test
     fun `initWaitDecisionsPhase — шафл через стратегию, публикация офферов респондентам, фаза OFFERS_SENT`() {

@@ -24,6 +24,7 @@ class AdminGameplayService(
     private val sessionRepository: SessionRepository,
     private val eventPublisherService: EventPublisherService,
     private val domainEventLogger: DomainEventLogger,
+    private val npcService: NpcService,
 ) {
 
     private val logger = logger()
@@ -51,6 +52,7 @@ class AdminGameplayService(
             domainEventLogger.emit(
                 RoundStarted(sessionId = sessionId, roundId = round.id!!, roundNumber = round.roundNumber)
             )
+            npcService.playOffers(round)
         }
     }
 
@@ -138,6 +140,7 @@ class AdminGameplayService(
             domainEventLogger.emit(
                 RoundStarted(sessionId = sessionId, roundId = newRound.id!!, roundNumber = newRound.roundNumber)
             )
+            npcService.playOffers(newRound)
         } else {
             domainEventLogger.emit(SessionClosed(sessionId = sessionId))
         }
