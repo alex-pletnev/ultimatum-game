@@ -14,14 +14,12 @@
 | T-041 | Часть C — warn при sha256-коллизии между recommended hook'ами | pending | low | 2026-07-13 | [T-041](T-041-sha-collision-warn-in-part-c.md) |
 | T-042 | Skill'ы, использующие sha/hash, обязать приводить input→expected-output пример | pending | medium | 2026-07-13 | [T-042](T-042-inline-hash-examples-in-skills.md) |
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
-| T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | in_progress | high | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
 | T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
 | T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
 | T-067 | TDD-skip 2 задачи подряд в infrastructure — приоритезировать «как я это протестирую» до кодинга | pending | medium | 2026-07-15 | [T-067](T-067-tdd-skip-in-infrastructure-tasks.md) |
-| T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо ручного split(';') | pending | low | 2026-07-15 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
 | T-070 | STOMP CONNECT: CloseStatus 1002 из-за MissingCsrfTokenException — disable через no-op csrfChannelInterceptor | done | 2026-07-15 | [T-070](T-070-disable-websocket-csrf-for-stomp.md) |
 | T-071 | Audit-тест WebSocketSecurityMatcherAuditTest — enforce покрытия matcher'ами | done | 2026-07-16 | [T-071](T-071-security-matcher-completeness-check.md) |
 | T-072 | GET /current-round 500 NPE — myRole/myPendingActions вынесены из primary constructor RoundResponse | done | 2026-07-16 | [T-072](T-072-roundresponse-npe-mapstruct-nullable-hints.md) |
@@ -33,6 +31,12 @@
 | T-090 | Prod-deploy readiness — externalize configs, Dockerfile, CORS/WS для GitHub Pages фронта | pending | high | 2026-07-16 | [T-090](T-090-prod-deploy-readiness.md) |
 | T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
 | T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | pending | medium | 2026-07-16 | [T-093](T-093-session-members-count-and-auto-close.md) |
+
+## Отменённые задачи
+
+| ID | Название | Отменено | Файл |
+|----|----------|----------|------|
+| T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо split(';') | 2026-07-16 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
 
 ## Закрытые задачи
 
@@ -106,6 +110,7 @@
 | T-086 | Публичные GET stats и session/with-teams-and-members | done | 2026-07-16 | [T-086](T-086-public-stats-endpoint.md) |
 | T-087 | bulkCreateAndJoinNpcs не распределяет NPC по командам в TEAM_BATTLE | done | 2026-07-16 | [T-087](T-087-bulk-npcs-team-battle-broken.md) |
 | T-092 | Stop-hook «Checking for new commit» — не триггерить self-review на task-add / только-docs коммиты | done | 2026-07-16 | [T-092](T-092-refine-self-review-hook-filter.md) |
+| T-044 | Ввести систему миграций БД (Flyway) вместо Hibernate auto-DDL | done | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
 
 
 ## Легенда статусов

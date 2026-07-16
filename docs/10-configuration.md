@@ -11,9 +11,13 @@
 | `management.endpoints.web.exposure.include` | `health,info,prometheus` | actuator сужен до health-check и Prometheus scrape (T-017) |
 | `spring.profiles.active` | `dev` | по умолчанию dev; в prod — `SPRING_PROFILES_ACTIVE=prod` |
 | `token.signing.key` | `${JWT_SIGNING_KEY}` | **обязательный env**, base64 |
-| `spring.jpa.hibernate.ddl-auto` | `update` | автомиграция схемы |
+| `spring.jpa.hibernate.ddl-auto` | `validate` | Hibernate только сверяет entity ↔ таблицы; схемой владеет Flyway (T-044) |
 | `spring.jpa.show-sql` | `true` | dev-логирование SQL (отключается в prod-профиле) |
 | `spring.jpa.properties.hibernate.format_sql` | `true` | pretty-print SQL |
+| `spring.flyway.enabled` | `true` | миграции при старте (T-044); в тестах — `false` (H2) |
+| `spring.flyway.baseline-on-migrate` | `true` | на непустой БД без `flyway_schema_history` — записать baseline и продолжить, не падать |
+| `spring.flyway.baseline-version` | `0` | версия baseline; `V1__baseline.sql` применяется как первая настоящая миграция |
+| `spring.flyway.locations` | `classpath:db/migration` | стандарт |
 | `logging.level.root` | `INFO` | общий root-level |
 
 **Профильные overrides** (T-017):
@@ -113,23 +117,34 @@ export JWT_SIGNING_KEY="$(openssl rand -base64 32)"
 
 Что произойдёт:
 1. Стартует PostgreSQL из `compose.yaml`.
-2. Hibernate накатывает схему (`ddl-auto=update`).
-3. Приложение слушает `http://localhost:8080/api/v1`.
-4. STOMP: `ws://localhost:8080/api/v1/ws`.
-5. Swagger UI: `http://localhost:8080/api/v1/swagger-ui.html`.
-6. Actuator: `http://localhost:8080/api/v1/actuator/**`.
+2. Flyway накатывает миграции из `src/main/resources/db/migration/V*.sql` (T-044).
+3. Hibernate `validate`'ит соответствие entity ↔ таблицы. Расхождение → приложение не стартует.
+4. Приложение слушает `http://localhost:8080/api/v1`.
+5. STOMP: `ws://localhost:8080/api/v1/ws`.
+6. Swagger UI: `http://localhost:8080/api/v1/swagger-ui.html`.
+7. Actuator: `http://localhost:8080/api/v1/actuator/**`.
 
-### Инициализация индексов БД
+### Схема БД и миграции (T-044)
 
-`src/main/resources/index.sql` применяется автоматически при `ApplicationReadyEvent` (T-001, `configs/IndexSqlInitializer.kt`) — расширение `pg_trgm` и GIN-индекс `idx_session_name_trgm` создаются идемпотентно (`IF NOT EXISTS`). Тесты на H2 пропускают applier — детектится по `databaseProductName`.
+**Полный контракт схемы — в миграциях Flyway.** `src/main/resources/db/migration/`:
 
-Ручного шага не требуется. Файл `index.sql`:
+- `V1__baseline.sql` — снапшот схемы после T-076 (сгенерирован `pg_dump --schema-only`
+  из БД, поднятой через `@SpringBootTest` с `ddl-auto=update`). Включает `pg_trgm`
+  extension, `idx_session_name_trgm` (GIN), `ix_npc_profile_user_id` (unique) —
+  то что раньше жило в `IndexSqlInitializer` + `index.sql` (удалены в T-044).
+- Дальнейшие изменения — новыми файлами `V2__<описание>.sql`, `V3__…` (только
+  incremental DDL, не редактировать уже применённые версии).
 
-```sql
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX IF NOT EXISTS idx_session_name_trgm
-    ON session USING gin (display_name gin_trgm_ops);
-```
+**Как добавить миграцию:**
+
+1. Изменить entity-класс (добавить поле, таблицу, etc).
+2. Создать `V<next>__<snake_case_description>.sql` с DDL-изменением (ALTER TABLE / CREATE TABLE / ...).
+3. Локально прогнать `./gradlew check` — Hibernate `validate` подтвердит совместимость.
+4. `bootRun` — Flyway применит новую версию.
+
+**Тесты используют H2** (`spring.flyway.enabled=false` в `src/test/resources/application.properties`),
+Hibernate создаёт схему через `ddl-auto=create-drop`. Testcontainers/real-Postgres
+для тестов — задача T-018.
 
 ### Тесты
 

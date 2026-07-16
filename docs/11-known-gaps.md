@@ -23,11 +23,16 @@
 
 ## Персистентность
 
-### ~~`index.sql` не применяется автоматически~~ — устранено (T-001)
-- `configs/IndexSqlInitializer.kt` применяет `index.sql` при `ApplicationReadyEvent`. Идемпотентно (`IF NOT EXISTS`). На H2 (тесты) пропускается по `databaseProductName`.
+### ~~`index.sql` не применяется автоматически~~ — устранено (T-001), затем поглощено T-044
+- `configs/IndexSqlInitializer.kt` + `resources/index.sql` удалены в T-044.
+  Их содержимое (pg_trgm extension, `idx_session_name_trgm`, `ix_npc_profile_user_id`)
+  теперь в `V1__baseline.sql` (Flyway).
 
-### `ddl-auto=update`
-- Автомиграция удобна для dev, но опасна для prod (не удаляет колонки, ловит edge-cases при переименованиях). Для prod — Flyway/Liquibase.
+### ~~`ddl-auto=update`~~ — устранено (T-044)
+- Prod и dev: Flyway владеет схемой (`resources/db/migration/V1__baseline.sql`),
+  Hibernate только `validate`'ит соответствие entity ↔ таблицы.
+- Тесты: остаются на H2 (`spring.flyway.enabled=false`), Hibernate `ddl-auto=create-drop`.
+  Testcontainers/real-Postgres тесты — отдельная задача (T-018).
 
 ### ~~Потенциальный N+1~~ — устранено (T-002)
 - `DecisionRepository.findAllBySessionIdWithRelations` теперь с fetch join по `offer`/`responder`/`round` (по аналогии с `OfferRepository`).

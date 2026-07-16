@@ -302,8 +302,10 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 | Условие | Что делать |
 |---------|-----------|
 | Edit в `controllers/**`, `dto/**` или `services/EventPublisherService.kt` | Перед commit'ом: `./gradlew generateApiSnapshots` → регенерирует `src/main/resources/doc/{openapi,asyncapi}.json` и через `finalizedBy` копирует их в `frontend-integration/specs/` — включить оба пути в тот же commit (T-069) |
+| Изменение JPA-entity (`model/*.kt` с `@Entity`/`@Table`/`@Column`/`@JoinColumn`) | Добавить `V<next>__<description>.sql` в `src/main/resources/db/migration/` с DDL-изменением. `ddl-auto=validate` (T-044) заставит Hibernate упасть при рассогласовании. Локальный dev-Postgres обновится Flyway'ом при следующем `bootRun`. Тесты остаются на H2 (`spring.flyway.enabled=false` в test-профиле) |
 
 ### Дополнительные «Что не делать»
 
 - Не менять `.gitignore`, `settings.gradle.kts`, `gradlew` без запроса.
 - Не создавать `baseline.xml` без явного согласия пользователя.
+- **Не редактировать уже применённые миграции** `src/main/resources/db/migration/V*.sql` (T-044). Flyway хранит checksum'ы — правка ломает `validate` на любой БД где эта версия уже применена. Изменение схемы — только новым файлом `V<next>__…sql`.

@@ -1,10 +1,10 @@
 ---
 id: T-068
 title: IndexSqlInitializer — переписать на ScriptUtils.executeSqlScript вместо split(';')
-status: pending
+status: cancelled
 priority: low
 created: 2026-07-15
-updated: 2026-07-15
+updated: 2026-07-16
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/configs/IndexSqlInitializer.kt
 related_docs:
@@ -43,3 +43,4 @@ Spring предоставляет `org.springframework.jdbc.datasource.init.Scri
 ## Лог
 
 - 2026-07-15: заведено из self-review T-001 (commit 87e1ce5). Категория B+E (wheel-check miss). Priority low — текущий код работает для текущего SQL, но контракт хрупкий.
+- 2026-07-16: **cancelled**. В рамках T-044 (Flyway) удалены `IndexSqlInitializer.kt`, `IndexSqlInitializerTest.kt` и `src/main/resources/index.sql` — миграции берут на себя всё что делал initializer. `ScriptUtils`-рефактор теряет смысл.
