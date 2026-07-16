@@ -10,6 +10,10 @@
 
 package edu.itmo.ultimatumgame.services
 
+import edu.itmo.ultimatumgame.dto.requests.CreateNpcRequest
+import edu.itmo.ultimatumgame.dto.responses.NpcProfileResponse
+import edu.itmo.ultimatumgame.exceptions.DuplicateIdException
+import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.model.Decision
 import edu.itmo.ultimatumgame.model.NpcParams
 import edu.itmo.ultimatumgame.model.NpcProfile
@@ -19,6 +23,7 @@ import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
+import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.model.npc.AdaptiveStrategy
 import edu.itmo.ultimatumgame.model.npc.DecisionCtx
@@ -34,6 +39,7 @@ import edu.itmo.ultimatumgame.repositories.NpcProfileRepository
 import edu.itmo.ultimatumgame.repositories.OfferRepository
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.repositories.UserRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.NpcStrategyFailed
 import edu.itmo.ultimatumgame.util.RoundClosed
@@ -42,6 +48,7 @@ import jakarta.transaction.Transactional
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import java.util.Random
+import java.util.UUID
 
 /**
  * Оркестрирует ходы NPC. Синхронно триггерится из двух точек существующего gameplay'а:
@@ -62,9 +69,62 @@ class NpcService(
     @Lazy private val coreGameplayService: CoreGameplayService,
     private val statsService: StatsService,
     @Lazy private val adminGameplayService: AdminGameplayService,
+    private val userRepository: UserRepository,
 ) {
 
     private val logger = logger()
+
+    @Transactional
+    fun create(req: CreateNpcRequest): NpcProfileResponse {
+        require(paramsMatchStrategy(req.strategy, req.params)) {
+            "params не соответствуют strategy=${req.strategy}"
+        }
+        if (userRepository.existsByNickname(req.nickname)) {
+            throw DuplicateIdException("nickname уже занят: ${req.nickname}")
+        }
+        val user = userRepository.save(User(nickname = req.nickname, role = Role.NPC))
+        val saved = npcProfileRepo.save(
+            NpcProfile(user = user, strategy = req.strategy, params = req.params, seed = req.seed)
+        )
+        return saved.toResponse()
+    }
+
+    fun list(): List<NpcProfileResponse> = npcProfileRepo.findAll().map { it.toResponse() }
+
+    fun get(id: UUID): NpcProfileResponse =
+        npcProfileRepo.findById(id).orElseThrow { IdNotFoundException("NPC $id не найден") }.toResponse()
+
+    @Transactional
+    fun delete(id: UUID) {
+        val profile = npcProfileRepo.findById(id)
+            .orElseThrow { IdNotFoundException("NPC $id не найден") }
+        val busy = sessionRepository.existsByMembersContainingAndStateNotIn(
+            profile.user,
+            listOf(SessionState.FINISHED, SessionState.ABORTED),
+        )
+        check(!busy) { "NPC $id участвует в открытой сессии — удаление невозможно" }
+        val user = profile.user
+        npcProfileRepo.delete(profile)
+        userRepository.delete(user)
+    }
+
+    private fun paramsMatchStrategy(strategy: NpcStrategy, p: NpcParams): Boolean = when (strategy) {
+        NpcStrategy.FAIR -> p is NpcParams.Fair
+        NpcStrategy.SELFISH -> p is NpcParams.Selfish
+        NpcStrategy.RANDOM -> p is NpcParams.Random
+        NpcStrategy.VENGEFUL -> p is NpcParams.Vengeful
+        NpcStrategy.ADAPTIVE -> p is NpcParams.Adaptive
+    }
+
+    private fun NpcProfile.toResponse(): NpcProfileResponse = NpcProfileResponse(
+        id = id!!,
+        userId = user.id!!,
+        nickname = user.nickname,
+        strategy = strategy,
+        params = params,
+        seed = seed,
+        createdAt = createdAt.toInstant(),
+    )
 
     @Transactional
     fun playOffers(round: Round) {

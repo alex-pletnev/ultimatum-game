@@ -41,6 +41,7 @@ class NpcServiceTest {
     private val coreGameplayService = mockk<CoreGameplayService>(relaxUnitFun = true)
     private val statsService = mockk<StatsService>()
     private val adminGameplayService = mockk<AdminGameplayService>(relaxUnitFun = true)
+    private val userRepository = mockk<edu.itmo.ultimatumgame.repositories.UserRepository>()
 
     init {
         every { roundRepo.save<edu.itmo.ultimatumgame.model.Round>(any()) } answers { firstArg() }
@@ -58,6 +59,7 @@ class NpcServiceTest {
         coreGameplayService,
         statsService,
         adminGameplayService,
+        userRepository,
     )
 
     private fun profile(user: edu.itmo.ultimatumgame.model.User, strategy: NpcStrategy, params: NpcParams): NpcProfile =

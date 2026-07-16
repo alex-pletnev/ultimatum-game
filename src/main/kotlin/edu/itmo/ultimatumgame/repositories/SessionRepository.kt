@@ -1,6 +1,8 @@
 package edu.itmo.ultimatumgame.repositories
 
 import edu.itmo.ultimatumgame.model.Session
+import edu.itmo.ultimatumgame.model.SessionState
+import edu.itmo.ultimatumgame.model.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
@@ -30,4 +32,6 @@ interface SessionRepository : CrudRepository<Session, UUID>, JpaSpecificationExe
         @Param("pattern") pattern: String,
         pageable: Pageable
     ): Page<Session>
+
+    fun existsByMembersContainingAndStateNotIn(user: User, states: Collection<SessionState>): Boolean
 }
