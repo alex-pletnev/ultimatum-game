@@ -96,6 +96,7 @@
 | T-078 | NpcStrategyPlayer interface + Fair / Selfish / Random стратегии | done | 2026-07-16 | [T-078](T-078-basic-npc-strategies.md) |
 | T-079 | Vengeful + Adaptive memory-стратегии NPC | done | 2026-07-16 | [T-079](T-079-memory-npc-strategies.md) |
 | T-080 | NpcService — оркестратор стратегий + hooks в start/init-decisions + fallback | done | 2026-07-16 | [T-080](T-080-npc-service-and-hooks.md) |
+| T-084 | index.sql — ALTER TABLE session ADD COLUMN auto_advance_rounds | done | 2026-07-16 | [T-084](T-084-alter-table-add-auto-advance-column.md) |
 
 ## Легенда статусов
 
