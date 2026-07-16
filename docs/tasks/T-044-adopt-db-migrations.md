@@ -2,9 +2,9 @@
 id: T-044
 title: Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL
 status: pending
-priority: medium
+priority: high
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-16
 related_code:
   - src/main/resources/application.properties
   - src/main/resources/index.sql
@@ -46,3 +46,4 @@ tags: [tech-debt, db, infra]
 ## Лог
 
 - 2026-07-13: заведено по идее пользователя во время обсуждения T-003. Priority medium — не блокирует текущую работу, но без миграций каждая новая schema-change задача копит риск.
+- 2026-07-16: priority → high. Стал hard-blocker'ом для T-090 (prod-deploy readiness) — без миграций накатывать на удалённую БД небезопасно.
