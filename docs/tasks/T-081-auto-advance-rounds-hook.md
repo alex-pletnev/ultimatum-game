@@ -1,7 +1,7 @@
 ---
 id: T-081
 title: autoAdvanceRounds — hook в makeDecision + NpcService.playDecisions
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -36,3 +36,4 @@ Task 6 из NPC-плана. После `ALL_DECISIONS_RECEIVED` + `publishScoreU
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done. `PlayerGameplayService.triggerAutoAdvanceIfEnabled` + `NpcService.triggerAutoAdvanceIfEnabled` — after `ALL_DECISIONS_RECEIVED` + score публикации проверяют `autoAdvanceRounds && state == RUNNING && roundNumber < numRounds` → `adminGameplayService.startNextRound`. `AdminGameplayService` инжектится напрямую в `PlayerGameplayService` (нет back-edge), но `@Lazy` в `NpcService` (back-edge через `.playOffers`). Unit-тесты в `PlayerGameplayServiceTest`: autoAdvance триггерится / не триггерится на последнем раунде. `./gradlew check` — зелёный.

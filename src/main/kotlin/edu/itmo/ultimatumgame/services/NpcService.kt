@@ -3,7 +3,9 @@
     "MaximumLineLength",
     "LongParameterList",
     "TooGenericExceptionCaught",
+    "TooManyFunctions",
     "UnsafeCallOnNullableType",
+    "ReturnCount",
 )
 
 package edu.itmo.ultimatumgame.services
@@ -59,6 +61,7 @@ class NpcService(
     private val domainEventLogger: DomainEventLogger,
     @Lazy private val coreGameplayService: CoreGameplayService,
     private val statsService: StatsService,
+    @Lazy private val adminGameplayService: AdminGameplayService,
 ) {
 
     private val logger = logger()
@@ -152,7 +155,17 @@ class NpcService(
             domainEventLogger.emit(
                 RoundClosed(sessionId = session.id!!, roundId = round.id!!, roundNumber = round.roundNumber)
             )
+            triggerAutoAdvanceIfEnabled(session, round)
         }
+    }
+
+    private fun triggerAutoAdvanceIfEnabled(session: Session, round: Round) {
+        val cfg = session.config ?: return
+        if (!cfg.autoAdvanceRounds) return
+        if (session.state != edu.itmo.ultimatumgame.model.SessionState.RUNNING) return
+        if (round.roundNumber >= cfg.numRounds) return
+        logger.info("autoAdvanceRounds включён — старт следующего раунда сессии {} из NpcService", session.id)
+        adminGameplayService.startNextRound(session.id!!)
     }
 
     private fun runStrategyOffer(

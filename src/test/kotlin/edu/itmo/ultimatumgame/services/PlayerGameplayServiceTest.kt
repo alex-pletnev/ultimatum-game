@@ -38,6 +38,7 @@ class PlayerGameplayServiceTest {
     private val coreGameplay = mockk<CoreGameplayService>(relaxUnitFun = true)
     private val statsService = mockk<StatsService>()
     private val domainEventLogger = mockk<DomainEventLogger>(relaxUnitFun = true)
+    private val adminGameplay = mockk<AdminGameplayService>(relaxUnitFun = true)
 
     private val service = PlayerGameplayService(
         eventPublisher,
@@ -50,6 +51,7 @@ class PlayerGameplayServiceTest {
         coreGameplay,
         statsService,
         domainEventLogger,
+        adminGameplay,
     )
 
     private fun stubOfferSaveIdentity() {
@@ -260,6 +262,92 @@ class PlayerGameplayServiceTest {
         assertEquals(RoundPhase.ALL_DECISIONS_RECEIVED, r.roundPhase)
         verify { eventPublisher.publishRoundStatus(s.id!!, r) }
         verify { eventPublisher.publishScoreUpdated(s.id!!, score) }
+    }
+
+    @Test
+    fun `makeDecision — autoAdvance триггерит startNextRound если флаг включён и есть следующий раунд`() {
+        val a = user()
+        val b = user()
+        val r = round(roundPhase = RoundPhase.OFFERS_SENT, roundNumber = 1)
+        val offA = offer(proposer = b, responder = a, round = r)
+        val offB = offer(proposer = a, responder = b, round = r)
+        r.offers.addAll(listOf(offA, offB))
+        r.decisions += Decision(id = UUID.randomUUID(), round = r, responder = b, offer = offB, decision = true)
+        val cfg = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(numRounds = 3, autoAdvanceRounds = true)
+        val s = session(
+            members = mutableSetOf(a, b),
+            currentRound = r,
+            state = edu.itmo.ultimatumgame.model.SessionState.RUNNING,
+            config = cfg,
+        )
+        every { userService.getUserById(a.id!!) } returns a
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+        stubDecisionSaveIdentity()
+        stubRoundSave()
+        stubSessionSave()
+        val score = edu.itmo.ultimatumgame.dto.responses.SessionScoreDto(
+            roundSum = 100,
+            roundsCompleted = 1,
+            players = emptyList(),
+            teams = emptyList(),
+        )
+        every { statsService.getSessionStats(s.id!!) } returns edu.itmo.ultimatumgame.dto.responses.SessionStatsDto(
+            sessionId = s.id!!,
+            displayName = s.displayName,
+            state = s.state,
+            createdAt = s.createdAt,
+            totalRounds = 3,
+            decisionsCount = 2,
+            offers = emptyList(),
+            score = score,
+        )
+
+        service.makeDecision(s.id!!, a.id!!, MakeDecisionCmd(offerId = offA.id.toString(), decision = false))
+
+        verify(exactly = 1) { adminGameplay.startNextRound(s.id!!) }
+    }
+
+    @Test
+    fun `makeDecision — autoAdvance не срабатывает если это последний раунд`() {
+        val a = user()
+        val b = user()
+        val r = round(roundPhase = RoundPhase.OFFERS_SENT, roundNumber = 3)
+        val offA = offer(proposer = b, responder = a, round = r)
+        val offB = offer(proposer = a, responder = b, round = r)
+        r.offers.addAll(listOf(offA, offB))
+        r.decisions += Decision(id = UUID.randomUUID(), round = r, responder = b, offer = offB, decision = true)
+        val cfg = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(numRounds = 3, autoAdvanceRounds = true)
+        val s = session(
+            members = mutableSetOf(a, b),
+            currentRound = r,
+            state = edu.itmo.ultimatumgame.model.SessionState.RUNNING,
+            config = cfg,
+        )
+        every { userService.getUserById(a.id!!) } returns a
+        every { sessionService.getSessionEntity(s.id!!) } returns s
+        stubDecisionSaveIdentity()
+        stubRoundSave()
+        stubSessionSave()
+        val score = edu.itmo.ultimatumgame.dto.responses.SessionScoreDto(
+            roundSum = 100,
+            roundsCompleted = 3,
+            players = emptyList(),
+            teams = emptyList(),
+        )
+        every { statsService.getSessionStats(s.id!!) } returns edu.itmo.ultimatumgame.dto.responses.SessionStatsDto(
+            sessionId = s.id!!,
+            displayName = s.displayName,
+            state = s.state,
+            createdAt = s.createdAt,
+            totalRounds = 3,
+            decisionsCount = 2,
+            offers = emptyList(),
+            score = score,
+        )
+
+        service.makeDecision(s.id!!, a.id!!, MakeDecisionCmd(offerId = offA.id.toString(), decision = false))
+
+        verify(exactly = 0) { adminGameplay.startNextRound(any()) }
     }
 
     @Test

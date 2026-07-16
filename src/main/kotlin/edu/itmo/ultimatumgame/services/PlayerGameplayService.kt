@@ -1,4 +1,10 @@
-@file:Suppress("LongParameterList", "LongMethod", "UnsafeCallOnNullableType", "UnnecessaryNotNullOperator")
+@file:Suppress(
+    "LongParameterList",
+    "LongMethod",
+    "UnsafeCallOnNullableType",
+    "UnnecessaryNotNullOperator",
+    "ReturnCount",
+)
 
 package edu.itmo.ultimatumgame.services
 
@@ -36,6 +42,7 @@ class PlayerGameplayService(
     private val gameplayService: CoreGameplayService,
     private val statsService: StatsService,
     private val domainEventLogger: DomainEventLogger,
+    private val adminGameplayService: AdminGameplayService,
 ) {
 
     private val logger = logger()
@@ -198,6 +205,20 @@ class PlayerGameplayService(
             domainEventLogger.emit(
                 RoundClosed(sessionId = sessionId, roundId = round.id!!, roundNumber = round.roundNumber)
             )
+
+            triggerAutoAdvanceIfEnabled(session, round)
         }
+    }
+
+    private fun triggerAutoAdvanceIfEnabled(
+        session: edu.itmo.ultimatumgame.model.Session,
+        round: edu.itmo.ultimatumgame.model.Round,
+    ) {
+        val cfg = session.config ?: return
+        if (!cfg.autoAdvanceRounds) return
+        if (session.state != edu.itmo.ultimatumgame.model.SessionState.RUNNING) return
+        if (round.roundNumber >= cfg.numRounds) return
+        logger.info("autoAdvanceRounds включён — старт следующего раунда сессии {}", session.id)
+        adminGameplayService.startNextRound(session.id!!)
     }
 }
