@@ -31,6 +31,7 @@
 | T-090 | Prod-deploy readiness — externalize configs, Dockerfile, CORS/WS для GitHub Pages фронта | pending | high | 2026-07-16 | [T-090](T-090-prod-deploy-readiness.md) |
 | T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
 | T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | pending | medium | 2026-07-16 | [T-093](T-093-session-members-count-and-auto-close.md) |
+| T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается (повтор паттерна) | pending | low | 2026-07-16 | [T-094](T-094-read-tool-before-write-tool.md) |
 
 ## Отменённые задачи
 
