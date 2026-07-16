@@ -98,6 +98,7 @@
 | T-084 | index.sql — ALTER TABLE session ADD COLUMN auto_advance_rounds | done | 2026-07-16 | [T-084](T-084-alter-table-add-auto-advance-column.md) |
 | T-082 | REST — POST/GET/DELETE /npc + валидация strategy/params | done | 2026-07-16 | [T-082](T-082-npc-crud-endpoints.md) |
 | T-085 | IndexSqlInitializer — per-line comment filter | done | 2026-07-16 | [T-085](T-085-index-sql-comment-filter.md) |
+| T-086 | Публичные GET stats и session/with-teams-and-members | done | 2026-07-16 | [T-086](T-086-public-stats-endpoint.md) |
 
 ## Легенда статусов
 

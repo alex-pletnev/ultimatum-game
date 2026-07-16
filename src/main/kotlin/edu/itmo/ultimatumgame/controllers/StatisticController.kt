@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -28,8 +27,8 @@ class StatisticController(
     /**
      * Скачать CSV со всеми офферами указанной сессии.
      */
+    // T-086: публичный read-only endpoint — летопись партии без JWT.
     @GetMapping("/{sessionId}/csv")
-    @PreAuthorize("hasAnyRole('ADMIN','PLAYER','OBSERVER')")
     fun downloadCsv(@PathVariable sessionId: UUID): ResponseEntity<ByteArrayResource> =
         try {
             val stats = statsService.getSessionStats(sessionId)
