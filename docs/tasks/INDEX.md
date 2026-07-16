@@ -31,6 +31,7 @@
 | T-088 | paramsMatchStrategy дублируется в NpcService и SessionService | pending | low | 2026-07-16 | [T-088](T-088-consolidate-params-match-strategy.md) |
 | T-089 | TDD-skip 3 задачи подряд — уточнить триггер | pending | medium | 2026-07-16 | [T-089](T-089-tdd-skip-3-in-a-row.md) |
 | T-090 | Prod-deploy readiness — externalize configs, Dockerfile, CORS/WS для GitHub Pages фронта | pending | high | 2026-07-16 | [T-090](T-090-prod-deploy-readiness.md) |
+| T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
 
 ## Закрытые задачи
 
