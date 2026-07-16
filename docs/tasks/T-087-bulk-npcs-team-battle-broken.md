@@ -1,7 +1,7 @@
 ---
 id: T-087
 title: bulkCreateAndJoinNpcs не распределяет NPC по командам в TEAM_BATTLE
-status: pending
+status: done
 priority: high
 created: 2026-07-16
 updated: 2026-07-16
@@ -25,10 +25,9 @@ bulk-attach в TEAM_BATTLE сессию сломан.
 
 ## Acceptance criteria
 
-- [ ] `BulkNpcsRequest` — либо поле `teamAssignments: Map<UUID, Int>` (per-team counts),
-      либо `teamId` (все N в одну команду), либо round-robin по существующим командам.
-- [ ] Юнит-тест — bulk с TEAM_BATTLE распределяет NPC по командам согласно логике.
-- [ ] `paramsMatchStrategy` не дублируется (см. T-088).
+- [x] `BulkNpcsRequest` — `teamId: UUID? = null`. TEAM_BATTLE + `teamId != null` → все N в указанную команду; TEAM_BATTLE + `null` → round-robin по least-full; FREE_FOR_ALL + `teamId != null` → 400.
+- [x] Юнит-тесты — 6 сценариев в `SessionServiceTest.kt` (FREE_FOR_ALL, round-robin пустых, least-full приоритет, targeted teamId, unknown teamId → 404, FREE_FOR_ALL + teamId → 400).
+- [ ] `paramsMatchStrategy` не дублируется — вынесено в T-088 (micro-refactor вне скоупа этой bug-fix задачи).
 
 ## План
 
@@ -39,3 +38,5 @@ vs явные teamId'ы). После — обновить `BulkNpcsRequest` и `
 ## Лог
 
 - 2026-07-16: заведено из self-review 67ac41b.
+- 2026-07-16: старт. Дизайн: `BulkNpcsRequest` расширяется `teamId: UUID? = null`. TEAM_BATTLE + `teamId != null` — все в одну команду; TEAM_BATTLE + `null` — round-robin по least-full. FREE_FOR_ALL + `teamId != null` — 400. AC3 (paramsMatchStrategy дедуп) остаётся в T-088 — не тяну в этот скоуп.
+- 2026-07-16: TDD RED→GREEN — 6 юнит-тестов (SessionServiceTest.kt). Impl: `planTeamAssignments` считает раскладку до создания сущностей (round-robin учитывает уже назначенные в этом же bulk). Detekt findings (name-shadowing внутреннего `it`) — исправлен через destructuring. `./gradlew check` зелёный. OpenAPI snapshots перегенерены — `teamId` виден в схеме BulkNpcsRequest. `frontend-integration/10-npc.md` обновлён: убран warning про known-limit, добавлена таблица поведения по `sessionType × teamId`, обновлён список ошибок. Закрыто.

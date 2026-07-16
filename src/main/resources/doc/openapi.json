@@ -54,7 +54,7 @@
         "type" : "object"
       },
       "edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest" : {
-        "description" : "Bulk-создание NPC для сессии.",
+        "description" : "Bulk-создание NPC для сессии. Для TEAM_BATTLE: teamId != null — все N NPC в указанную команду; teamId == null — round-robin по существующим командам с приоритетом наименее заполненной. Для FREE_FOR_ALL: teamId должен быть null.",
         "properties" : {
           "count" : {
             "format" : "int32",
@@ -79,6 +79,10 @@
           },
           "strategy" : {
             "enum" : [ "FAIR", "SELFISH", "RANDOM", "VENGEFUL", "ADAPTIVE" ],
+            "type" : "string"
+          },
+          "teamId" : {
+            "format" : "uuid",
             "type" : "string"
           }
         },

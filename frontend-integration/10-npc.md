@@ -103,13 +103,23 @@ Sealed-тип с дискриминатором `type` (Jackson polymorphic). **
   "count": 4,                        // 1..100
   "strategy": "FAIR",
   "params": { "type": "FAIR", "fairnessThreshold": 0.3 },
-  "seedBase": 100                    // optional; NPC получат seed = seedBase + index
+  "seedBase": 100,                   // optional; NPC получат seed = seedBase + index
+  "teamId": null                     // optional; смысл зависит от sessionType — см. ниже
 }
 ```
 
 `count + текущее число членов сессии <= config.numPlayers` — иначе 400.
 
 Nickname'ы генерятся автоматически: `NPC-<STRATEGY>-<random6>`.
+
+**Раскладка по командам (`teamId`):**
+
+| sessionType | `teamId` | Поведение |
+|---|---|---|
+| FREE_FOR_ALL | `null` | NPC добавляются в `session.members`, teams не задействованы |
+| FREE_FOR_ALL | указан | **400** — teamId недопустим для FREE_FOR_ALL |
+| TEAM_BATTLE | указан | все N NPC добавляются в указанную команду |
+| TEAM_BATTLE | `null` | round-robin по существующим командам с приоритетом наименее заполненной (3 NPC на 2 пустые команды → 2/1, а не 3/0) |
 
 ### `BulkNpcsResponse`
 
@@ -293,9 +303,9 @@ curl -sX POST http://localhost:8080/api/v1/session/{sessionId}/start \
 - `400` — `count + members > numPlayers`.
 - `400` — `strategy` и `params.type` не совпадают.
 - `400` — сессия не в `CREATED` или `openToConnect: false`.
+- `400` — `teamId` указан для сессии FREE_FOR_ALL.
+- `404` — `teamId` указан, но команда с таким UUID в сессии не найдена.
 - `403` — не ADMIN.
-
-**⚠ Известное ограничение:** в текущей версии bulk **не распределяет NPC по командам в TEAM_BATTLE** — NPC-user'ы попадают в `session.members`, но не в `team.members`. Для TEAM_BATTLE пока используйте `POST /npc` + `POST /session/{id}/join-npc` с явным `teamId`. Bug зафиксирован на бэке, будет починен.
 
 ---
 

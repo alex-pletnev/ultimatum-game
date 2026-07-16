@@ -16,12 +16,18 @@ data class CreateNpcRequest(
     val seed: Long? = null,
 )
 
-@Schema(description = "Bulk-создание NPC для сессии.")
+@Schema(
+    description = "Bulk-создание NPC для сессии. " +
+        "Для TEAM_BATTLE: teamId != null — все N NPC в указанную команду; " +
+        "teamId == null — round-robin по существующим командам с приоритетом наименее заполненной. " +
+        "Для FREE_FOR_ALL: teamId должен быть null."
+)
 data class BulkNpcsRequest(
     val count: Int,
     val strategy: NpcStrategy,
     val params: NpcParams,
     val seedBase: Long? = null,
+    val teamId: java.util.UUID? = null,
 )
 
 @Schema(description = "Подключение существующего NPC к сессии.")

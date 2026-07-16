@@ -6,6 +6,7 @@ import edu.itmo.ultimatumgame.TestFixtures.session
 import edu.itmo.ultimatumgame.TestFixtures.sessionConfig
 import edu.itmo.ultimatumgame.TestFixtures.team
 import edu.itmo.ultimatumgame.TestFixtures.user
+import edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest
 import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
 import edu.itmo.ultimatumgame.dto.responses.MyRole
 import edu.itmo.ultimatumgame.dto.responses.PendingActionType
@@ -14,12 +15,16 @@ import edu.itmo.ultimatumgame.dto.responses.SessionResponse
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
 import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
+import edu.itmo.ultimatumgame.model.NpcParams
+import edu.itmo.ultimatumgame.model.NpcProfile
+import edu.itmo.ultimatumgame.model.NpcStrategy
 import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
+import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.repositories.RoundRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
 import edu.itmo.ultimatumgame.util.DomainEventLogger
@@ -544,6 +549,143 @@ class SessionServiceTest {
 
         assertThrows<SessionJoinRejectedException> { service.joinSessionAsObserver(s.id!!) }
     }
+
+    // ---------- bulkCreateAndJoinNpcs ----------
+
+    private fun stubNpcSaves() {
+        every { userRepository.save(any<User>()) } answers {
+            firstArg<User>().copy(id = UUID.randomUUID())
+        }
+        every { npcProfileRepository.save(any<NpcProfile>()) } answers {
+            firstArg<NpcProfile>().apply { id = UUID.randomUUID() }
+        }
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs FREE_FOR_ALL — все NPC в session_members, teams не трогаем`() {
+        val s = session(
+            members = mutableSetOf(),
+            teams = mutableSetOf(),
+            config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numTeams = 0, numPlayers = 10),
+        )
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(count = 3, strategy = NpcStrategy.FAIR, params = NpcParams.Fair())
+        service.bulkCreateAndJoinNpcs(s.id!!, req)
+
+        assertEquals(3, s.members.size)
+        assertTrue(s.teams.isEmpty())
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs TEAM_BATTLE teamId=null — round-robin по пустым командам`() {
+        val tA = team(members = mutableSetOf())
+        val tB = team(members = mutableSetOf())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 10)
+        val s = session(members = mutableSetOf(), teams = mutableSetOf(tA, tB), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(count = 4, strategy = NpcStrategy.FAIR, params = NpcParams.Fair())
+        service.bulkCreateAndJoinNpcs(s.id!!, req)
+
+        assertEquals(4, s.members.size)
+        assertEquals(2, tA.members.size)
+        assertEquals(2, tB.members.size)
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs TEAM_BATTLE teamId=null — least-full first (2 - 0 → +0 - +3)`() {
+        val filler1 = user()
+        val filler2 = user()
+        val tA = team(members = mutableSetOf(filler1, filler2))
+        val tB = team(members = mutableSetOf())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 10)
+        val s = session(
+            members = mutableSetOf(filler1, filler2),
+            teams = mutableSetOf(tA, tB),
+            config = cfg,
+        )
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(count = 3, strategy = NpcStrategy.FAIR, params = NpcParams.Fair())
+        service.bulkCreateAndJoinNpcs(s.id!!, req)
+
+        // tA уже 2, tB — 0. Три новых NPC должны сначала выравнять (tB +2), затем ещё один либо в A либо в B
+        // (оба по 2). Проверяем инвариант: разница не больше 1, суммарно 5 в командах, все 3 новых — в session.members.
+        assertEquals(5, s.members.size)
+        assertEquals(5, tA.members.size + tB.members.size)
+        assertTrue(kotlin.math.abs(tA.members.size - tB.members.size) <= 1)
+        // Конкретно: tB получает первые двух, третий — в любую (наши 3 новых)
+        assertEquals(3, (tA.members.size - 2) + tB.members.size)
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs TEAM_BATTLE teamId указан — все N в указанную команду`() {
+        val tA = team(members = mutableSetOf())
+        val tB = team(members = mutableSetOf())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 10)
+        val s = session(members = mutableSetOf(), teams = mutableSetOf(tA, tB), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(
+            count = 5,
+            strategy = NpcStrategy.FAIR,
+            params = NpcParams.Fair(),
+            teamId = tA.id,
+        )
+        service.bulkCreateAndJoinNpcs(s.id!!, req)
+
+        assertEquals(5, s.members.size)
+        assertEquals(5, tA.members.size)
+        assertTrue(tB.members.isEmpty())
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs TEAM_BATTLE teamId неизвестен — IdNotFoundException`() {
+        val tA = team(members = mutableSetOf())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 10)
+        val s = session(members = mutableSetOf(), teams = mutableSetOf(tA), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(
+            count = 2,
+            strategy = NpcStrategy.FAIR,
+            params = NpcParams.Fair(),
+            teamId = UUID.randomUUID(),
+        )
+        assertThrows<IdNotFoundException> { service.bulkCreateAndJoinNpcs(s.id!!, req) }
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs FREE_FOR_ALL teamId указан — IllegalArgumentException`() {
+        val cfg = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numTeams = 0, numPlayers = 10)
+        val s = session(members = mutableSetOf(), teams = mutableSetOf(), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(
+            count = 2,
+            strategy = NpcStrategy.FAIR,
+            params = NpcParams.Fair(),
+            teamId = UUID.randomUUID(),
+        )
+        assertThrows<IllegalArgumentException> { service.bulkCreateAndJoinNpcs(s.id!!, req) }
+    }
+
+    // ---------- joinSessionAsObserver (continued) ----------
 
     @Test
     fun `joinSessionAsObserver — если user был member, убирает его из members и team_members`() {

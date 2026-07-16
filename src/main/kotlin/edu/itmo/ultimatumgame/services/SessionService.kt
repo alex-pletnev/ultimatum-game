@@ -357,6 +357,10 @@ class SessionService(
         require(paramsMatchStrategy(req.strategy, req.params)) {
             "params не соответствуют strategy=${req.strategy}"
         }
+        // T-087: раскладка NPC по командам считается ДО создания сущностей,
+        // чтобы round-robin учитывал уже назначенные (иначе 3 NPC на 2 пустые
+        // команды дали бы 3/0 вместо 2/1).
+        val assignedTeams = planTeamAssignments(session, config, req)
         val created = (0 until req.count).map { i ->
             val nick = "NPC-${req.strategy}-${UUID.randomUUID().toString().take(BULK_NICK_SUFFIX_LEN)}"
             val user = userRepository.save(User(nickname = nick, role = Role.NPC))
@@ -365,9 +369,10 @@ class SessionService(
                 NpcProfile(user = user, strategy = req.strategy, params = req.params, seed = seed)
             )
         }
-        created.forEach {
-            session.members += it.user
-            domainEventLogger.emit(NpcJoined(sessionId, it.user.id!!, it.strategy.name))
+        created.forEachIndexed { i, profile ->
+            session.members += profile.user
+            assignedTeams[i]?.members?.add(profile.user)
+            domainEventLogger.emit(NpcJoined(sessionId, profile.user.id!!, profile.strategy.name))
         }
         sessionRepository.save(session)
         eventPublisherService.publishSessionStatus(sessionId, session)
@@ -384,6 +389,41 @@ class SessionService(
             )
         }
         return BulkNpcsResponse(sessionDto, npcs)
+    }
+
+    /**
+     * T-087: раскладка NPC по командам для bulk-create.
+     *
+     * - FREE_FOR_ALL: `teamId` должен быть null; для каждого NPC — null (в команду не кладём).
+     * - TEAM_BATTLE + teamId != null: команда должна существовать; все N NPC в неё.
+     * - TEAM_BATTLE + teamId == null: round-robin — на каждой итерации берём команду с
+     *   наименьшим (текущий размер + уже назначенные в этом bulk) числом членов.
+     */
+    private fun planTeamAssignments(
+        session: Session,
+        config: edu.itmo.ultimatumgame.model.SessionConfig,
+        req: BulkNpcsRequest,
+    ): List<Team?> = when (config.sessionType) {
+        SessionType.FREE_FOR_ALL -> {
+            require(req.teamId == null) { "teamId недопустим для FREE_FOR_ALL" }
+            List(req.count) { null }
+        }
+        SessionType.TEAM_BATTLE -> {
+            if (req.teamId != null) {
+                val team = session.teams.find { it.id == req.teamId }
+                    ?: throw IdNotFoundException(
+                        "В сессии ${session.id} не найдена команда ${req.teamId}"
+                    )
+                List(req.count) { team }
+            } else {
+                val planned = session.teams.associateWith { it.members.size }.toMutableMap()
+                List(req.count) {
+                    val target = planned.minBy { (_, size) -> size }.key
+                    planned[target] = planned.getValue(target) + 1
+                    target
+                }
+            }
+        }
     }
 
     private fun paramsMatchStrategy(strategy: NpcStrategy, p: NpcParams): Boolean = when (strategy) {
