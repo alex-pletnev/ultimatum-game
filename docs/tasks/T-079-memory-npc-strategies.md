@@ -1,7 +1,7 @@
 ---
 id: T-079
 title: Vengeful + Adaptive memory-стратегии NPC
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -31,3 +31,4 @@ Task 4 из NPC-плана. Две стратегии с историей. `Veng
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done. `VengefulStrategy` — offer снижается на punishStep после reject прошлого раунда, decide поднимает fairnessThreshold на 0.05 если предыдущий incoming был ниже baseline (клэмп до 0.5). `AdaptiveStrategy` — offerFraction = baseline + slope * (rejectRate - target), clamp 0..1, decide мягкий (accept выше половины baseline). Unit-тесты покрывают baseline / rejectRate high / low / clamp / decide-порог. `./gradlew check` — зелёный после фикса detekt ReturnCount.
