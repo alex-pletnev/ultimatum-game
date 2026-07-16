@@ -80,6 +80,19 @@ description: Use PROACTIVELY сразу после `task-done` (см. Auto-mode)
 
 Срабатывает **сразу после успешного `task-done`** (и после commit+push, если они прошли). Один запуск на одну закрытую задачу.
 
+Enforcement — через Stop-hook `.claude/settings.json` → `.claude/hooks/self-review-guard.py`
+(T-092). Guard блокирует ответ пользователю после нового commit'а, если diff
+трогает исходники / build-config / harness / внешнюю API-документацию
+(`frontend-integration/**` кроме `specs/`). Skip'ается для:
+
+- `chore(tasks): ...` (task-add / task-sync);
+- коммитов только в `docs/**`;
+- коммитов с message `docs(...)`, если в diff нет исходников/harness'а.
+
+Правила skip'а синхронизированы с секцией «Что НЕ является поводом» ниже.
+Если появляется новый повод skip'а или новая high-signal папка — синхронно
+править и skill, и guard.
+
 ## Что НЕ является поводом
 
 - Задача была тривиальная (typo, rename, комментарий). Self-review избыточен.

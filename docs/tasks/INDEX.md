@@ -14,7 +14,7 @@
 | T-041 | Часть C — warn при sha256-коллизии между recommended hook'ами | pending | low | 2026-07-13 | [T-041](T-041-sha-collision-warn-in-part-c.md) |
 | T-042 | Skill'ы, использующие sha/hash, обязать приводить input→expected-output пример | pending | medium | 2026-07-13 | [T-042](T-042-inline-hash-examples-in-skills.md) |
 | T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
-| T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | pending | high | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
+| T-044 | Ввести систему миграций БД (Flyway или Liquibase) вместо Hibernate auto-DDL | in_progress | high | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
 | T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
@@ -104,6 +104,7 @@
 | T-083 | POST /session/{id}/join-npc + POST /session/{id}/npcs (bulk) + integration finalize | done | 2026-07-16 | [T-083](T-083-session-join-npc-and-bulk.md) |
 | T-086 | Публичные GET stats и session/with-teams-and-members | done | 2026-07-16 | [T-086](T-086-public-stats-endpoint.md) |
 | T-087 | bulkCreateAndJoinNpcs не распределяет NPC по командам в TEAM_BATTLE | done | 2026-07-16 | [T-087](T-087-bulk-npcs-team-battle-broken.md) |
+| T-092 | Stop-hook «Checking for new commit» — не триггерить self-review на task-add / только-docs коммиты | done | 2026-07-16 | [T-092](T-092-refine-self-review-hook-filter.md) |
 
 
 ## Легенда статусов
