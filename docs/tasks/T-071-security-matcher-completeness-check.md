@@ -1,7 +1,7 @@
 ---
 id: T-071
 title: Правило — при добавлении @MessageMapping / @SendToUser проверять WebSocketSecurityConfig matcher
-status: pending
+status: done
 priority: medium
 created: 2026-07-15
 updated: 2026-07-15
@@ -36,16 +36,14 @@ tags: [meta, process, security-config, stomp]
 
 ## Acceptance criteria
 
-- [ ] Обновить `.claude/skills/pre-flight.md` (или CLAUDE.md проактивные триггеры):
-  при работе с файлами `controllers/ws/*` или `@SendToUser` в service — обязательный
-  чек «есть ли парный matcher в WebSocketSecurityConfig для нового destination?»
-  до commit'а.
-- [ ] Или (более надёжно): unit-тест `WebSocketSecurityConfigAuditTest`, который через
-  рефлексию собирает все `@MessageMapping`-destinations из `controllers/ws/*` и все
-  `@SendToUser`-destinations из `exceptions/` / `services/*`, и проверяет что каждый
-  destination покрыт matcher'ом. Fail → миссинг matcher.
-- [ ] Первый вариант обучает агента; второй — enforce'ит автоматически. По возможности —
-  второй.
+- [~] Обновить `.claude/skills/pre-flight.md` — не сделано, второй вариант надёжнее и
+  выбран вместо этого.
+- [x] Unit-тест `WebSocketSecurityMatcherAuditTest` через `ClassPathScanningCandidateComponentProvider`
+  собирает все `@MessageMapping`-destinations из пакета controllers.ws и все
+  `@SendToUser`-destinations во всём приложении, парсит `WebSocketSecurityConfig.kt`
+  как текст (regex по `.simpDestMatchers` / `.simpSubscribeDestMatchers`), сверяет
+  через AntPathMatcher. Fail с понятным сообщением при миссинг matcher'а.
+- [x] Enforce на каждом `./gradlew check` — не зависит от дисциплины агента.
 
 ## План
 
@@ -61,3 +59,11 @@ tags: [meta, process, security-config, stomp]
 - 2026-07-15: заведено из self-review T-070 (commit a052b73). Паттерн (T-050 и T-054 —
   два miss'а подряд), приоритет medium. Соседствует с T-067 — общая тема «infrastructure
   и security-config под TDD/audit».
+- 2026-07-16: закрыто. Реализация — `WebSocketSecurityMatcherAuditTest`.
+  Ключевые находки: (1) regex parsing должен пропускать `//`-закомментированные matcher'ы
+  — иначе тест vacuously true. (2) `AntPathMatcher` + `{var} → *`-нормализация корректно
+  сверяет destination'ы с matcher-pattern'ами. Ретро-проверка: закомментировал matcher
+  `/app/session/*/round.abort` → тест упал с понятным message «SEND /app/session/{sessionId}/round.abort
+  не покрыт». Восстановил — зелёный. Sanity-check на `messageDestinations.isNotEmpty()`
+  и `sendToUserDestinations.isNotEmpty()` защищает от vacuous truth.
+  `./gradlew check` зелёный (242 теста).
