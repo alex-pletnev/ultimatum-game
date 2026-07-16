@@ -295,7 +295,7 @@ curl -sX POST http://localhost:8080/api/v1/session/{sessionId}/start \
 - `400` — сессия не в `CREATED` или `openToConnect: false`.
 - `403` — не ADMIN.
 
-**⚠ Известное ограничение (T-087):** в текущей версии bulk **не распределяет NPC по командам в TEAM_BATTLE** — NPC-user'ы попадают в `session.members`, но не в `team.members`. Для TEAM_BATTLE пока используйте `POST /npc` + `POST /session/{id}/join-npc` с явным `teamId`. Bug зафиксирован, будет починен.
+**⚠ Известное ограничение:** в текущей версии bulk **не распределяет NPC по командам в TEAM_BATTLE** — NPC-user'ы попадают в `session.members`, но не в `team.members`. Для TEAM_BATTLE пока используйте `POST /npc` + `POST /session/{id}/join-npc` с явным `teamId`. Bug зафиксирован на бэке, будет починен.
 
 ---
 

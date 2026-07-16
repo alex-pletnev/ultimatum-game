@@ -22,12 +22,12 @@ Authorization: Bearer <accessToken>
 | POST | `/session` | ADMIN | Создать сессию |
 | GET | `/session` | any auth | Список сессий (пагинация + фильтры) |
 | GET | `/session/{id}` | any auth | Детали сессии |
-| GET | `/session/{id}/with-teams-and-members` | permitAll | Сессия + команды + участники + наблюдатели (публично, T-086) |
+| GET | `/session/{id}/with-teams-and-members` | permitAll | Сессия + команды + участники + наблюдатели (публично — без JWT) |
 | GET | `/session/{id}/current-round` | any auth | Текущий раунд сессии |
 | GET | `/session/{id}/rounds` | any auth | История всех раундов + офферы + решения |
 | POST | `/session/{sessionId}/join` | ADMIN, PLAYER | Присоединиться как игрок |
 | POST | `/session/{sessionId}/join/observer` | any auth | Присоединиться как наблюдатель |
-| GET | `/statistics/{sessionId}/csv` | permitAll | Экспорт статистики сессии в CSV (публично, T-086) |
+| GET | `/statistics/{sessionId}/csv` | permitAll | Экспорт статистики сессии в CSV (публично — без JWT) |
 | POST | `/npc` | ADMIN | Создать NPC-профиль (см. [10-npc.md](10-npc.md)) |
 | GET | `/npc` | ADMIN | Список NPC-профилей |
 | GET | `/npc/{id}` | ADMIN | Один NPC-профиль |
@@ -121,9 +121,11 @@ GET /api/v1/session?state=CREATED&openToConnect=true
 
 Расширенная версия — с раскрытыми `teams` (внутри `members`), плюс `members` и `observers` на верхнем уровне.
 
+**Роль:** publicly accessible (без JWT). Публичный артефакт — ник-состав + roundSum. POST-мутации остались с auth.
+
 **200 OK:** `SessionWithTeamsAndMembersResponse`.
 
-Используется когда фронту нужно показать «кто уже в сессии» и/или «какие команды с их составом».
+Используется когда фронту нужно показать «кто уже в сессии» и/или «какие команды с их составом», в том числе на публичной странице статистики завершённой партии.
 
 ### `GET /session/{id}/current-round`
 
@@ -169,7 +171,7 @@ GET /api/v1/session?state=CREATED&openToConnect=true
 
 ### `GET /statistics/{sessionId}/csv` — CSV-экспорт
 
-**Роль:** ADMIN, PLAYER, OBSERVER.
+**Роль:** publicly accessible (без JWT). Летопись партии — публичный артефакт, ссылку можно кидать в чат/форум без принуждения открывателя регистрироваться.
 
 **Response:**
 - `Content-Type: text/plain` (не `text/csv` для универсальной совместимости).
