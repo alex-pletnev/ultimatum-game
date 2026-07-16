@@ -9,6 +9,12 @@ import java.util.UUID
  * `myRole` и `myPendingActions` — enrichment hints для фронта (T-053). Вычисляются
  * относительно вызывающего user'а. В STOMP-broadcast остаются `NONE`/`emptyList()`,
  * потому что shared payload не привязан к конкретному пользователю.
+ *
+ * Вынесены из primary constructor в тело класса (T-072): MapStruct генерит Java-код,
+ * который передаёт `null` во все параметры конструктора неглядя на Kotlin default'ы —
+ * это давало NPE в `Intrinsics.checkNotNullParameter`. Вне первичного конструктора
+ * MapStruct эти поля не трогает, default'ы применяются, `SessionService.enrichWithHints`
+ * заполняет через прямое присвоение.
  */
 data class RoundResponse(
     val id: UUID,
@@ -17,9 +23,10 @@ data class RoundResponse(
     val offers: MutableList<OfferPrewResponse>,
     val decisions: MutableList<DecisionPrewResponse>,
     val session: SessionPrewResponse,
-    val myRole: MyRole = MyRole.NONE,
-    val myPendingActions: List<PendingAction> = emptyList(),
-)
+) {
+    var myRole: MyRole = MyRole.NONE
+    var myPendingActions: List<PendingAction> = emptyList()
+}
 
 enum class MyRole {
     PROPOSER,

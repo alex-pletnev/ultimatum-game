@@ -146,11 +146,14 @@ class SessionService(
         round: Round,
         members: Set<User>,
     ): RoundResponse {
-        // null — broadcast / system-каналы / anonymous; DTO возвращается без hints.
+        // null — broadcast / system-каналы / anonymous; DTO возвращается без hints
+        // (default'ы `NONE` / `emptyList()` из RoundResponse).
         val userId = securityService.getCurrentUserIdOrNull() ?: return dto
-        val role = computeMyRole(round, userId)
-        val actions = computeMyPendingActions(round, userId, members)
-        return dto.copy(myRole = role, myPendingActions = actions)
+        // T-072: myRole / myPendingActions вынесены из primary constructor —
+        // присваиваем напрямую вместо data class .copy(...).
+        dto.myRole = computeMyRole(round, userId)
+        dto.myPendingActions = computeMyPendingActions(round, userId, members)
+        return dto
     }
 
     private fun computeMyRole(round: Round, userId: UUID): MyRole {

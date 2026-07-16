@@ -24,7 +24,8 @@ abstract class RoundMapper {
         round.decisions.forEach { it.round = round }
     }
 
-    abstract fun toEntity(roundResponse: RoundResponse): Round
-
+    // toEntity намеренно не декларируем — reverse-mapping не используется в коде,
+    // а MapStruct на нём падает из-за несовпадения `SessionPrewResponse.config:
+    // SessionConfigResponse` vs `Session.config: SessionConfig` (T-072).
     abstract fun toDto(round: Round): RoundResponse
 }
