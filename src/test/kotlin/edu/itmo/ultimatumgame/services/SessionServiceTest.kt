@@ -95,6 +95,27 @@ class SessionServiceTest {
     }
 
     @Test
+    fun `createSession — сохраняет autoAdvanceRounds=true`() {
+        val req = CreateSessionRequest()
+        val cfg = sessionConfig(autoAdvanceRounds = true)
+        val newSession = Session(
+            id = UUID.randomUUID(),
+            displayName = "s",
+            state = SessionState.CREATED,
+            config = cfg,
+        )
+        every { sessionMapper.toEntity(req) } returns newSession
+        every { userService.getCurrentUser() } returns user(role = Role.ADMIN)
+        val savedSlot = slot<Session>()
+        every { sessionRepo.save(capture(savedSlot)) } answers { firstArg() }
+        every { sessionWithTeamsAndMembersMapper.toDto(any()) } returns mockk(relaxed = true)
+
+        service.createSession(req)
+
+        assertEquals(true, savedSlot.captured.config!!.autoAdvanceRounds)
+    }
+
+    @Test
     fun `createSession — TEAM_BATTLE создаёт numTeams команд`() {
         val req = CreateSessionRequest()
         val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numRounds = 2, numTeams = 3)

@@ -1,7 +1,7 @@
 ---
 id: T-076
 title: SessionConfig.autoAdvanceRounds — additive поле для all-NPC симуляции
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -36,3 +36,4 @@ Task 1 из NPC-плана. Добавляет флаг `SessionConfig.autoAdvan
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done. Добавил `autoAdvanceRounds: Boolean = false` в `SessionConfig`, `SessionConfigDto`, `SessionConfigResponse`. MapStruct подхватил автоматически (same-name). Unit-тест `SessionServiceTest.createSession — сохраняет autoAdvanceRounds=true`. `generateApiSnapshots` регенерирован, авто-скопирован в `frontend-integration/specs/`. `./gradlew check` — зелёный.

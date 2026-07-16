@@ -22,4 +22,6 @@ data class SessionConfig(
     val roundSum: Int,
     @field:Column(nullable = false)
     val timeoutMoveSec: Int,
+    @field:Column(nullable = false)
+    val autoAdvanceRounds: Boolean = false,
 )

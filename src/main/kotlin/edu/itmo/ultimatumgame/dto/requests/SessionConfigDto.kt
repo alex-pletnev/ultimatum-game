@@ -30,5 +30,9 @@ data class SessionConfigDto(
     @field:Range(message = "roundSum это число от 10 и до 100000", min = 10, max = 100000)
     val roundSum: Int? = null,
     @field:Range(message = "timeoutMoveSec это число от 10 и до 300", min = 10, max = 300)
-    val timeoutMoveSec: Int? = null
+    val timeoutMoveSec: Int? = null,
+    @field:Schema(
+        description = "Автоматически прогонять следующий раунд после закрытия текущего (для all-NPC симуляции).",
+    )
+    val autoAdvanceRounds: Boolean = false,
 )

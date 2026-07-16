@@ -35,6 +35,7 @@ object TestFixtures {
         numPlayers: Int = 4,
         roundSum: Int = 100,
         timeoutMoveSec: Int = 60,
+        autoAdvanceRounds: Boolean = false,
     ): SessionConfig = SessionConfig(
         sessionType = sessionType,
         numRounds = numRounds,
@@ -42,6 +43,7 @@ object TestFixtures {
         numPlayers = numPlayers,
         roundSum = roundSum,
         timeoutMoveSec = timeoutMoveSec,
+        autoAdvanceRounds = autoAdvanceRounds,
     )
 
     fun session(

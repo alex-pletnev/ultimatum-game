@@ -110,6 +110,10 @@
       "edu.itmo.ultimatumgame.dto.requests.SessionConfigDto" : {
         "description" : "Конфигурация сессии. Кросс-инвариант: для FREE_FOR_ALL numTeams=0; для TEAM_BATTLE numTeams>=2. Числовые поля не должны быть null (валидируется на уровне сервиса).",
         "properties" : {
+          "autoAdvanceRounds" : {
+            "description" : "Автоматически прогонять следующий раунд после закрытия текущего (для all-NPC симуляции).",
+            "type" : "boolean"
+          },
           "numPlayers" : {
             "format" : "int32",
             "type" : "integer"
@@ -138,7 +142,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "numTeams", "sessionType" ],
+        "required" : [ "autoAdvanceRounds", "numTeams", "sessionType" ],
         "title" : "SessionConfigDto",
         "type" : "object"
       },
@@ -310,6 +314,9 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse" : {
         "properties" : {
+          "autoAdvanceRounds" : {
+            "type" : "boolean"
+          },
           "numPlayers" : {
             "format" : "int32",
             "type" : "integer"
@@ -335,7 +342,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
+        "required" : [ "autoAdvanceRounds", "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
         "title" : "SessionConfigResponse",
         "type" : "object"
       },

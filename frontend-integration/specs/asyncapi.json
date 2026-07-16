@@ -815,6 +815,7 @@
               "role" : "ADMIN"
             },
             "config" : {
+              "autoAdvanceRounds" : true,
               "numPlayers" : 0,
               "numRounds" : 0,
               "numTeams" : 0,
@@ -874,6 +875,7 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse" : {
         "examples" : [ {
+          "autoAdvanceRounds" : true,
           "numPlayers" : 0,
           "numRounds" : 0,
           "numTeams" : 0,
@@ -882,6 +884,9 @@
           "timeoutMoveSec" : 0
         } ],
         "properties" : {
+          "autoAdvanceRounds" : {
+            "type" : "boolean"
+          },
           "numPlayers" : {
             "format" : "int32",
             "type" : "integer"
@@ -907,7 +912,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
+        "required" : [ "autoAdvanceRounds", "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
         "title" : "SessionConfigResponse",
         "type" : "object"
       },
@@ -920,6 +925,7 @@
             "role" : "ADMIN"
           },
           "config" : {
+            "autoAdvanceRounds" : true,
             "numPlayers" : 0,
             "numRounds" : 0,
             "numTeams" : 0,
@@ -1015,6 +1021,7 @@
             "role" : "ADMIN"
           },
           "config" : {
+            "autoAdvanceRounds" : true,
             "numPlayers" : 0,
             "numRounds" : 0,
             "numTeams" : 0,
