@@ -1,7 +1,7 @@
 ---
 id: T-078
 title: NpcStrategyPlayer interface + Fair / Selfish / Random стратегии
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
 updated: 2026-07-16
@@ -34,3 +34,4 @@ Task 3 из NPC-плана. Интерфейс `NpcStrategyPlayer` + `OfferCtx`/
 ## Лог
 
 - 2026-07-16: заведено из NPC-plan.
+- 2026-07-16: done. Созданы `NpcStrategyPlayer` (интерфейс + `OfferCtx`/`DecisionCtx`/`RoundOutcome`), `FairStrategy`, `SelfishStrategy`, `RandomStrategy`. Extension `roundSum()` для checkNotNull на `session.config` (detekt UnsafeCallOnNullableType). Юнит-тесты по каждой стратегии + helper `NpcTestFactories`. `./gradlew check` — зелёный.

@@ -28,7 +28,6 @@
 | T-073 | Аудит DTO на MapStruct-safety — починен пустой Prew-mapping для OfferPrew/DecisionPrew | done | 2026-07-16 | [T-073](T-073-audit-dto-mapstruct-nullable-safety.md) |
 | T-074 | Расширить WebSocketSecurityMatcherAuditTest — block-комментарии + dead-matcher detection | pending | low | 2026-07-16 | [T-074](T-074-audit-test-block-comments-and-dead-matchers.md) |
 | T-075 | CLAUDE.md — configuration-cache-safe паттерн для file-ops в gradle-тасках | pending | low | 2026-07-16 | [T-075](T-075-cc-safe-gradle-file-ops.md) |
-| T-078 | NpcStrategyPlayer interface + Fair / Selfish / Random стратегии | pending | medium | 2026-07-16 | [T-078](T-078-basic-npc-strategies.md) |
 | T-079 | Vengeful + Adaptive memory-стратегии NPC | pending | medium | 2026-07-16 | [T-079](T-079-memory-npc-strategies.md) |
 | T-080 | NpcService — оркестратор стратегий + hooks в start/init-decisions + fallback | pending | medium | 2026-07-16 | [T-080](T-080-npc-service-and-hooks.md) |
 | T-081 | autoAdvanceRounds — hook в makeDecision + NpcService.playDecisions | pending | medium | 2026-07-16 | [T-081](T-081-auto-advance-rounds-hook.md) |
@@ -96,6 +95,7 @@
 | T-069 | Автокопирование openapi/asyncapi.json в frontend-integration/specs после generateApiSnapshots | done | 2026-07-16 | [T-069](T-069-auto-copy-specs-to-frontend-integration.md) |
 | T-076 | SessionConfig.autoAdvanceRounds — additive поле для all-NPC симуляции | done | 2026-07-16 | [T-076](T-076-session-config-auto-advance.md) |
 | T-077 | NpcProfile entity + repository + JSONB params | done | 2026-07-16 | [T-077](T-077-npc-profile-entity.md) |
+| T-078 | NpcStrategyPlayer interface + Fair / Selfish / Random стратегии | done | 2026-07-16 | [T-078](T-078-basic-npc-strategies.md) |
 
 ## Легенда статусов
 
