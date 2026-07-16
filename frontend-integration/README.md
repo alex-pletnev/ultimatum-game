@@ -21,6 +21,8 @@
 - [specs/openapi.json](specs/openapi.json) — OpenAPI 3.0, сгенерирован из кода. Годится для кодогенерации типов/клиента (`openapi-typescript-codegen`, `orval`, и т.д.).
 - [specs/asyncapi.json](specs/asyncapi.json) — AsyncAPI 3.0 для WebSocket/STOMP-каналов.
 
+Оба файла синхронизируются автоматически: `./gradlew generateApiSnapshots` регенерирует `src/main/resources/doc/*.json` и через `finalizedBy` копирует их сюда — вручную `cp` делать не нужно.
+
 ## TL;DR — с чего начать
 
 1. Поднять бек: [01-running-backend.md](01-running-backend.md).

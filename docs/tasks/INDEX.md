@@ -22,7 +22,6 @@
 | T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
 | T-067 | TDD-skip 2 задачи подряд в infrastructure — приоритезировать «как я это протестирую» до кодинга | pending | medium | 2026-07-15 | [T-067](T-067-tdd-skip-in-infrastructure-tasks.md) |
 | T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо ручного split(';') | pending | low | 2026-07-15 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
-| T-069 | Автокопирование openapi/asyncapi.json в frontend-integration/specs после generateApiSnapshots | pending | low | 2026-07-15 | [T-069](T-069-auto-copy-specs-to-frontend-integration.md) |
 | T-070 | STOMP CONNECT: CloseStatus 1002 из-за MissingCsrfTokenException — disable через no-op csrfChannelInterceptor | done | 2026-07-15 | [T-070](T-070-disable-websocket-csrf-for-stomp.md) |
 | T-071 | Audit-тест WebSocketSecurityMatcherAuditTest — enforce покрытия matcher'ами | done | 2026-07-16 | [T-071](T-071-security-matcher-completeness-check.md) |
 | T-072 | GET /current-round 500 NPE — myRole/myPendingActions вынесены из primary constructor RoundResponse | done | 2026-07-16 | [T-072](T-072-roundresponse-npe-mapstruct-nullable-hints.md) |
@@ -87,6 +86,7 @@
 | T-057 | GET /session — Specification-based фильтры state/sessionType/openToConnect | done | 2026-07-15 | [T-057](T-057-session-list-filters.md) |
 | T-058 | AssignedOfferResponse — отдельный DTO для персональной доставки оффера | done | 2026-07-15 | [T-058](T-058-personal-offer-dto.md) |
 | T-001 | Автоматическое применение index.sql на ApplicationReadyEvent (IndexSqlInitializer) | done | 2026-07-15 | [T-001](T-001-apply-index-sql-on-startup.md) |
+| T-069 | Автокопирование openapi/asyncapi.json в frontend-integration/specs после generateApiSnapshots | done | 2026-07-16 | [T-069](T-069-auto-copy-specs-to-frontend-integration.md) |
 
 ## Легенда статусов
 

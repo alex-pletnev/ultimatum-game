@@ -301,7 +301,7 @@ Baseline'ы для этого проекта (с прогретым кэшем):
 
 | Условие | Что делать |
 |---------|-----------|
-| Edit в `controllers/**`, `dto/**` или `services/EventPublisherService.kt` | Перед commit'ом: `./gradlew generateApiSnapshots` → регенерирует `src/main/resources/doc/openapi.json` и `asyncapi.json` → включить их в тот же commit |
+| Edit в `controllers/**`, `dto/**` или `services/EventPublisherService.kt` | Перед commit'ом: `./gradlew generateApiSnapshots` → регенерирует `src/main/resources/doc/{openapi,asyncapi}.json` и через `finalizedBy` копирует их в `frontend-integration/specs/` — включить оба пути в тот же commit (T-069) |
 
 ### Дополнительные «Что не делать»
 

@@ -99,6 +99,14 @@ tasks.register<Test>("generateApiSnapshots") {
         includeTags("snapshot")
     }
     outputs.upToDateWhen { false }
+    finalizedBy("copyApiSnapshotsToFrontendIntegration")
+}
+
+tasks.register<Copy>("copyApiSnapshotsToFrontendIntegration") {
+    description = "Copies generated openapi/asyncapi.json to frontend-integration/specs for external consumers"
+    group = "documentation"
+    from("src/main/resources/doc/openapi.json", "src/main/resources/doc/asyncapi.json")
+    into(layout.projectDirectory.dir("frontend-integration/specs"))
 }
 
 // ----- JaCoCo (T-012): coverage бизнес-логики -----

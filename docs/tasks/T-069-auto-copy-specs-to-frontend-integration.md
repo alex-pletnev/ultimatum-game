@@ -1,10 +1,10 @@
 ---
 id: T-069
 title: Автоматическое копирование openapi/asyncapi.json в frontend-integration/specs после generateApiSnapshots
-status: pending
+status: done
 priority: low
 created: 2026-07-15
-updated: 2026-07-15
+updated: 2026-07-16
 related_code:
   - build.gradle.kts
   - frontend-integration/specs/
@@ -25,9 +25,9 @@ tags: [tech-debt, tooling, docs]
 
 ## Acceptance criteria
 
-- [ ] Gradle-task `generateApiSnapshots` (или новая обёртка) после генерации автоматически копирует оба файла в `frontend-integration/specs/`.
-- [ ] Ссылка на этот шаг в CLAUDE.md (проактивный триггер) — обновить: `./gradlew generateApiSnapshots` уже делает всё, отдельного `cp` не требуется.
-- [ ] Проверка: изменить контроллер → `./gradlew generateApiSnapshots` → убедиться что оба файла (в `src/main/resources/doc/` и в `frontend-integration/specs/`) обновились.
+- [x] Gradle-task `generateApiSnapshots` (или новая обёртка) после генерации автоматически копирует оба файла в `frontend-integration/specs/`.
+- [x] Ссылка на этот шаг в CLAUDE.md (проактивный триггер) — обновить: `./gradlew generateApiSnapshots` уже делает всё, отдельного `cp` не требуется.
+- [x] Проверка: изменить контроллер → `./gradlew generateApiSnapshots` → убедиться что оба файла (в `src/main/resources/doc/` и в `frontend-integration/specs/`) обновились.
 
 ## План
 
@@ -38,3 +38,4 @@ tags: [tech-debt, tooling, docs]
 ## Лог
 
 - 2026-07-15: заведено из self-review commit'а 7de7996 (создание frontend-integration/). Priority low — не блокер, но снижает риск stale-спек на фронте.
+- 2026-07-16: реализовано. Первая попытка (`doLast { copy { … } }` внутри `generateApiSnapshots`) сломала configuration-cache — Test-таск сериализовал ссылку на Gradle-скрипт-объект. Разнесено на два таска: `generateApiSnapshots` + отдельный `copyApiSnapshotsToFrontendIntegration` (тип `Copy`, cache-safe) через `finalizedBy`. Прогон: `./gradlew generateApiSnapshots` → BUILD SUCCESSFUL, оба таска выполнились, md5 в обоих каталогах совпал, CC entry stored. Обновлены CLAUDE.md (проактивный триггер про включение обоих путей в commit) и `frontend-integration/README.md` (снята подсказка про ручной `cp`).
