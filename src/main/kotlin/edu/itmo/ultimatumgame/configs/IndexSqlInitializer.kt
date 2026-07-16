@@ -34,11 +34,7 @@ class IndexSqlInitializer(
             return
         }
         val sql = indexSql.inputStream.use { it.readBytes().toString(StandardCharsets.UTF_8) }
-        // index.sql содержит несколько stmt'ов разделённых `;`. Простое разбиение подходит,
-        // потому что в scripts проекта нет `;` внутри литералов/комментариев.
-        val statements = sql.split(";")
-            .map { it.trim() }
-            .filter { it.isNotBlank() && !it.startsWith("--") }
+        val statements = splitSqlStatements(sql)
         log.info("Применяем index.sql: {} statements", statements.size)
         statements.forEach { stmt ->
             log.debug("execute: {}", stmt)
@@ -46,4 +42,20 @@ class IndexSqlInitializer(
         }
         log.info("index.sql применён успешно")
     }
+
+    /**
+     * Разбивает `index.sql` на statement'ы. Комментные строки (`--`) фильтруем
+     * ПОСТРОЧНО внутри chunk'а, а не chunk целиком: иначе `--` перед `ALTER TABLE`
+     * съедает валидный DDL (см. T-085). В проекте нет `;` внутри литералов/комментариев,
+     * поэтому наивный split по `;` безопасен.
+     */
+    internal fun splitSqlStatements(sql: String): List<String> =
+        sql.split(";")
+            .map { chunk ->
+                chunk.lines()
+                    .filterNot { it.trim().startsWith("--") }
+                    .joinToString("\n")
+                    .trim()
+            }
+            .filter { it.isNotBlank() }
 }

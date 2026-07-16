@@ -97,6 +97,7 @@
 | T-080 | NpcService — оркестратор стратегий + hooks в start/init-decisions + fallback | done | 2026-07-16 | [T-080](T-080-npc-service-and-hooks.md) |
 | T-081 | autoAdvanceRounds — hook в makeDecision + NpcService.playDecisions | done | 2026-07-16 | [T-081](T-081-auto-advance-rounds-hook.md) |
 | T-084 | index.sql — ALTER TABLE session ADD COLUMN auto_advance_rounds | done | 2026-07-16 | [T-084](T-084-alter-table-add-auto-advance-column.md) |
+| T-085 | IndexSqlInitializer — per-line comment filter | done | 2026-07-16 | [T-085](T-085-index-sql-comment-filter.md) |
 
 ## Легенда статусов
 
