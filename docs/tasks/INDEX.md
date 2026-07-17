@@ -37,6 +37,7 @@
 | T-099 | Springwolf ERROR на старте — SessionAdminWsController::abortCurrentRound/openSession без @Payload | pending | low | 2026-07-17 | [T-099](T-099-springwolf-payload-error-on-startup.md) |
 | T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | pending | high | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
 | T-101 | CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM) | in_progress | high | 2026-07-17 | [T-101](T-101-cicd-pipeline.md) |
+| T-102 | Refactor docs/13-deploy.md — разделы B.1-B.7 под VM-архитектуру (исторический Serverless-текст) | pending | low | 2026-07-17 | [T-102](T-102-refactor-13-deploy-under-vm.md) |
 
 ## Отменённые задачи
 
