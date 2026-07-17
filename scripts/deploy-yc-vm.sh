@@ -102,13 +102,21 @@ write_files:
     permissions: '0755'
     content: |
       #!/bin/bash
-      set -e
-      # SA metadata → IAM токен
-      TOKEN=\$(curl -s -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token | jq -r .access_token)
+      set -euxo pipefail
+      # Всё в лог (для debug через SSH)
+      exec > /var/log/utg-run.log 2>&1
 
-      # docker login без stdin (cloud-init stdin недоступен — printf/echo не помогают).
-      # Password в args менее secure (виден в 'ps'), но VM ephemeral, ports docker
-      # exec не выдаёт список процессов извне.
+      # SA metadata → IAM токен. Retry — metadata service после boot стартует не сразу.
+      TOKEN=""
+      for i in 1 2 3 4 5 6; do
+        TOKEN=\$(curl -sf -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token 2>/dev/null | jq -r .access_token 2>/dev/null || true)
+        if [ -n "\$TOKEN" ] && [ "\$TOKEN" != "null" ]; then break; fi
+        echo "metadata retry \$i (no token yet)"; sleep 5
+      done
+      [ -n "\$TOKEN" ] || { echo "FAILED to get SA token from metadata"; exit 1; }
+
+      # docker login (без stdin — cloud-init non-TTY). Token в args менее secure,
+      # но VM ephemeral, ports docker не выдают process list извне.
       docker login -u iam -p "\$TOKEN" cr.yandex
 
       docker pull $IMAGE
@@ -165,6 +173,7 @@ yc compute instance create \
   --create-boot-disk "image-id=$UBUNTU_IMAGE,size=20,type=network-hdd" \
   --network-interface "subnet-id=$SUBNET_ID,nat-ip-version=ipv4,nat-address=$PUBLIC_IP" \
   --service-account-id "$SA_ID" \
+  --ssh-key "$HOME/.ssh/id_ed25519.pub" \
   --metadata-from-file "user-data=$CLOUD_INIT" \
   --metadata "serial-port-enable=1"
 
