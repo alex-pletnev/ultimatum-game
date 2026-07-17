@@ -38,8 +38,14 @@ FOLDER_ID=$(yc config get folder-id)
 ZONE=$(yc config get compute-default-zone)
 SUBNET_RANGE="10.130.0.0/24"
 
-# yc-installed docker credential helper лежит здесь:
+# docker-credential-yc:
+#   - ручная установка (curl | bash) → $HOME/yandex-cloud/bin
+#   - brew cask → /opt/homebrew/Caskroom/yandex-cloud-cli/*/yandex-cloud-cli/bin
 export PATH="$HOME/yandex-cloud/bin:$PATH"
+if ! command -v docker-credential-yc >/dev/null 2>&1; then
+  YC_CASK_BIN=$(ls -d /opt/homebrew/Caskroom/yandex-cloud-cli/*/yandex-cloud-cli/bin 2>/dev/null | head -1)
+  [[ -n "$YC_CASK_BIN" ]] && export PATH="$YC_CASK_BIN:$PATH"
+fi
 
 log() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m!! %s\033[0m\n' "$*"; }
