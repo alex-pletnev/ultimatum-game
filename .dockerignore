@@ -1,0 +1,27 @@
+# Build outputs
+build/
+.gradle/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# VCS
+.git/
+.gitignore
+.github/
+
+# Docs / infra
+docs/
+.claude/
+frontend-integration/
+compose.yaml
+
+# OS
+.DS_Store
+
+# Env
+.env
+.env.*

@@ -1,6 +1,7 @@
 package edu.itmo.ultimatumgame.configs
 
 import edu.itmo.ultimatumgame.util.logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
@@ -16,6 +17,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 @EnableWebSocketMessageBroker
 class WebSocketConfig(
     private val jwtStompChannelInterceptor: JwtStompChannelInterceptor,
+    @Value("\${app.cors.origins:http://localhost:[*]}") private val corsOriginsCsv: String,
 ) :
     WebSocketMessageBrokerConfigurer {
 
@@ -26,7 +28,14 @@ class WebSocketConfig(
         registry.setApplicationDestinationPrefixes("/app")
     }
 
+    // T-090: Spring API принимает только vararg — spread над короткой List<String>
+    // (обычно 1-3 origin'а) неизбежен и безопасен.
+    @Suppress("SpreadOperator")
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        val originPatterns = corsOriginsCsv.split(',')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toTypedArray()
         registry.addEndpoint("/ws")
             .addInterceptors(
                 object : HandshakeInterceptor {
@@ -49,7 +58,7 @@ class WebSocketConfig(
                     ) {}
                 }
             )
-            .setAllowedOrigins("*")
+            .setAllowedOriginPatterns(*originPatterns)
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {

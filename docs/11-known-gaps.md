@@ -51,14 +51,19 @@
 - `services/JwtService.kt:85` — токен живёт год. При компрометации отозвать невозможно (нет revocation list, нет refresh-токенов).
 - Рекомендация: короткий access + refresh (15–30 мин + 7–30 дней).
 
-### CORS слишком широкий для prod
-- HTTP: `allowedOriginPatterns = ["http://localhost:[*]"]` — dev-only.
-- STOMP handshake: `setAllowedOrigins("*")` (`WebSocketConfig.kt:51`) — слишком широко.
-- Перед деплоем в prod — сузить до конкретных доменов.
+### ~~CORS слишком широкий для prod~~ — устранено (T-090)
+- HTTP: `allowedOriginPatterns` теперь из `${APP_CORS_ORIGINS:http://localhost:[*]}`
+  (`SecurityConfiguration.kt`).
+- STOMP handshake: `setAllowedOriginPatterns` из того же env-списка вместо
+  `setAllowedOrigins("*")` (`WebSocketConfig.kt`) — обязательное условие для
+  сочетания с `allowCredentials=true`.
+- В prod задать `APP_CORS_ORIGINS=https://<gh-user>.github.io` через хостер.
 
-### Actuator полностью открыт
-- `management.endpoints.web.exposure.include=*` (`application.properties:3`).
-- `/actuator/**` в `permitAll` (`SecurityConfiguration.kt`). Наружу могут утекать `/env`, `/beans`, `/heapdump`. Ограничить до `health`, `info` для publish + auth для остального.
+### ~~Actuator полностью открыт~~ — устранено (T-017 + T-090)
+- Base `application.properties`: `management.endpoints.web.exposure.include=health,info,prometheus` (T-017).
+- Prod override (T-090): `health,prometheus` (без `info` — не утекать build-метаданные).
+- `/actuator/**` в `permitAll` — оставлено для scrape'а Prometheus; чувствительные
+  endpoint'ы (`/env`, `/beans`, `/heapdump`) не в exposure-list, значит не публикуются.
 
 ### DEBUG/TRACE логирование
 - `logging.level.org.springframework.security=DEBUG`

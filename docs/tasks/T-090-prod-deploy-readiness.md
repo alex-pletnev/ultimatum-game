@@ -14,6 +14,9 @@ related_code:
   - compose.yaml
 related_docs:
   - docs/tasks/T-044-adopt-db-migrations.md
+  - docs/10-configuration.md
+  - docs/11-known-gaps.md
+  - docs/13-deploy.md
 tags: [infra, deploy, security]
 ---
 
@@ -33,23 +36,23 @@ tags: [infra, deploy, security]
 ## Acceptance criteria
 
 ### Externalize prod-config
-- [ ] `application-prod.properties` — `spring.datasource.{url,username,password,driver-class-name}` из env-vars (`DB_URL`, `DB_USER`, `DB_PASSWORD`).
-- [ ] `spring.docker.compose.enabled=false` в prod (гарантия что дев-плагин не сработает).
-- [ ] `server.port=${PORT:8080}` для совместимости с PaaS (Render/Railway/Koyeb).
-- [ ] `management.endpoints.web.exposure.include` в prod — только `health,prometheus` (не info).
+- [x] `application.properties` — `spring.datasource.{url,username,password,driver-class-name}` из env (`DB_URL`, `DB_USER`, `DB_PASSWORD`), dev-defaults.
+- [x] `spring.docker.compose.enabled=false` в `application-prod.properties`.
+- [x] `server.port=${PORT:8080}` для совместимости с PaaS.
+- [x] `management.endpoints.web.exposure.include=health,prometheus` в prod-профиле.
 
 ### CORS / WebSocket origins
-- [ ] `SecurityConfiguration.corsConfigurationSource` — origin-список из env (`APP_CORS_ORIGINS`, comma-separated), default `http://localhost:[*]` для dev.
-- [ ] `WebSocketConfig.registerStompEndpoints` — `setAllowedOriginPatterns` (не `setAllowedOrigins("*")`) с тем же env-списком.
-- [ ] В prod-профиле задокументировано что `APP_CORS_ORIGINS=https://<gh-user>.github.io`.
+- [x] `SecurityConfiguration.corsConfigurationSource` — origin-список из `${app.cors.origins}` (CSV), default `http://localhost:[*]`.
+- [x] `WebSocketConfig.registerStompEndpoints` — `setAllowedOriginPatterns` из того же CSV вместо `setAllowedOrigins("*")`.
+- [x] В `docs/13-deploy.md` документировано `APP_CORS_ORIGINS=https://<gh-user>.github.io`.
 
 ### Dockerfile
-- [ ] Multi-stage: `gradle:jdk21` → build → `eclipse-temurin:21-jre` (или distroless-java21).
-- [ ] `ENTRYPOINT` c `-XX:MaxRAMPercentage=75.0` для free-tier контейнеров 512MB.
-- [ ] Локально проверено: `docker build -t ultimatum-game . && docker run -e ... -p 8080:8080 ultimatum-game` — старт до READY.
+- [x] Multi-stage: `gradle:8.14.3-jdk21` → build → `eclipse-temurin:21-jre-alpine` runtime.
+- [x] `ENTRYPOINT` c `-XX:MaxRAMPercentage=75.0` + `UseZGC` + `ExitOnOutOfMemoryError` для free-tier 512MB.
+- [ ] Локально проверено: `docker build -t ultimatum-game . && docker run ...` — старт до READY. (следующим шагом)
 
 ### Миграции (blocker)
-- [ ] Закрыт T-044 (Flyway baseline от текущей schema, `ddl-auto=validate`). Без него prod-deploy не начинать.
+- [x] T-044 закрыт (Flyway baseline от текущей schema, `ddl-auto=validate`).
 
 ### Хостинг + smoke-test
 - [ ] Выбран и обоснован хостинг (по умолчанию Fly.io + Neon PG). Задокументирован в `docs/12-deploy.md` (или аналог).
@@ -58,9 +61,11 @@ tags: [infra, deploy, security]
 - [ ] Frontend (github.io) сконфигурирован на прод URL, живой end-to-end сценарий: create session → join → offer/decision через WS.
 
 ### Docs
-- [ ] `docs/12-deploy.md` (новый) — как задеплоить с нуля, env-vars, secrets, откат.
-- [ ] `docs/11-known-gaps.md` — обновлён (убрать пункт «нет prod-конфига»).
-- [ ] `CLAUDE.md` — если появились prod-специфичные правила (например «не коммитить prod URLs»), добавить в SPECIFIC_RULES.
+- [x] `docs/13-deploy.md` (новый; `12-` был занят observability) — как задеплоить с нуля, env-vars, secrets, откат.
+- [x] `docs/11-known-gaps.md` — CORS и actuator-gap помечены устранёнными (T-090).
+- [x] `docs/10-configuration.md` — таблица properties/env расширена под T-090.
+- [x] `docs/README.md` — добавлен пункт 13-deploy.
+- [ ] `CLAUDE.md` — prod-специфичных правил пока нет; добавить если появятся после Phase 4/5.
 
 ## План
 
@@ -189,3 +194,14 @@ jobs:
 
 - 2026-07-16: заведено пользователем. Blocker — T-044 (миграции). Приоритет high — блокирует показ проекта фронтом.
 - 2026-07-17: T-044 закрыт (blocker снят). Статус → in_progress. Добавлена спецификация Phase 5 (Frontend deploy to GitHub Pages) — контракт для интегратора фронта: env-vars, GH Actions workflow, CORS/WS handshake детали, JWT storage/refresh, end-to-end smoke-сценарий.
+- 2026-07-17: Phase 1 (config externalization) + Phase 2 (Dockerfile) закрыты.
+  Правки:
+    - `application.properties`: `server.port=${PORT:8080}`, datasource `${DB_URL:...}/${DB_USER:...}/${DB_PASSWORD:...}` с dev-defaults из compose.yaml, `app.cors.origins=${APP_CORS_ORIGINS:http://localhost:[*]}`.
+    - `application-prod.properties`: `spring.docker.compose.enabled=false`, actuator сужен до `health,prometheus`.
+    - `SecurityConfiguration.kt`: `@Value("\${app.cors.origins:...}")` → CSV split → `allowedOriginPatterns`.
+    - `WebSocketConfig.kt`: тот же CSV → `setAllowedOriginPatterns(*array)` вместо `setAllowedOrigins("*")` (совместимо с `allowCredentials=true`).
+    - `Dockerfile` (multi-stage: gradle:8.14.3-jdk21 build → eclipse-temurin:21-jre-alpine runtime, non-root user, `-XX:MaxRAMPercentage=75.0 -XX:+UseZGC -XX:+ExitOnOutOfMemoryError`).
+    - `.dockerignore`.
+    - `docs/13-deploy.md` (12- занят observability): Fly.io + Neon runbook, env-vars, secrets, smoke, откат.
+    - `docs/10-configuration.md` + `11-known-gaps.md` + `README.md` синхронизированы.
+  `./gradlew check` — зелёный (44s). Осталось: локальный docker-run smoke; Phase 4 (хостинг Fly.io + Neon) — требует твоего участия; Phase 5 (frontend cutover) — уже заспецена.

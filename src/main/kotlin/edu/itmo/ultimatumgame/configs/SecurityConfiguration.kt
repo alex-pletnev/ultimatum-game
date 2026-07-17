@@ -1,6 +1,7 @@
 package edu.itmo.ultimatumgame.configs
 
 import edu.itmo.ultimatumgame.exceptions.RestAccessDeniedHandler
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -20,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfiguration(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val restAccessDeniedHandler: RestAccessDeniedHandler,
+    @Value("\${app.cors.origins:http://localhost:[*]}") private val corsOriginsCsv: String,
 ) {
 
     @Bean
@@ -53,7 +55,7 @@ class SecurityConfiguration(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOriginPatterns = listOf("http://localhost:[*]")
+            allowedOriginPatterns = parseOrigins(corsOriginsCsv)
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true
@@ -62,4 +64,7 @@ class SecurityConfiguration(
         source.registerCorsConfiguration("/**", configuration)
         return source
     }
+
+    private fun parseOrigins(csv: String): List<String> =
+        csv.split(',').map { it.trim() }.filter { it.isNotEmpty() }
 }

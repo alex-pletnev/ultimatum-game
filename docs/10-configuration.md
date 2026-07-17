@@ -8,9 +8,15 @@
 |------|----------|-------------|
 | `spring.application.name` | `ultimatum-game` | имя в metrics/logs |
 | `server.servlet.context-path` | `/api/v1` | префикс всех endpoints |
-| `management.endpoints.web.exposure.include` | `health,info,prometheus` | actuator сужен до health-check и Prometheus scrape (T-017) |
+| `server.port` | `${PORT:8080}` | (T-090) PaaS-хостеры прокидывают порт через `$PORT` |
+| `management.endpoints.web.exposure.include` | `health,info,prometheus` | actuator сужен до health-check и Prometheus scrape (T-017); в prod overridден до `health,prometheus` (T-090) |
 | `spring.profiles.active` | `dev` | по умолчанию dev; в prod — `SPRING_PROFILES_ACTIVE=prod` |
 | `token.signing.key` | `${JWT_SIGNING_KEY}` | **обязательный env**, base64 |
+| `spring.datasource.url` | `${DB_URL:jdbc:postgresql://localhost:5432/postgres}` | (T-090) externalized; dev-default совпадает с `compose.yaml` |
+| `spring.datasource.username` | `${DB_USER:postgres}` | (T-090) externalized |
+| `spring.datasource.password` | `${DB_PASSWORD:postgres}` | (T-090) externalized |
+| `spring.datasource.driver-class-name` | `org.postgresql.Driver` | (T-090) явно, а не через autodetect |
+| `app.cors.origins` | `${APP_CORS_ORIGINS:http://localhost:[*]}` | (T-090) CSV-список origin'ов для CORS и WebSocket handshake; читается `@Value` в `SecurityConfiguration` и `WebSocketConfig` |
 | `spring.jpa.hibernate.ddl-auto` | `validate` | Hibernate только сверяет entity ↔ таблицы; схемой владеет Flyway (T-044) |
 | `spring.jpa.show-sql` | `true` | dev-логирование SQL (отключается в prod-профиле) |
 | `spring.jpa.properties.hibernate.format_sql` | `true` | pretty-print SQL |
@@ -20,21 +26,31 @@
 | `spring.flyway.locations` | `classpath:db/migration` | стандарт |
 | `logging.level.root` | `INFO` | общий root-level |
 
-**Профильные overrides** (T-017):
+**Профильные overrides** (T-017, T-090):
 - `application-dev.properties` — `edu.itmo.ultimatumgame=DEBUG`, `spring.web=DEBUG`.
-- `application-prod.properties` — `edu.itmo.ultimatumgame=INFO`, `spring.security=INFO`, `show-sql=false`.
+- `application-prod.properties` — `edu.itmo.ultimatumgame=INFO`, `spring.security=INFO`, `show-sql=false`, `spring.docker.compose.enabled=false` (T-090), `management.endpoints.web.exposure.include=health,prometheus` (T-090, убран `info` — не утекать build-метаданные).
 
 **Формат логов** (T-017): `src/main/resources/logback-spring.xml` — plaintext для `!prod`, JSON (`LogstashEncoder`) для `prod`. Подробнее: `docs/12-observability.md`.
 
-Настройки datasource не прописаны — их подставляет `spring-boot-docker-compose` (см. ниже) через service connection.
+(T-090) Datasource externalized через `${DB_URL:...}`/`${DB_USER:...}`/`${DB_PASSWORD:...}`.
+Dev-defaults совпадают с `compose.yaml`, поэтому `spring-boot-docker-compose` плагин
+всё ещё поднимает контейнер при `bootRun`, а explicit env-vars идут в приоритет
+на prod-профиле.
 
 ## Environment variables
 
 | Var | Обязателен | Комментарий |
 |-----|-----------|-------------|
 | `JWT_SIGNING_KEY` | да | base64-строка для HS256, не короче 32 байт после декодирования |
+| `DB_URL` | prod | (T-090) JDBC-URL Postgres. Dev-default — localhost из `compose.yaml` |
+| `DB_USER` | prod | (T-090) юзер БД |
+| `DB_PASSWORD` | prod | (T-090) пароль БД |
+| `APP_CORS_ORIGINS` | prod | (T-090) CSV origin'ов для CORS и WS, e.g. `https://<gh-user>.github.io` |
+| `PORT` | нет | (T-090) `${PORT:8080}`; PaaS-хостеры выставят сами |
 
-Опционально можно переопределить через env любые ключи `application.properties` (`server.port`, `SPRING_DATASOURCE_*` и т. д.).
+Опционально можно переопределить через env любые ключи `application.properties` (`SPRING_DATASOURCE_*` и т. д.).
+
+Полный prod-runbook — `docs/13-deploy.md` (T-090).
 
 ## compose.yaml
 
