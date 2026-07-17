@@ -32,6 +32,8 @@
 | T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
 | T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается (повтор паттерна) | pending | low | 2026-07-16 | [T-094](T-094-read-tool-before-write-tool.md) |
 | T-095 | SessionServiceTest — split на функциональные группы (LargeClass detekt suppress) | pending | low | 2026-07-17 | [T-095](T-095-split-session-service-test.md) |
+| T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не `./gradlew check` | pending | medium | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
+| T-097 | Dockerfile warmup-слой `./gradlew dependencies ... \|\| true` глотает ошибки | pending | low | 2026-07-17 | [T-097](T-097-dockerfile-warmup-layer-swallows-errors.md) |
 
 ## Отменённые задачи
 
