@@ -103,25 +103,22 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      # Получить IAM-токен через SA metadata
+      # SA metadata → IAM токен
       TOKEN=\$(curl -s -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token | jq -r .access_token)
 
-      # Auth docker → cr.yandex
-      echo "\$TOKEN" | docker login --username iam --password-stdin cr.yandex
+      # docker login через printf (не требует TTY)
+      printf '%s' "\$TOKEN" | docker login --username iam --password-stdin cr.yandex
 
-      # Pull image
       docker pull $IMAGE
 
-      # Достать secrets из Lockbox
+      # Secrets из Lockbox через REST
       PAYLOAD=\$(curl -s -H "Authorization: Bearer \$TOKEN" \\
         "https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/$SECRET_ID/payload")
       JWT_KEY=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="JWT_SIGNING_KEY") | .textValue')
       DB_PWD=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="DB_PASSWORD") | .textValue')
 
-      # Остановить старый если есть
       docker rm -f ultimatum-game 2>/dev/null || true
 
-      # Запустить
       docker run -d --name ultimatum-game --restart=always \\
         -p 8080:8080 \\
         -e SPRING_PROFILES_ACTIVE=prod \\
@@ -131,24 +128,19 @@ write_files:
         -e "JWT_SIGNING_KEY=\$JWT_KEY" \\
         -e "APP_CORS_ORIGINS=$CORS_ORIGINS" \\
         $IMAGE
-  - path: /etc/caddy/Caddyfile
-    content: |
-      $DOMAIN {
-        reverse_proxy :8080
-      }
 
 runcmd:
-  # Docker
   - systemctl enable --now docker
-  # Caddy repo
+  # Caddy repo + install (noninteractive, чтобы dpkg не спрашивал про Caddyfile)
   - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
   - apt-get update
-  - apt-get install -y caddy
-  # Запустить приложение
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold caddy
+  # Caddyfile — пишем ПОСЛЕ install (иначе dpkg спрашивает про конфликт)
+  - printf '%s {\\n  reverse_proxy :8080\\n}\\n' '$DOMAIN' > /etc/caddy/Caddyfile
+  - systemctl restart caddy
+  # Приложение
   - /opt/app/run.sh
-  # Caddy reload
-  - systemctl reload caddy || systemctl restart caddy
 CLOUDINIT
 echo "wrote $CLOUD_INIT ($(wc -l < "$CLOUD_INIT") lines)"
 
