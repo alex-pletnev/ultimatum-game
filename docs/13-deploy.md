@@ -78,17 +78,23 @@ yc config list
 
 ## 13.4 Часть B — что делает агент (yc CLI)
 
-Все шаги B.1–B.7 собраны в идемпотентный скрипт `scripts/deploy-yc.sh` —
-одна команда:
+Актуальный скрипт для полного первичного deploy'а (Compute VM вариант) —
+`scripts/deploy-yc-vm.sh`:
 
 ```bash
-bash scripts/deploy-yc.sh [<gh-user>]
+bash scripts/deploy-yc-vm.sh [<gh-user>]
 # default gh-user = alex-pletnev
 ```
 
-Скрипт проверяет prereqs (yc/docker/jq/openssl), реиспользует existing
-ресурсы, создаёт недостающие, деплоит revision. Ниже — что он делает
-пошагово (для аудита/дебага):
+Создаёт SA + PG + Lockbox + static IP + Ubuntu VM с cloud-init'ом
+(docker + caddy + первый `docker run`).
+
+> **Устарело**: разделы B.1–B.7 ниже написаны под изначальный Serverless
+> Container-вариант (заброшен после pivot'а — cold-start Spring Boot ~40s
+> > YC execution-timeout). Оставлены как историческая справка на случай,
+> если Serverless-вариант когда-нибудь снова окажется приемлемым (например,
+> с GraalVM native-image). Мёртвые скрипты `scripts/deploy-yc.sh` и
+> `scripts/smoke-yc.sh` удалены в T-101; в git history сохранены.
 
 ### B.1 Container Registry
 ```bash
