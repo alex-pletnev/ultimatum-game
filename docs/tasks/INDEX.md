@@ -13,13 +13,9 @@
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |
 | T-041 | Часть C — warn при sha256-коллизии между recommended hook'ами | pending | low | 2026-07-13 | [T-041](T-041-sha-collision-warn-in-part-c.md) |
 | T-042 | Skill'ы, использующие sha/hash, обязать приводить input→expected-output пример | pending | medium | 2026-07-13 | [T-042](T-042-inline-hash-examples-in-skills.md) |
-| T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | pending | medium | 2026-07-13 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
 | T-048 | JUnit5 parallel execution + split integrationTest source-set | pending | low | 2026-07-13 | [T-048](T-048-parallel-tests-and-split-integration.md) |
-| T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | pending | medium | 2026-07-13 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
 | T-061 | TokenRevocationService — TTL-cleanup отозванных jti (unbounded memory concern) | pending | low | 2026-07-14 | [T-061](T-061-token-revocation-ttl-cleanup.md) |
-| T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | pending | medium | 2026-07-14 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
 | T-066 | setup-agent-harness фаза 2.5 — разрешение конфликтов между осями интерпретации PROJECT_CONTEXT | pending | medium | 2026-07-14 | [T-066](T-066-setup-harness-axis-conflict-resolution.md) |
-| T-067 | TDD-skip 2 задачи подряд в infrastructure — приоритезировать «как я это протестирую» до кодинга | pending | medium | 2026-07-15 | [T-067](T-067-tdd-skip-in-infrastructure-tasks.md) |
 | T-070 | STOMP CONNECT: CloseStatus 1002 из-за MissingCsrfTokenException — disable через no-op csrfChannelInterceptor | done | 2026-07-15 | [T-070](T-070-disable-websocket-csrf-for-stomp.md) |
 | T-071 | Audit-тест WebSocketSecurityMatcherAuditTest — enforce покрытия matcher'ами | done | 2026-07-16 | [T-071](T-071-security-matcher-completeness-check.md) |
 | T-072 | GET /current-round 500 NPE — myRole/myPendingActions вынесены из primary constructor RoundResponse | done | 2026-07-16 | [T-072](T-072-roundresponse-npe-mapstruct-nullable-hints.md) |
@@ -27,16 +23,16 @@
 | T-074 | Расширить WebSocketSecurityMatcherAuditTest — block-комментарии + dead-matcher detection | pending | low | 2026-07-16 | [T-074](T-074-audit-test-block-comments-and-dead-matchers.md) |
 | T-075 | CLAUDE.md — configuration-cache-safe паттерн для file-ops в gradle-тасках | pending | low | 2026-07-16 | [T-075](T-075-cc-safe-gradle-file-ops.md) |
 | T-088 | paramsMatchStrategy дублируется в NpcService и SessionService | pending | low | 2026-07-16 | [T-088](T-088-consolidate-params-match-strategy.md) |
-| T-089 | TDD-skip 3 задачи подряд — уточнить триггер | pending | medium | 2026-07-16 | [T-089](T-089-tdd-skip-3-in-a-row.md) |
 | T-090 | Prod-deploy readiness — externalize configs, Dockerfile, CORS/WS для GitHub Pages фронта | in_progress | high | 2026-07-17 | [T-090](T-090-prod-deploy-readiness.md) |
 | T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
-| T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается (повтор паттерна) | pending | low | 2026-07-16 | [T-094](T-094-read-tool-before-write-tool.md) |
 | T-095 | SessionServiceTest — split на функциональные группы (LargeClass detekt suppress) | pending | low | 2026-07-17 | [T-095](T-095-split-session-service-test.md) |
-| T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не `./gradlew check` | pending | medium | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
 | T-098 | NoResourceFoundException возвращает 500 вместо 404 (обнаружено на /actuator/info в prod) | pending | medium | 2026-07-17 | [T-098](T-098-no-resource-found-returns-500.md) |
 | T-099 | Springwolf ERROR на старте — SessionAdminWsController::abortCurrentRound/openSession без @Payload | pending | low | 2026-07-17 | [T-099](T-099-springwolf-payload-error-on-startup.md) |
-| T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | pending | high | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
 | T-102 | Refactor docs/13-deploy.md — разделы B.1-B.7 под VM-архитектуру (исторический Serverless-текст) | pending | low | 2026-07-17 | [T-102](T-102-refactor-13-deploy-under-vm.md) |
+| T-103 | setup-agent-harness — CI/CD template как opt при init (по обкатке T-101) | pending | medium | 2026-07-17 | [T-103](T-103-cicd-template-in-harness.md) |
+| T-104 | setup-agent-harness — правило про bootstrap через CLI (gh + cloud-CLI), не через UI | pending | low | 2026-07-17 | [T-104](T-104-bootstrap-via-cli-pattern.md) |
+| T-105 | Правило — при архитектурном pivot'е runbook обновляется в том же commit'е | pending | medium | 2026-07-17 | [T-105](T-105-runbook-rot-after-pivot.md) |
+| T-106 | PR + worktrees + parallel-agents workflow — правила, wire в harness, условный триггер | pending | medium | 2026-07-17 | [T-106](T-106-worktrees-parallel-agents-workflow.md) |
 
 ## Отменённые задачи
 
@@ -44,6 +40,7 @@
 |----|----------|----------|------|
 | T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо split(';') | 2026-07-16 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
 | T-097 | Dockerfile warmup-слой `./gradlew dependencies ... \|\| true` глотает ошибки | 2026-07-17 | [T-097](T-097-dockerfile-warmup-layer-swallows-errors.md) |
+| T-089 | TDD-skip 3 задачи подряд — merged в T-067 | 2026-07-17 | [T-089](T-089-tdd-skip-3-in-a-row.md) |
 
 ## Закрытые задачи
 
@@ -120,6 +117,13 @@
 | T-044 | Ввести систему миграций БД (Flyway) вместо Hibernate auto-DDL | done | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
 | T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | done | 2026-07-17 | [T-093](T-093-session-members-count-and-auto-close.md) |
 | T-101 | CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM) | done | 2026-07-17 | [T-101](T-101-cicd-pipeline.md) |
+| T-043 | High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done | done | 2026-07-17 | [T-043](T-043-fix-high-priority-bugs-inline.md) |
+| T-060 | Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии | done | 2026-07-17 | [T-060](T-060-invoke-systematic-debugging-on-second-patch.md) |
+| T-062 | Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление | done | 2026-07-17 | [T-062](T-062-pre-commit-ac-deviation-notice.md) |
+| T-067 | TDD-skip в infrastructure/persistence — приоритезировать «как я это протестирую» до кодинга (merged T-089) | done | 2026-07-17 | [T-067](T-067-tdd-skip-in-infrastructure-tasks.md) |
+| T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается | done | 2026-07-17 | [T-094](T-094-read-tool-before-write-tool.md) |
+| T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не gradle check | done | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
+| T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | done | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
 
 
 ## Легенда статусов

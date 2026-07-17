@@ -1,10 +1,10 @@
 ---
 id: T-060
 title: Проактивный триггер — invoke systematic-debugging при повторной правке того же правила в сессии
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-17
 related_code:
   - CLAUDE.md
   - .claude/skills/self-review.md
@@ -23,9 +23,9 @@ T-059 задокументировал «reactive patchwork» как lagging ind
 
 ## Acceptance criteria
 
-- [ ] В `CLAUDE.md` таблица «Проактивные триггеры» — новая строка: «Правлю то же самое правило / секцию CLAUDE.md / skill 2+ раза внутри одной сессии → `superpowers:systematic-debugging` в Auto-mode → искать root cause, а не патчить симптом».
-- [ ] Портировать в harness template.
-- [ ] Кросс-ссылка из self-review категории E: «если этот пункт триггерится в self-review, значит проактивный триггер не сработал → escalation для CLAUDE.md rule».
+- [x] В `CLAUDE.md` таблица «Проактивные триггеры» — новая строка: «Правлю то же самое правило / секцию CLAUDE.md / skill 2+ раза внутри одной сессии → `superpowers:systematic-debugging` в Auto-mode → искать root cause, а не патчить симптом».
+- [x] Портировать в harness template.
+- [x] Кросс-ссылка из self-review категории E: «если этот пункт триггерится в self-review, значит проактивный триггер не сработал → escalation для CLAUDE.md rule».
 
 ## План
 
@@ -35,3 +35,4 @@ T-059 задокументировал «reactive patchwork» как lagging ind
 ## Лог
 
 - 2026-07-13: заведено из self-review T-059 (commit f5caa73), категория E. Priority medium — leading indicator для root-cause-first подхода; low blast radius, но high leverage для будущих сессий с сопротивляющейся проблемой.
+- 2026-07-17: закрыта. Проактивный триггер добавлен в CLAUDE.md проекта + harness template. Cross-ref из self-review.md категория E (проект + harness): «reactive patchwork = сработал этот триггер поздно».

@@ -1,7 +1,7 @@
 ---
 id: T-100
 title: Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить
-status: pending
+status: done
 priority: high
 created: 2026-07-17
 updated: 2026-07-17
@@ -35,7 +35,7 @@ container, точный вид `allow-unauthenticated-invoke` — всё по п
 
 ## Acceptance criteria
 
-- [ ] В CLAUDE.md проактивные триггеры добавить две строки:
+- [x] В CLAUDE.md проактивные триггеры добавить две строки:
   1. «Smoke-тест **внешнего API проекта** (curl / Postman / wscat) → до первого
      запроса прочитать контроллер (Grep `@\*Mapping` на нужный путь) или
      `docs/05-rest-api.md`».
@@ -43,7 +43,7 @@ container, точный вид `allow-unauthenticated-invoke` — всё по п
      в текущей сессии → до написания скрипта или chain'а команд прочитать
      минимум одну команду через `<cli> <cmd> --help` или официальный docs-page.
      Не полагаться на память о синтаксисе».
-- [ ] Синхронизировать оба правила в `setup-agent-harness` — применимо к любому
+- [x] Синхронизировать оба правила в `setup-agent-harness` — применимо к любому
   проекту с внешним API и/или CLI-based deploy.
 
 ## План
@@ -68,3 +68,4 @@ container, точный вид `allow-unauthenticated-invoke` — всё по п
   распространяется не только на REST/WS API целевого проекта, но и на **любой
   внешний CLI/API, вызываемый впервые в этой сессии** (yc, flyctl, gh, aws, ...).
   Per self-review skill: повторение E-паттерна во втором ревью подряд ⇒ high.
+- 2026-07-17: закрыта. CLAUDE.md проекта уже содержал combined-строку про CLI/API (обкатано в T-090). В harness template `claude-md.template.md` добавлена симметричная строка. AC покрыт.

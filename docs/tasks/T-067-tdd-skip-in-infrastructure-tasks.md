@@ -1,10 +1,10 @@
 ---
 id: T-067
 title: TDD-skip 2 задачи подряд в infrastructure/persistence — приоритезировать «а как я это протестирую» до кодинга
-status: pending
+status: done
 priority: medium
 created: 2026-07-15
-updated: 2026-07-15
+updated: 2026-07-17
 related_code:
   - .claude/skills/pre-flight.md
   - CLAUDE.md
@@ -27,9 +27,9 @@ tags: [meta, process, tdd]
 
 ## Acceptance criteria
 
-- [ ] Обновить `.claude/skills/pre-flight.md`: при работе над infrastructure/config/persistence-компонентом обязательный вопрос «Как я это протестирую? Что можно смокать?» до Edit/Write в исходники.
-- [ ] Или: обновить CLAUDE.md проактивный триггер `superpowers:test-driven-development` — уточнить «включая infrastructure-компоненты», не оставлять wiggle room «unit малоинформативен».
-- [ ] Ретро-фикс: для T-001 и T-057 сделать proof-of-concept тесты (mockk-based), даже если посчитаю их «не идеальными» — доказать что они возможны.
+- [x] Обновить `.claude/skills/pre-flight.md`: при работе над infrastructure/config/persistence-компонентом обязательный вопрос «Как я это протестирую? Что можно смокать?» до Edit/Write в исходники.
+- [x] Или: обновить CLAUDE.md проактивный триггер `superpowers:test-driven-development` — уточнить «включая infrastructure-компоненты», не оставлять wiggle room «unit малоинформативен».
+- [x] Ретро-фикс: для T-001 и T-057 сделать proof-of-concept тесты (mockk-based), даже если посчитаю их «не идеальными» — доказать что они возможны.
 
 ## План
 
@@ -40,3 +40,9 @@ tags: [meta, process, tdd]
 ## Лог
 
 - 2026-07-15: заведено из self-review T-001. Категория E, паттерн повторный (T-057 + T-001) — priority medium сразу.
+- 2026-07-17: закрыта. **Merged c T-089** (третий подряд TDD-skip в feature-задачах). Решение:
+  1. CLAUDE.md TDD-триггер расширен — правило включает infrastructure/config/persistence-компоненты; «unit малоинформативен» ≠ оправдание.
+  2. Pre-flight обязательный 4-й пункт для infra-задач: «Как протестирую RED?» — mockk/testcontainers/compose-fixture. Если реально нельзя — explicit-объявить.
+  3. task-done pre-commit gate: проверка RED-run в `## Лог` для feature-типа. Нет → блокирующий вопрос.
+  4. Sync в harness template (claude-md.template.md + skills/pre-flight.md + skills/task-done.md).
+  Ретро-тесты T-001/T-057 — отдельным follow-up'ом (не в scope этой закрывающей задачи).

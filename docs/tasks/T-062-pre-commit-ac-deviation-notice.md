@@ -1,10 +1,10 @@
 ---
 id: T-062
 title: Уточнить в CLAUDE.md — pre-flight объявление отклонения от AC ≠ pre-commit уведомление
-status: pending
+status: done
 priority: medium
 created: 2026-07-14
-updated: 2026-07-14
+updated: 2026-07-17
 related_code:
   - CLAUDE.md
 related_docs:
@@ -24,8 +24,8 @@ tags: [meta, harness]
 
 ## Acceptance criteria
 
-- [ ] В `CLAUDE.md` (или `.claude/skills/pre-flight.md`) — уточнение: pre-flight-объявление отклонения от AC требует **явного** «да, отклоняйся» от user'а, иначе продублировать одной строкой pre-commit.
-- [ ] Портировать в harness template.
+- [x] В `CLAUDE.md` (или `.claude/skills/pre-flight.md`) — уточнение: pre-flight-объявление отклонения от AC требует **явного** «да, отклоняйся» от user'а, иначе продублировать одной строкой pre-commit.
+- [x] Портировать в harness template.
 
 ## План
 
@@ -36,3 +36,4 @@ tags: [meta, harness]
 ## Лог
 
 - 2026-07-14: заведено из self-review T-055 (commit cf73ed3), категория E. Priority medium — не критично, но паттерн «pre-flight сказал → считаю согласованным» будет повторяться без правила.
+- 2026-07-17: закрыта. Проактивный триггер добавлен в CLAUDE.md проекта + harness. Pre-flight обязательный 4-й пункт (AC-deviation approve required) добавлен в `.claude/skills/pre-flight.md` (проект + harness).

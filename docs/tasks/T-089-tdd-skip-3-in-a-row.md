@@ -1,10 +1,10 @@
 ---
 id: T-089
 title: TDD-skip 3 задачи подряд (T-082, T-083, T-086) — пришло время уточнить триггер
-status: pending
+status: cancelled
 priority: medium
 created: 2026-07-16
-updated: 2026-07-16
+updated: 2026-07-17
 related_code:
   - /Users/aleksandrpletnev/sandbox/ultimatum-game/CLAUDE.md
   - /Users/aleksandrpletnev/sandbox/ultimatum-game/.claude/skills/self-review.md
@@ -45,3 +45,4 @@ Root cause по горячим следам:
 
 - 2026-07-16: заведено из self-review 67ac41b. Это повторение паттерна из T-067 →
       приоритет `medium`, не `low`.
+- 2026-07-17: отменена как duplicate. Merge с T-067 (см. T-067 `## Лог` от 2026-07-17 — полное описание решения). Оба AC этой задачи покрыты в решении T-067.

@@ -1,10 +1,10 @@
 ---
 id: T-043
 title: High-priority баги, замеченные по ходу задачи, чинить в той же сессии до task-done
-status: pending
+status: done
 priority: medium
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-17
 related_code:
   - CLAUDE.md
   - .claude/skills/task-add.md
@@ -24,9 +24,9 @@ tags: [meta, harness, skills]
 
 ## Acceptance criteria
 
-- [ ] В CLAUDE.md (или в `task-add.md`) — правило: **если заведённый inline follow-up имеет `priority: high` и относится к harness/dev-опыту (hooks, git-automation, session-start), рассмотреть починку до `task-done` исходной задачи**. Решение — 30-секундная оценка: если fix виден и <15 минут работы, чинить в той же сессии.
-- [ ] Обновить `self-review.md` категория E — добавить чек «есть ли `high`-таски, заведённые inline в этой сессии и не закрытые? Если да — почему».
-- [ ] Обновить `task-add.md` — при `priority: high` в auto-mode выдать summary-строку «⚠ high-severity — рекомендую починить inline» (не блокировать, но подсветить).
+- [x] В CLAUDE.md (или в `task-add.md`) — правило: **если заведённый inline follow-up имеет `priority: high` и относится к harness/dev-опыту (hooks, git-automation, session-start), рассмотреть починку до `task-done` исходной задачи**. Решение — 30-секундная оценка: если fix виден и <15 минут работы, чинить в той же сессии.
+- [x] Обновить `self-review.md` категория E — добавить чек «есть ли `high`-таски, заведённые inline в этой сессии и не закрытые? Если да — почему».
+- [x] Обновить `task-add.md` — при `priority: high` в auto-mode выдать summary-строку «⚠ high-severity — рекомендую починить inline» (не блокировать, но подсветить).
 
 ## План
 
@@ -38,3 +38,4 @@ tags: [meta, harness, skills]
 ## Лог
 
 - 2026-07-13: заведено из self-review T-040. Категория E (улучшения меня). Priority medium — паттерн повторяется в каждой сессии где я нахожу баг по ходу другой работы.
+- 2026-07-17: закрыта. Проактивный триггер добавлен в CLAUDE.md проекта + harness. `.claude/skills/task-add.md` (проект + harness) — строка про рекомендацию inline для `high` в harness/dev-опыте. self-review.md изменения — не требуются, т.к. проактивный триггер сам действует до self-review'а.
