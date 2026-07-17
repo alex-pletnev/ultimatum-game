@@ -87,6 +87,50 @@ echo "subnet: $SUBNET_ID"
 log "Step 6: cloud-init user-data"
 SSH_PUB=$(cat "$HOME/.ssh/id_ed25519.pub" 2>/dev/null || cat "$HOME/.ssh/id_rsa.pub" 2>/dev/null)
 [[ -z "$SSH_PUB" ]] && { echo "no SSH pubkey found in ~/.ssh/"; exit 1; }
+
+# run.sh — bash-script на VM. Собираем в переменной, кодируем base64 → embed в
+# cloud-init как `encoding: b64`. Причина: cloud-init YAML `content: |` парсит
+# ${var} references и превращает undefined в пустые строки (обнаружено в
+# предыдущей итерации: `[ -n "" ]` вместо `[ -n "$TOKEN" ]`). base64 обходит.
+RUN_SH=$(cat <<RUNSH
+#!/bin/bash
+set -euxo pipefail
+exec > /var/log/utg-run.log 2>&1
+
+# SA metadata → IAM токен. Retry — metadata service после boot стартует не сразу.
+TOKEN=""
+for i in 1 2 3 4 5 6; do
+  TOKEN=\$(curl -sf -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token 2>/dev/null | jq -r .access_token 2>/dev/null || true)
+  if [ -n "\$TOKEN" ] && [ "\$TOKEN" != "null" ]; then break; fi
+  echo "metadata retry \$i (no token yet)"; sleep 5
+done
+[ -n "\$TOKEN" ] || { echo "FAILED to get SA token from metadata"; exit 1; }
+
+# docker login без stdin (cloud-init runcmd non-TTY)
+docker login -u iam -p "\$TOKEN" cr.yandex
+
+docker pull $IMAGE
+
+# Secrets из Lockbox через REST
+PAYLOAD=\$(curl -s -H "Authorization: Bearer \$TOKEN" \\
+  "https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/$SECRET_ID/payload")
+JWT_KEY=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="JWT_SIGNING_KEY") | .textValue')
+DB_PWD=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="DB_PASSWORD") | .textValue')
+
+docker rm -f ultimatum-game 2>/dev/null || true
+
+docker run -d --name ultimatum-game --restart=always \\
+  -p 8080:8080 \\
+  -e SPRING_PROFILES_ACTIVE=prod \\
+  -e "DB_URL=$DB_URL" \\
+  -e "DB_USER=$PG_USER" \\
+  -e "DB_PASSWORD=\$DB_PWD" \\
+  -e "JWT_SIGNING_KEY=\$JWT_KEY" \\
+  -e "APP_CORS_ORIGINS=$CORS_ORIGINS" \\
+  $IMAGE
+RUNSH
+)
+RUN_SH_B64=$(printf '%s' "$RUN_SH" | base64 | tr -d '\n')
 CLOUD_INIT=$(mktemp -t cloud-init-XXXXXX.yaml)
 cat > "$CLOUD_INIT" <<CLOUDINIT
 #cloud-config
@@ -108,44 +152,8 @@ packages:
 write_files:
   - path: /opt/app/run.sh
     permissions: '0755'
-    content: |
-      #!/bin/bash
-      set -euxo pipefail
-      # Всё в лог (для debug через SSH)
-      exec > /var/log/utg-run.log 2>&1
-
-      # SA metadata → IAM токен. Retry — metadata service после boot стартует не сразу.
-      TOKEN=""
-      for i in 1 2 3 4 5 6; do
-        TOKEN=\$(curl -sf -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token 2>/dev/null | jq -r .access_token 2>/dev/null || true)
-        if [ -n "\$TOKEN" ] && [ "\$TOKEN" != "null" ]; then break; fi
-        echo "metadata retry \$i (no token yet)"; sleep 5
-      done
-      [ -n "\$TOKEN" ] || { echo "FAILED to get SA token from metadata"; exit 1; }
-
-      # docker login (без stdin — cloud-init non-TTY). Token в args менее secure,
-      # но VM ephemeral, ports docker не выдают process list извне.
-      docker login -u iam -p "\$TOKEN" cr.yandex
-
-      docker pull $IMAGE
-
-      # Secrets из Lockbox через REST
-      PAYLOAD=\$(curl -s -H "Authorization: Bearer \$TOKEN" \\
-        "https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/$SECRET_ID/payload")
-      JWT_KEY=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="JWT_SIGNING_KEY") | .textValue')
-      DB_PWD=\$(echo "\$PAYLOAD" | jq -r '.entries[] | select(.key=="DB_PASSWORD") | .textValue')
-
-      docker rm -f ultimatum-game 2>/dev/null || true
-
-      docker run -d --name ultimatum-game --restart=always \\
-        -p 8080:8080 \\
-        -e SPRING_PROFILES_ACTIVE=prod \\
-        -e "DB_URL=$DB_URL" \\
-        -e "DB_USER=$PG_USER" \\
-        -e "DB_PASSWORD=\$DB_PWD" \\
-        -e "JWT_SIGNING_KEY=\$JWT_KEY" \\
-        -e "APP_CORS_ORIGINS=$CORS_ORIGINS" \\
-        $IMAGE
+    encoding: b64
+    content: $RUN_SH_B64
 
 runcmd:
   - systemctl enable --now docker
