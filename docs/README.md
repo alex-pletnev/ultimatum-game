@@ -18,7 +18,8 @@
 | 10 | [configuration.md](10-configuration.md) | properties, env, compose, gradle |
 | 11 | [known-gaps.md](11-known-gaps.md) | Что не реализовано, TODO, security-concerns |
 | 12 | [observability.md](12-observability.md) | Логи (JSON/MDC), доменные события, Prometheus-метрики |
-| 13 | [deploy.md](13-deploy.md) | Prod-runbook: Fly.io + Neon PG, secrets, smoke-test, откат |
+| 13 | [deploy.md](13-deploy.md) | Prod-runbook: Yandex.Cloud (Compute VM + Managed PG + Lockbox + Caddy), secrets, smoke-test, откат |
+| 14 | [cicd.md](14-cicd.md) | CI/CD: GitHub Actions workflow'ы (CI на PR/push + manual release), bootstrap, rollback, ротация ключей |
 
 ## Как читать
 

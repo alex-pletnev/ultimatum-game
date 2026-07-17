@@ -3,6 +3,10 @@
 Как задеплоить `ultimatum-game` бэк в Yandex.Cloud так, чтобы фронт с GitHub
 Pages мог к нему ходить. Задача-контекст — T-090.
 
+> **Redeploy новой версии на живую VM** — через GitHub Actions release workflow.
+> Runbook: `docs/14-cicd.md`. Этот файл описывает **первичный** deploy (создание
+> VM, PG, secrets, cloud-init) — то, что делается один раз или при пересоздании инфры.
+
 **Почему Yandex.Cloud**: доступность из РФ без VPN, юрисдикция и юрлицо в РФ
 (готово к 152-ФЗ если появятся персданные), managed Postgres, Serverless
 Containers с pay-per-request. Free-tier'а нет, но при регистрации выдают
