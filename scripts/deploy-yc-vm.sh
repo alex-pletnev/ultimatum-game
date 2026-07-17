@@ -56,12 +56,21 @@ done
 echo "sa-id=$SA_ID"
 
 # ---- Step 2: PG cluster info ----------------------------------------------
-log "Step 2: PG cluster info"
+log "Step 2: PG cluster info + enable pg_trgm"
 PG_HOST=$(yc managed-postgresql host list --cluster-name "$PG_CLUSTER_NAME" --format json | jq -r '.[0].name')
 DB_URL="jdbc:postgresql://${PG_HOST}:6432/${PG_DB}?sslmode=require"
 SECRET_ID=$(yc lockbox secret get "$SECRET_NAME" --format json | jq -r .id)
 echo "PG:     $PG_HOST"
 echo "secret: $SECRET_ID"
+# YC Managed PG не даёт rights на CREATE EXTENSION обычному user'у.
+# V1__baseline.sql использует pg_trgm — включаем на уровне YC (admin op).
+CURRENT_EXTS=$(yc managed-postgresql database get "$PG_DB" --cluster-name "$PG_CLUSTER_NAME" --format json | jq -r '.extensions[]?.name' 2>/dev/null)
+if ! echo "$CURRENT_EXTS" | grep -q pg_trgm; then
+  echo "enabling pg_trgm..."
+  yc managed-postgresql database update "$PG_DB" --cluster-name "$PG_CLUSTER_NAME" --extensions pg_trgm 2>&1 | tail -3
+else
+  echo "pg_trgm уже включён"
+fi
 
 # ---- Step 3: Static public IP ---------------------------------------------
 log "Step 3: Static public IP"
