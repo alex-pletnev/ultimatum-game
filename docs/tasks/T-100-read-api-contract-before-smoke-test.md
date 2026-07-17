@@ -1,8 +1,8 @@
 ---
 id: T-100
-title: Правило — перед smoke-тестом внешнего API прочитать контракт, а не полагаться на память
+title: Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить
 status: pending
-priority: medium
+priority: high
 created: 2026-07-17
 updated: 2026-07-17
 related_code:
@@ -14,26 +14,37 @@ tags: [meta]
 
 ## Контекст
 
-Во время T-090 docker-smoke я тестировал `POST /auth/register` и `POST /auth/login`
-и получал 500-ки, тратил время на диагностику (проверял jar-classes, gradle-log,
-component-scan) — думал, что controller не мапится в prod-профиле. По факту
-`/auth/register` и `/auth/login` **никогда не существовали** в этом проекте —
-реальные endpoint'ы: `/auth/quick-register`, `/auth/quick-login`. Достаточно
-было открыть `AuthController.kt` (или `docs/05-rest-api.md`) перед первым curl'ом.
+Повторяющийся fault-mode «trust memory over reality» — применительно к внешним
+контрактам (не своему коду).
 
-Причина: доверился памяти о «стандартных» Spring-auth endpoint'ах вместо
-чтения контракта. Классический fault-mode «trust memory over reality» — те же
-костыли, что в T-094 (Read-tool перед Write/Edit) но применительно к API-контракту
-внешнего сервиса.
+**Эпизод 1** (T-090 docker-smoke, commit f8db6f8): тестировал `POST /auth/register`
+и `POST /auth/login` — таких endpoint'ов у нас нет, реальные —
+`/auth/quick-register`, `/auth/quick-login`. Не открыл `AuthController.kt` или
+`docs/05-rest-api.md` до первого curl'а. Потратил время на ложную диагностику
+(проверял jar-classes, gradle-log, component-scan) прежде чем осознал что
+endpoint'а просто нет.
+
+**Эпизод 2** (T-090 YC deploy, commit a93c3f6): написал 200-строчный `scripts/deploy-yc.sh`
+с `yc` командами по памяти документации, не прогнав ни одну. Синтаксис
+`--host zone-id=X,subnet-id=Y`, поведение `--network-id` для serverless
+container, точный вид `allow-unauthenticated-invoke` — всё по памяти.
+
+Общая природа: **доверяю памяти о шаблонных API/CLI-паттернах вместо чтения
+контракта источника**. Работает быстро, ломается на первом же нестандартном
+проекте / инструменте.
 
 ## Acceptance criteria
 
-- [ ] В CLAUDE.md проактивные триггеры добавить:
-  «Smoke-тест реального API (curl / Postman / wscat) → до первого запроса
-  прочитать контроллер (`Grep '@\*Mapping' на нужный путь) или `docs/05-rest-api.md`.
-  Не полагаться на память или дефолты фреймворка».
-- [ ] Синхронизировать в `setup-agent-harness` SPECIFIC_RULES (для проектов с
-  REST/WS API).
+- [ ] В CLAUDE.md проактивные триггеры добавить две строки:
+  1. «Smoke-тест **внешнего API проекта** (curl / Postman / wscat) → до первого
+     запроса прочитать контроллер (Grep `@\*Mapping` на нужный путь) или
+     `docs/05-rest-api.md`».
+  2. «Первый вызов **внешнего CLI/SDK** (yc, flyctl, gh, aws, terraform, ...)
+     в текущей сессии → до написания скрипта или chain'а команд прочитать
+     минимум одну команду через `<cli> <cmd> --help` или официальный docs-page.
+     Не полагаться на память о синтаксисе».
+- [ ] Синхронизировать оба правила в `setup-agent-harness` — применимо к любому
+  проекту с внешним API и/или CLI-based deploy.
 
 ## План
 
@@ -48,3 +59,12 @@ component-scan) — думал, что controller не мапится в prod-п
 
 - 2026-07-17: заведено self-review'ом commit f8db6f8 (T-090 smoke). Категория E.
   Первое явное наблюдение этого fault-mode для API-контрактов → medium.
+- 2026-07-17: **повышено до high**. Второе срабатывание за две сессии подряд —
+  self-review commit'а a93c3f6 (T-090 YC deploy-script). Написал 200-строчный
+  bash-скрипт с `yc` командами по памяти документации, не прогнав ни одну:
+  синтаксис `--host zone-id=X,subnet-id=Y`, поведение `--network-id` для
+  serverless container, точный вид `allow-unauthenticated-invoke`. Пользователь
+  запускает — и я не знаю, где именно упадёт. Расширил scope: правило
+  распространяется не только на REST/WS API целевого проекта, но и на **любой
+  внешний CLI/API, вызываемый впервые в этой сессии** (yc, flyctl, gh, aws, ...).
+  Per self-review skill: повторение E-паттерна во втором ревью подряд ⇒ high.
