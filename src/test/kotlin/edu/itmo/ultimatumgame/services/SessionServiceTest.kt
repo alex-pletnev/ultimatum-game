@@ -1,3 +1,7 @@
+// T-093 follow-up (T-095): файл разросся после T-087+T-093 — детект жалуется на LargeClass.
+// Split на несколько классов — отдельная задача.
+@file:Suppress("LargeClass")
+
 package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures
@@ -548,6 +552,85 @@ class SessionServiceTest {
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
 
         assertThrows<SessionJoinRejectedException> { service.joinSessionAsObserver(s.id!!) }
+    }
+
+    // ---------- auto-close полной сессии (T-093) ----------
+
+    @Test
+    fun `joinSession — при достижении numPlayers сессия авто-закрывается (openToConnect=false)`() {
+        val newUser = user()
+        val filler = user()
+        val s = session(
+            members = mutableSetOf(filler),
+            config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numPlayers = 2),
+        )
+        every { userService.getCurrentUser() } returns newUser
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+
+        assertTrue(s.openToConnect, "prerequisite: сессия ещё открыта")
+        service.joinSession(s.id!!, null)
+
+        assertFalse(s.openToConnect, "после заполнения openToConnect должен стать false")
+    }
+
+    @Test
+    fun `joinSession — при members меньше numPlayers openToConnect остаётся true`() {
+        val newUser = user()
+        val s = session(
+            members = mutableSetOf(),
+            config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numPlayers = 3),
+        )
+        every { userService.getCurrentUser() } returns newUser
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+
+        service.joinSession(s.id!!, null)
+
+        assertTrue(s.openToConnect, "1 из 3 — сессия должна остаться открытой")
+    }
+
+    @Test
+    fun `addNpcMember — авто-закрытие при заполнении`() {
+        val filler = user()
+        val npcUser = user(role = Role.NPC)
+        val profileId = UUID.randomUUID()
+        val profile = edu.itmo.ultimatumgame.model.NpcProfile(
+            id = profileId,
+            user = npcUser,
+            strategy = edu.itmo.ultimatumgame.model.NpcStrategy.FAIR,
+            params = edu.itmo.ultimatumgame.model.NpcParams.Fair(),
+        )
+        val s = session(
+            members = mutableSetOf(filler),
+            config = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numPlayers = 2),
+        )
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        every { npcProfileRepository.findById(profileId) } returns Optional.of(profile)
+
+        service.addNpcMember(s.id!!, profileId, null)
+
+        assertFalse(s.openToConnect, "второй NPC должен закрыть сессию")
+    }
+
+    @Test
+    fun `bulkCreateAndJoinNpcs — bulk заполняющий до numPlayers авто-закрывает`() {
+        val filler = user()
+        val cfg = sessionConfig(sessionType = SessionType.FREE_FOR_ALL, numPlayers = 3, numTeams = 0)
+        val s = session(members = mutableSetOf(filler), teams = mutableSetOf(), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
+        stubNpcSaves()
+
+        val req = BulkNpcsRequest(count = 2, strategy = NpcStrategy.FAIR, params = NpcParams.Fair())
+        service.bulkCreateAndJoinNpcs(s.id!!, req)
+
+        assertFalse(s.openToConnect, "1 human + 2 NPC = 3/3, сессия должна закрыться")
     }
 
     // ---------- bulkCreateAndJoinNpcs ----------

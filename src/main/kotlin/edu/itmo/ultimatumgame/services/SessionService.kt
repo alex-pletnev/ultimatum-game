@@ -301,12 +301,12 @@ class SessionService(
             team.members += user
             session.members += user
             session.observers.remove(user)
-            sessionRepository.save(session)
         } else {
             session.members += user
             session.observers.remove(user)
-            sessionRepository.save(session)
         }
+        closeIfFull(session, config)
+        sessionRepository.save(session)
         eventPublisherService.publishSessionStatus(sessionId, session)
         domainEventLogger.emit(PlayerJoined(sessionId = sessionId, userId = user.id!!, role = user.role))
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
@@ -336,6 +336,7 @@ class SessionService(
             team.members += profile.user
         }
         session.members += profile.user
+        closeIfFull(session, config)
         sessionRepository.save(session)
         eventPublisherService.publishSessionStatus(sessionId, session)
         domainEventLogger.emit(NpcJoined(sessionId, profile.user.id!!, profile.strategy.name))
@@ -374,6 +375,7 @@ class SessionService(
             assignedTeams[i]?.members?.add(profile.user)
             domainEventLogger.emit(NpcJoined(sessionId, profile.user.id!!, profile.strategy.name))
         }
+        closeIfFull(session, config)
         sessionRepository.save(session)
         eventPublisherService.publishSessionStatus(sessionId, session)
         val sessionDto = sessionWithTeamsAndMembersMapper.toDto(session)
@@ -389,6 +391,19 @@ class SessionService(
             )
         }
         return BulkNpcsResponse(sessionDto, npcs)
+    }
+
+    /**
+     * T-093: если после инкремента members сессия заполнилась —
+     * авто-закрываем её (`openToConnect = false`), чтобы фильтр
+     * `GET /session?openToConnect=true` не возвращал полные сессии.
+     * `sessionStatus` в WS публикуется вызывающим методом сразу после save
+     * — состояние `openToConnect=false` попадёт во фронт-подписки одним broadcast'ом.
+     */
+    private fun closeIfFull(session: Session, config: edu.itmo.ultimatumgame.model.SessionConfig) {
+        if (session.openToConnect && session.members.size >= config.numPlayers) {
+            session.openToConnect = false
+        }
     }
 
     /**

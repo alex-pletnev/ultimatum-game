@@ -145,9 +145,19 @@
   "rounds": [ /* RoundPrewResponse[] */ ],
   "config": { /* SessionConfigResponse */ },
   "teams": [ /* TeamPrewResponse[] */ ],
-  "currentRound": { /* RoundPrewResponse | null */ }
+  "currentRound": { /* RoundPrewResponse | null */ },
+  "membersCount": 4
 }
 ```
+
+**`membersCount`** — количество вошедших участников (`session.members.size`).
+Работает единообразно для FFA (`teams: []`) и TEAM_BATTLE. Используй его как
+источник истины «сколько мест занято», не считай `teams[].members` вручную.
+
+**Auto-close полных сессий:** сервер выставляет `openToConnect=false`
+автоматически, как только `membersCount >= config.numPlayers` (после `join` /
+`join-npc` / bulk-`npcs`). Значит фильтр `GET /session?openToConnect=true` уже
+не вернёт полные — фронту не надо перепроверять «есть ли места».
 
 ### `SessionWithTeamsAndMembersResponse`
 Как `SessionResponse`, но с раскрытыми teams (внутри — members), плюс верхнеуровневые `members` и `observers`.

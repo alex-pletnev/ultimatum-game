@@ -18,4 +18,10 @@ data class SessionResponse(
     val config: SessionConfigResponse,
     val teams: MutableSet<TeamPrewResponse>,
     val currentRound: RoundPrewResponse? = null,
+    /**
+     * T-093: количество вошедших участников (= `session.members.size`).
+     * Работает единообразно для FREE_FOR_ALL (`teams` пуст) и TEAM_BATTLE
+     * (сумма `team.members` == `members.size`).
+     */
+    val membersCount: Int = 0,
 )

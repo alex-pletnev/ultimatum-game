@@ -155,6 +155,12 @@ GET /api/v1/session?state=CREATED&openToConnect=true
 **Ошибки:**
 - `409` — сессия закрыта (`openToConnect=false`) / уже полна (`members.size >= numPlayers`) / вы админ этой сессии.
 
+**Auto-close полных сессий (T-093):** любой успешный `join` / `join-npc` /
+`bulk-npcs`, который заполнил `members.size` до `config.numPlayers`, автоматически
+переводит сессию в `openToConnect=false` и публикует `sessionStatus`. Значит
+после этого фильтр `GET /session?openToConnect=true` полную сессию уже не отдаст.
+Используй `SessionResponse.membersCount` — не считай места вручную по `teams`.
+
 ### `POST /session/{sessionId}/join/observer`
 
 **Роль:** ADMIN, PLAYER, OBSERVER.

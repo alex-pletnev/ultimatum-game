@@ -1,10 +1,10 @@
 ---
 id: T-093
 title: SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false)
-status: pending
+status: done
 priority: medium
 created: 2026-07-16
-updated: 2026-07-16
+updated: 2026-07-17
 related_code:
   - src/main/kotlin/edu/itmo/ultimatumgame/dto/responses/SessionResponse.kt
   - src/main/kotlin/edu/itmo/ultimatumgame/util/SessionMapper.kt
@@ -32,20 +32,12 @@ per-card. Приемлемо на page-size=8, не масштабируется
 
 ## Acceptance criteria
 
-- [ ] `SessionResponse` содержит `membersCount: Int` = `session.members.size`.
-  Работает единообразно для FREE_FOR_ALL и TEAM_BATTLE.
-- [ ] `SessionMapper` (MapStruct) заполняет `membersCount` из `session.members.size`.
-- [ ] `SessionService.joinSession` — после инкремента members: если
-  `members.size >= config.numPlayers` → `session.openToConnect = false` + publish
-  `sessionStatus`.
-- [ ] `SessionService.addNpcMember` — тот же авто-close.
-- [ ] `SessionService.bulkCreateAndJoinNpcs` — тот же авто-close (когда N NPC
-  дозаполнили сессию).
-- [ ] Юнит-тесты: 3 сценария (join полной сессии → openToConnect=false после;
-  join-npc заполняет last-slot; bulk 3 из 3 → openToConnect=false).
-- [ ] OpenAPI snapshot перегенерирован — `membersCount` виден в `SessionResponse`.
-- [ ] `frontend-integration/*.md` (03-sessions.md или аналог) — упомянуть новое поле
-  и авто-close поведение.
+- [x] `SessionResponse.membersCount: Int = 0` (default для Kotlin data class, MapStruct перезапишет).
+- [x] `SessionMapper.toDto` с `@Mapping(target = "membersCount", expression = "java(session.getMembers().size())")`.
+- [x] `SessionService.closeIfFull(session, config)` — private helper; вызван в `joinSession`, `addNpcMember`, `bulkCreateAndJoinNpcs` после инкремента `session.members` и до `sessionRepository.save`. `sessionStatus` публикуется существующим `eventPublisherService.publishSessionStatus` — уже включает новое состояние `openToConnect=false`.
+- [x] Юнит-тесты (4): join full → close; join меньше numPlayers → остаётся open (регрессия); addNpcMember full → close; bulk 1+2 = 3/3 → close.
+- [x] OpenAPI snapshot перегенерирован — `membersCount` в `SessionResponse` schema.
+- [x] Docs sync: `frontend-integration/06-data-models.md` (описание `membersCount` + auto-close), `frontend-integration/04-rest-api.md` (примечание про auto-close на join endpoint'ах).
 
 ## План
 
@@ -61,3 +53,4 @@ per-card. Приемлемо на page-size=8, не масштабируется
 
 - 2026-07-16: заведено по запросу из фронт-репо (BACKEND-FIX-session-list-member-count.md).
   Не критический баг, но заметный UX.
+- 2026-07-17: TDD RED→GREEN — 4 unit-теста в SessionServiceTest.kt (3 сценария auto-close + 1 regression на неполную сессию). Impl: `closeIfFull` (мутирует `openToConnect`), MapStruct expression на `membersCount`. Snapshot перегенерирован, copyApiSnapshotsToFrontendIntegration отработал. Docs синхронизированы. Detekt LargeClass на разросшемся `SessionServiceTest` — `@file:Suppress("LargeClass")` + follow-up T-095 на split файла. `./gradlew check` зелёный. Закрыто.

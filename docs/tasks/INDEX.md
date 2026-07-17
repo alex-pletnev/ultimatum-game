@@ -30,8 +30,8 @@
 | T-089 | TDD-skip 3 задачи подряд — уточнить триггер | pending | medium | 2026-07-16 | [T-089](T-089-tdd-skip-3-in-a-row.md) |
 | T-090 | Prod-deploy readiness — externalize configs, Dockerfile, CORS/WS для GitHub Pages фронта | pending | high | 2026-07-16 | [T-090](T-090-prod-deploy-readiness.md) |
 | T-091 | joinSession и addNpcMember — unknown teamId → IdNotFoundException (сейчас error() = 500) | pending | low | 2026-07-16 | [T-091](T-091-align-join-session-unknown-team-error.md) |
-| T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | pending | medium | 2026-07-16 | [T-093](T-093-session-members-count-and-auto-close.md) |
 | T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается (повтор паттерна) | pending | low | 2026-07-16 | [T-094](T-094-read-tool-before-write-tool.md) |
+| T-095 | SessionServiceTest — split на функциональные группы (LargeClass detekt suppress) | pending | low | 2026-07-17 | [T-095](T-095-split-session-service-test.md) |
 
 ## Отменённые задачи
 
@@ -112,6 +112,7 @@
 | T-087 | bulkCreateAndJoinNpcs не распределяет NPC по командам в TEAM_BATTLE | done | 2026-07-16 | [T-087](T-087-bulk-npcs-team-battle-broken.md) |
 | T-092 | Stop-hook «Checking for new commit» — не триггерить self-review на task-add / только-docs коммиты | done | 2026-07-16 | [T-092](T-092-refine-self-review-hook-filter.md) |
 | T-044 | Ввести систему миграций БД (Flyway) вместо Hibernate auto-DDL | done | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
+| T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | done | 2026-07-17 | [T-093](T-093-session-members-count-and-auto-close.md) |
 
 
 ## Легенда статусов

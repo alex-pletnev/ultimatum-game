@@ -545,6 +545,10 @@
             "format" : "uuid",
             "type" : "string"
           },
+          "membersCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "openToConnect" : {
             "type" : "boolean"
           },
@@ -567,7 +571,7 @@
             "uniqueItems" : true
           }
         },
-        "required" : [ "admin", "config", "createdAt", "displayName", "openToConnect", "rounds", "state", "teams" ],
+        "required" : [ "admin", "config", "createdAt", "displayName", "membersCount", "openToConnect", "rounds", "state", "teams" ],
         "title" : "SessionResponse",
         "type" : "object"
       },
