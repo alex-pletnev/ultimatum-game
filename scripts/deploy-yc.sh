@@ -70,12 +70,12 @@ else
 fi
 IMAGE="cr.yandex/$REGISTRY_ID/ultimatum-game:$IMAGE_TAG"
 
-# ---- Step 2: Docker build + push -------------------------------------------
-log "Step 2: Docker build (skip if ultimatum-game:local exists) + push"
-if ! docker image inspect ultimatum-game:local >/dev/null 2>&1; then
-  docker build -t ultimatum-game:local .
-fi
-docker tag ultimatum-game:local "$IMAGE"
+# ---- Step 2: Docker build (linux/amd64) + push -----------------------------
+log "Step 2: Docker build (linux/amd64 — YC Serverless Container runs on amd64) + push"
+# ВСЕГДА пересобираем под amd64 — image ultimatum-game:local собран под host-arch
+# (arm64 на Apple Silicon → 'exec format error' в YC при попытке запуска).
+# BuildKit не требуется — cross-build через QEMU/binfmt автоматически.
+docker build --platform=linux/amd64 -t "$IMAGE" .
 yc container registry configure-docker >/dev/null 2>&1 || true
 docker push "$IMAGE"
 
@@ -177,7 +177,7 @@ yc serverless container revision deploy \
 # Публичный доступ (без IAM auth) — чтобы фронт с GH Pages мог ходить
 yc serverless container allow-unauthenticated-invoke --name "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
-CONT_URL=$(yc serverless container get "$CONTAINER_NAME" --format json | jq -r .url)
+CONT_URL=$(yc serverless container get "$CONTAINER_NAME" --format json | jq -r .url | sed 's:/*$::')
 
 # ---- Done ------------------------------------------------------------------
 cat <<EOF
