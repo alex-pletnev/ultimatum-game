@@ -34,6 +34,8 @@
 | T-095 | SessionServiceTest — split на функциональные группы (LargeClass detekt suppress) | pending | low | 2026-07-17 | [T-095](T-095-split-session-service-test.md) |
 | T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не `./gradlew check` | pending | medium | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
 | T-098 | NoResourceFoundException возвращает 500 вместо 404 (обнаружено на /actuator/info в prod) | pending | medium | 2026-07-17 | [T-098](T-098-no-resource-found-returns-500.md) |
+| T-099 | Springwolf ERROR на старте — SessionAdminWsController::abortCurrentRound/openSession без @Payload | pending | low | 2026-07-17 | [T-099](T-099-springwolf-payload-error-on-startup.md) |
+| T-100 | Правило — перед smoke-тестом внешнего API прочитать контракт, а не полагаться на память | pending | medium | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
 
 ## Отменённые задачи
 
