@@ -71,3 +71,10 @@ VM целиком.
 - 2026-07-17: заведена. Design в `docs/superpowers/specs/2026-07-17-cicd-pipeline-design.md` одобрен пользователем. Пользователь явно разрешил SSH в прод-VM для bootstrap-шагов.
 - 2026-07-17: Task 1 — `.github/workflows/ci.yml` добавлен. Первый run на push в `main` — green за 214s (`https://github.com/alex-pletnev/ultimatum-game/actions/runs/29584836018`). Локальный `./gradlew check` перед push тоже green (кэш, 6s).
 - 2026-07-17: status → in_progress.
+- 2026-07-17: Task 2 — `scripts/vm-redeploy.sh` (109 строк). Self-review нашёл 2 micro-fix'а: `docker login --password-stdin` + guard на `docker pull` failure.
+- 2026-07-17: Task 3 — `.github/workflows/release.yml` (workflow_dispatch → build+push+SSH). Workflow виден в `gh workflow list` как `Release active`.
+- 2026-07-17: Task 4 — `docs/14-cicd.md` runbook. Cross-ref в 13-deploy + README (обновил описание 13-deploy после pivot'а T-090 на YC).
+- 2026-07-17: Task 5 — удалены мёртвые `scripts/deploy-yc.sh` + `scripts/smoke-yc.sh` (оба Serverless-only). `smoke-yc.sh` — расширение scope (одна группа мёртвого кода). Попутно завёл T-102 (refactor 13-deploy под VM).
+- 2026-07-17: Task 6a — SA-key `ajeur5mn48kq9hjjfag9` для utg-sa, role container-registry.images.pusher, GH secrets `YC_SA_JSON_CREDENTIALS` + `VM_SSH_PRIVATE_KEY` заведены.
+- 2026-07-17: Task 6b — VM setup. host key VM изменился (пересоздание T-090), refresh `known_hosts`. Deploy-pubkey в `~ubuntu/.ssh/authorized_keys`, `scripts/vm-redeploy.sh` → `/opt/app/redeploy.sh` (root:root, +x). Sanity `sudo bash /opt/app/redeploy.sh v1` — HEALTHY на 12-й попытке (24s), exit 0.
+- 2026-07-17: Cleanup — `/tmp/sa-key.json`, `/tmp/utg-deploy*` удалены.
