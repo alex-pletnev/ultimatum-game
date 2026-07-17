@@ -1,7 +1,7 @@
 ---
 id: T-101
 title: CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM)
-status: in_progress
+status: done
 priority: high
 created: 2026-07-17
 updated: 2026-07-17
@@ -10,7 +10,10 @@ related_code:
   - .github/workflows/release.yml
   - scripts/vm-redeploy.sh
   - scripts/deploy-yc.sh
+  - scripts/smoke-yc.sh
   - docs/14-cicd.md
+  - docs/README.md
+  - docs/13-deploy.md
 related_docs:
   - docs/superpowers/specs/2026-07-17-cicd-pipeline-design.md
   - docs/tasks/T-090-prod-deploy-readiness.md
@@ -34,15 +37,15 @@ VM целиком.
 
 ## Acceptance criteria
 
-- [ ] `.github/workflows/ci.yml` — `./gradlew check` зелёный на PR и push в `main`.
-- [ ] `.github/workflows/release.yml` — `workflow_dispatch` c input'ом `sha`; job'ы `build-and-push` (docker build+push в `cr.yandex/crp7b8ldv830cfseac0e/ultimatum-game`) → `deploy` (SSH + `redeploy.sh`).
-- [ ] `scripts/vm-redeploy.sh` в репо + скопирован на VM в `/opt/app/redeploy.sh`. Атомарный swap, health-check `/actuator/health` 60s, auto-rollback на PREV_SHA при провале.
-- [ ] GH secrets: `YC_SA_JSON_CREDENTIALS` (SA-key для CR push+pull) и `VM_SSH_PRIVATE_KEY` (ключ для deploy) — заведены через `gh secret set`.
-- [ ] SA `utg-sa` имеет роль `container-registry.images.pusher`.
-- [ ] `scripts/deploy-yc.sh` удалён (заодно очищается unstaged `M`-правка).
-- [ ] `docs/14-cicd.md` — runbook: bootstrap (что сделал агент / где секреты), как выкатить релиз, как откатиться руками, ротация ключей, диагностика.
-- [ ] `docs/README.md` + `docs/13-deploy.md` — ссылка на 14-cicd.
-- [ ] End-to-end проверено: (a) первый `workflow_dispatch` из GH UI выкатывает текущий main-HEAD, `docker inspect` на VM показывает новый SHA, `/actuator/health` UP; (b) искусственный failing deploy → auto-rollback на PREV_SHA, VM жива.
+- [x] `.github/workflows/ci.yml` — `./gradlew check` зелёный на PR и push в `main`.
+- [x] `.github/workflows/release.yml` — `workflow_dispatch` c input'ом `sha`; job'ы `build-and-push` (docker build+push в `cr.yandex/crp7b8ldv830cfseac0e/ultimatum-game`) → `deploy` (SSH + `redeploy.sh`).
+- [x] `scripts/vm-redeploy.sh` в репо + скопирован на VM в `/opt/app/redeploy.sh`. Атомарный swap, health-check `/actuator/health` 60s, auto-rollback на PREV_SHA при провале.
+- [x] GH secrets: `YC_SA_JSON_CREDENTIALS` (SA-key для CR push+pull) и `VM_SSH_PRIVATE_KEY` (ключ для deploy) — заведены через `gh secret set`.
+- [x] SA `utg-sa` имеет роль `container-registry.images.pusher`.
+- [x] `scripts/deploy-yc.sh` удалён (заодно очищается unstaged `M`-правка).
+- [x] `docs/14-cicd.md` — runbook: bootstrap (что сделал агент / где секреты), как выкатить релиз, как откатиться руками, ротация ключей, диагностика.
+- [x] `docs/README.md` + `docs/13-deploy.md` — ссылка на 14-cicd.
+- [x] End-to-end проверено: (a) первый `workflow_dispatch` из GH UI выкатывает текущий main-HEAD, `docker inspect` на VM показывает новый SHA, `/actuator/health` UP; (b) искусственный failing deploy → auto-rollback на PREV_SHA, VM жива.
 
 ## План
 
@@ -78,3 +81,7 @@ VM целиком.
 - 2026-07-17: Task 6a — SA-key `ajeur5mn48kq9hjjfag9` для utg-sa, role container-registry.images.pusher, GH secrets `YC_SA_JSON_CREDENTIALS` + `VM_SSH_PRIVATE_KEY` заведены.
 - 2026-07-17: Task 6b — VM setup. host key VM изменился (пересоздание T-090), refresh `known_hosts`. Deploy-pubkey в `~ubuntu/.ssh/authorized_keys`, `scripts/vm-redeploy.sh` → `/opt/app/redeploy.sh` (root:root, +x). Sanity `sudo bash /opt/app/redeploy.sh v1` — HEALTHY на 12-й попытке (24s), exit 0.
 - 2026-07-17: Cleanup — `/tmp/sa-key.json`, `/tmp/utg-deploy*` удалены.
+- 2026-07-17: Task 7 — end-to-end release-dispatch. `gh workflow run release.yml -f sha=594b45753…` — GREEN за 222s (build+push 178s, deploy 38s). VM переехала на `594b457`, health UP, quick-register (с корректным `{"nickname":"..."}`) вернул JWT.
+- 2026-07-17: Task 8 — rollback test. `server.port=99999` в test-ветке `test/rollback-T-101`, dispatch → build прошёл, deploy упал (Spring `port out of range: 99999`) → health-check timeout за 60s → auto-rollback на `594b457` → rollback healthy. VM осталась на working SHA, health UP. Test-ветка удалена локально + remote.
+- 2026-07-17: Task 9 — final `./gradlew check` green (кэш, 940ms). Verification gate: workflow'ы active, оба secret'а на месте, prod health UP.
+- 2026-07-17: task done. Наблюдения (не заводить как таски сейчас, но зафиксировать): (a) `script_stop: true` в release.yml — invalid input для `appleboy/ssh-action@v1` (warning в UI, скрипт всё равно работает); (b) Node.js 20 deprecation warning в Actions runner'е для `actions/checkout@v4`, `docker/*-action@v3/v6` — GH делает автоматический fallback на Node.js 24.

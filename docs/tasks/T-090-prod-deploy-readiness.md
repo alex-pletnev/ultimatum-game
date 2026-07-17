@@ -244,3 +244,4 @@ jobs:
   End-to-end smoke пройден: health 200 UP, quick-register → JWT (201),
   session list с JWT → 200. Startup 27.6s. Phase 4 закрыта.
   Осталось Phase 5 — frontend cutover на GH Pages (интегратору фронта).
+- 2026-07-17: T-101 закрыт — CI/CD автоматизирован. Redeploy на живую VM теперь через `gh workflow run release.yml -f sha=<sha>` (build+push в cr.yandex → SSH → `/opt/app/redeploy.sh` с health-check + auto-rollback). Скрипт `deploy-yc-vm.sh` остаётся как fallback для пересоздания VM с нуля. Runbook: `docs/14-cicd.md`.

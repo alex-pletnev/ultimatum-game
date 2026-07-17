@@ -36,7 +36,6 @@
 | T-098 | NoResourceFoundException возвращает 500 вместо 404 (обнаружено на /actuator/info в prod) | pending | medium | 2026-07-17 | [T-098](T-098-no-resource-found-returns-500.md) |
 | T-099 | Springwolf ERROR на старте — SessionAdminWsController::abortCurrentRound/openSession без @Payload | pending | low | 2026-07-17 | [T-099](T-099-springwolf-payload-error-on-startup.md) |
 | T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | pending | high | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
-| T-101 | CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM) | in_progress | high | 2026-07-17 | [T-101](T-101-cicd-pipeline.md) |
 | T-102 | Refactor docs/13-deploy.md — разделы B.1-B.7 под VM-архитектуру (исторический Serverless-текст) | pending | low | 2026-07-17 | [T-102](T-102-refactor-13-deploy-under-vm.md) |
 
 ## Отменённые задачи
@@ -120,6 +119,7 @@
 | T-092 | Stop-hook «Checking for new commit» — не триггерить self-review на task-add / только-docs коммиты | done | 2026-07-16 | [T-092](T-092-refine-self-review-hook-filter.md) |
 | T-044 | Ввести систему миграций БД (Flyway) вместо Hibernate auto-DDL | done | 2026-07-16 | [T-044](T-044-adopt-db-migrations.md) |
 | T-093 | SessionResponse.membersCount + авто-закрытие полных сессий (openToConnect=false) | done | 2026-07-17 | [T-093](T-093-session-members-count-and-auto-close.md) |
+| T-101 | CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM) | done | 2026-07-17 | [T-101](T-101-cicd-pipeline.md) |
 
 
 ## Легенда статусов
