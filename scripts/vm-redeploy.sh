@@ -51,8 +51,11 @@ DB_PWD=$(echo "$PAYLOAD" | jq -r '.entries[]|select(.key=="DB_PASSWORD")|.textVa
 [[ -n "$JWT_KEY" && -n "$DB_PWD" ]] || { echo "ERROR: secrets missing from Lockbox"; exit 1; }
 
 # ---- Docker login + pull ----
-docker login -u iam -p "$TOKEN" cr.yandex
-docker pull "$IMAGE:$NEW_SHA"
+# Password через stdin, чтобы TOKEN не светился в ps.
+echo "$TOKEN" | docker login -u iam --password-stdin cr.yandex
+# Явный guard: без set -e провал pull'а не остановит скрипт, а мы не хотим
+# делать docker rm -f под мёртвый tag.
+docker pull "$IMAGE:$NEW_SHA" || { echo "ERROR: docker pull $IMAGE:$NEW_SHA failed"; exit 1; }
 
 # ---- Функция запуска контейнера ----
 run_container() {
