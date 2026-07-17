@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Git SHA to deploy (default = HEAD of main)'
+        required: false
+        default: ''
+
+concurrency:
+  group: release-prod
+  cancel-in-progress: false
+
+env:
+  REG_ID: crp7b8ldv830cfseac0e
+  IMAGE_NAME: cr.yandex/crp7b8ldv830cfseac0e/ultimatum-game
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      short_sha: ${{ steps.sha.outputs.short }}
+      full_sha: ${{ steps.sha.outputs.full }}
+    steps:
+      - name: Resolve target SHA
+        id: sha
+        run: |
+          if [[ -n "${{ inputs.sha }}" ]]; then
+            FULL="${{ inputs.sha }}"
+          else
+            FULL="${{ github.sha }}"
+          fi
+          echo "full=$FULL" >> "$GITHUB_OUTPUT"
+          echo "short=${FULL:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout @${{ steps.sha.outputs.full }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.sha.outputs.full }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Yandex Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+
+      - name: Build & push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: SSH → VM → /opt/app/redeploy.sh
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 158.160.48.113
+          username: ubuntu
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          command_timeout: 3m
+          script_stop: true
+          script: |
+            sudo bash /opt/app/redeploy.sh ${{ needs.build-and-push.outputs.short_sha }}
