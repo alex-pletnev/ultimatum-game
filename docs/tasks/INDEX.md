@@ -36,6 +36,7 @@
 | T-098 | NoResourceFoundException возвращает 500 вместо 404 (обнаружено на /actuator/info в prod) | pending | medium | 2026-07-17 | [T-098](T-098-no-resource-found-returns-500.md) |
 | T-099 | Springwolf ERROR на старте — SessionAdminWsController::abortCurrentRound/openSession без @Payload | pending | low | 2026-07-17 | [T-099](T-099-springwolf-payload-error-on-startup.md) |
 | T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | pending | high | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
+| T-101 | CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM) | pending | high | 2026-07-17 | [T-101](T-101-cicd-pipeline.md) |
 
 ## Отменённые задачи
 
