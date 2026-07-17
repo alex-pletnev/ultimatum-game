@@ -1,7 +1,7 @@
 ---
 id: T-101
 title: CI/CD pipeline — GitHub Actions (check на PR/push + manual release на прод-VM)
-status: pending
+status: in_progress
 priority: high
 created: 2026-07-17
 updated: 2026-07-17
@@ -69,3 +69,5 @@ VM целиком.
 ## Лог
 
 - 2026-07-17: заведена. Design в `docs/superpowers/specs/2026-07-17-cicd-pipeline-design.md` одобрен пользователем. Пользователь явно разрешил SSH в прод-VM для bootstrap-шагов.
+- 2026-07-17: Task 1 — `.github/workflows/ci.yml` добавлен. Первый run на push в `main` — green за 214s (`https://github.com/alex-pletnev/ultimatum-game/actions/runs/29584836018`). Локальный `./gradlew check` перед push тоже green (кэш, 6s).
+- 2026-07-17: status → in_progress.
