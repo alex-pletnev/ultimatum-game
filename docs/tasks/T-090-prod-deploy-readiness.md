@@ -23,8 +23,15 @@ tags: [infra, deploy, security]
 ## Контекст
 
 Фронт хостится на GitHub Pages (HTTPS, домен `https://<user>.github.io`), локально
-поднимать бэк каждый раз возможности нет — нужен постоянно доступный remote deploy
-на бесплатном PaaS (кандидаты: Fly.io + Neon PG, Render, Railway).
+поднимать бэк каждый раз возможности нет — нужен постоянно доступный remote deploy.
+
+**Выбор хостера** (обновлено 2026-07-17): Yandex.Cloud (Serverless Containers +
+Managed Postgres + Container Registry + Lockbox). Причина смены с изначального
+кандидата Fly.io: сервис будет использоваться на территории РФ, где доступ к
+иностранным облачным сегментам сейчас нестабилен (VPN-only, риск полной
+недоступности). YC — юрисдикция и ДЦ в РФ, доступ прямой, юрлицо в РФ (нужно
+для 152-ФЗ при появлении персданных). Trade-off: нет full free-tier, но
+приветственный грант ~5000₽ на 60 дней покрывает MVP.
 
 Текущее состояние бэка не деплоится «как есть»: нет prod datasource, CORS/WS зашиты
 на localhost, порт фиксированный, Dockerfile отсутствует, схема БД накатывается
@@ -55,9 +62,9 @@ tags: [infra, deploy, security]
 - [x] T-044 закрыт (Flyway baseline от текущей schema, `ddl-auto=validate`).
 
 ### Хостинг + smoke-test
-- [ ] Выбран и обоснован хостинг (по умолчанию Fly.io + Neon PG). Задокументирован в `docs/12-deploy.md` (или аналог).
-- [ ] Задеплоено. Secrets заданы через CLI хостера (не в git).
-- [ ] Прогнан smoke-test: `/actuator/health` 200, `/auth/register` → `/auth/login` → JWT работает, STOMP `wss://` handshake проходит.
+- [x] Выбран и обоснован хостинг: Yandex.Cloud (Serverless Containers + Managed PG + Lockbox). Причина смены с Fly.io — доступность в РФ. Runbook `docs/13-deploy.md`.
+- [ ] Задеплоено. Secrets в Lockbox, не в git.
+- [ ] Прогнан smoke-test: `/actuator/health` 200, `/auth/quick-register` → JWT, STOMP `wss://` handshake проходит.
 - [ ] Frontend (github.io) сконфигурирован на прод URL, живой end-to-end сценарий: create session → join → offer/decision через WS.
 
 ### Docs
@@ -74,7 +81,7 @@ tags: [infra, deploy, security]
 1. **Config externalization** (safe, локально проверяется): datasource из env, CORS из env, port из env, WS origins из env. Локально — прогнать с `SPRING_PROFILES_ACTIVE=prod DB_URL=... APP_CORS_ORIGINS=... ./gradlew bootRun`.
 2. **Dockerfile** (safe, локально проверяется): multi-stage build, локальный `docker run`.
 3. **T-044 миграции** (изолированная задача, отдельным брейнштормом): Flyway baseline, `validate`. Без этого шаг 4 не начинать.
-4. **Хостинг**: завести аккаунт Fly.io + Neon (или альтернатива), поднять PG, задеплоить app, задать secrets. Здесь high-stakes зона — pre-flight обязателен.
+4. **Хостинг** (Yandex.Cloud): аккаунт + грант + `yc init` — пользователь; `yc container registry create` / `yc managed-postgresql cluster create` / `yc lockbox secret create` / `yc serverless container revision deploy` — агент. Здесь high-stakes зона — pre-flight обязателен.
 5. **Frontend cutover**: hardcode прод URL, redeploy Pages, end-to-end smoke. См. подробную спеку ниже.
 6. **Docs**: `12-deploy.md` с runbook'ом (кто и как ротирует secrets, как логи смотреть).
 
@@ -90,8 +97,8 @@ tags: [infra, deploy, security]
 
 | Переменная | Prod-значение | Dev-значение |
 |------------|---------------|--------------|
-| `VITE_API_BASE_URL` (или `REACT_APP_*`) | `https://ultimatum-game-api.fly.dev/api/v1` | `http://localhost:8080/api/v1` |
-| `VITE_WS_URL` (или `REACT_APP_*`) | `wss://ultimatum-game-api.fly.dev/api/v1/ws` | `ws://localhost:8080/api/v1/ws` |
+| `VITE_API_BASE_URL` (или `REACT_APP_*`) | `https://<container-id>.containers.yandexcloud.net/api/v1` | `http://localhost:8080/api/v1` |
+| `VITE_WS_URL` (или `REACT_APP_*`) | `wss://<container-id>.containers.yandexcloud.net/api/v1/ws` | `ws://localhost:8080/api/v1/ws` |
 
 - Prod-values инжектятся в GitHub Actions build-step через `secrets`/`vars` (не в
   git). Пример: `env: { VITE_API_BASE_URL: ${{ vars.API_BASE_URL }} }`.
@@ -112,9 +119,9 @@ tags: [infra, deploy, security]
 
 Проверка что бэк принимает GitHub Pages origin:
 
-- В Fly.io secrets задано `APP_CORS_ORIGINS=https://<gh-user>.github.io` (без
-  path'а — origin это scheme+host+port). Comma-separated если origin'ов несколько
-  (напр. staging + prod).
+- В env-vars Serverless Container'а задано `APP_CORS_ORIGINS=https://<gh-user>.github.io`
+  (без path'а — origin это scheme+host+port). Comma-separated если origin'ов
+  несколько (напр. staging + prod).
 - WS: `setAllowedOriginPatterns` с тем же env-списком — StockJS/native WS
   handshake пойдёт с `Origin: https://<gh-user>.github.io`, бэк должен пропускать.
 - Preflight (OPTIONS): `SecurityConfiguration.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()` — уже есть.
@@ -187,7 +194,7 @@ jobs:
 - [ ] `main`-push фронт-репо публикует `dist/` на GH Pages через Actions.
 - [ ] Prod-URL забиты в repo `vars`, а не в git.
 - [ ] Все 7 шагов smoke-сценария зелёные.
-- [ ] Backend origin (`APP_CORS_ORIGINS`) обновлён на Fly.io: `flyctl secrets set APP_CORS_ORIGINS=https://<gh-user>.github.io`.
+- [ ] Backend origin (`APP_CORS_ORIGINS`) обновлён на YC Serverless Container: `yc serverless container revision deploy ... --environment "APP_CORS_ORIGINS=https://<gh-user>.github.io"`.
 - [ ] Ссылка на прод-фронт добавлена в `README.md` этого репо (секция «Live demo»).
 
 ## Лог
@@ -210,3 +217,9 @@ jobs:
   2. `docker build` (2m 56s, image 434MB) + `docker run` c prod-env → READY за 12.4s из контейнера. `/auth/quick-register` → 201 с JWT, `/session` без JWT → 403 (Security работает). Springwolf-warning про `SessionAdminWsController::openSession/abortCurrentRound` без `@Payload` — не блокирует старт, но грязнит логи (мельком).
   Dockerfile упрощён: убран BuildKit `--mount=type=cache` (для совместимости с обычным Docker builder без buildx), убран warmup-слой с `|| true` — это заодно закрывает T-097. Base для build-stage сменён с `gradle:8.14.3-jdk21` на `eclipse-temurin:21-jdk-alpine` (Gradle-версия всё равно фиксирована wrapper'ом).
   Follow-up'ы: T-098 (NoResourceFoundException → 404, medium), T-097 закрывается новым Dockerfile'ом.
+- 2026-07-17: Смена хостера с Fly.io + Neon на Yandex.Cloud (Serverless Containers +
+  Managed PG + Container Registry + Lockbox). Причина: сервис будет доступен на
+  территории РФ, где доступ к иностранным облакам нестабилен. YC — юрисдикция и
+  ДЦ в РФ. Trade-off: нет full free-tier, но приветственный грант ~5000₽ на 60
+  дней покрывает MVP. `docs/13-deploy.md` полностью переписан под YC. Спека
+  Phase 5 обновлена (`.containers.yandexcloud.net` вместо `.fly.dev`).

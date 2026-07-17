@@ -1,19 +1,21 @@
-# 13. Deploy — prod runbook
+# 13. Deploy — prod runbook (Yandex.Cloud)
 
-Как задеплоить `ultimatum-game` бэк с нуля на бесплатный PaaS так, чтобы фронт с
-GitHub Pages мог к нему ходить. Задача-контекст — T-090.
+Как задеплоить `ultimatum-game` бэк в Yandex.Cloud так, чтобы фронт с GitHub
+Pages мог к нему ходить. Задача-контекст — T-090.
 
-Кандидат хостинга по умолчанию — **Fly.io + Neon Postgres**. Причины: обе платформы
-имеют вменяемый free-tier, поддерживают Docker deployment, регион можно выбрать
-близко к пользователю. Альтернативы (Render, Railway, Koyeb) — те же шаги, отличия
-только в CLI-командах и точных именах env-vars.
+**Почему Yandex.Cloud**: доступность из РФ без VPN, юрисдикция и юрлицо в РФ
+(готово к 152-ФЗ если появятся персданные), managed Postgres, Serverless
+Containers с pay-per-request. Free-tier'а нет, но при регистрации выдают
+приветственный грант (~5000₽ на 60 дней) — на MVP этого хватает.
+
+Альтернативы для доступности в РФ (не покрыты этим runbook'ом): **Selectel**,
+**Timeweb Cloud** (обычная VM + PG руками — дешевле, ~250-500₽/мес).
 
 ## 13.1 Что нужно на входе
 
-- Docker установлен локально (для проверки образа перед push'ем; сам PaaS собирает
-  из Dockerfile'а).
-- Аккаунт Fly.io (`flyctl auth signup`).
-- Аккаунт Neon (или другой managed Postgres 15+).
+- Docker (для локального build'а и push'а в registry).
+- Аккаунт в Yandex.Cloud + активированный приветственный грант.
+- `yc` CLI (`curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash`).
 - Домен фронта (`https://<gh-user>.github.io` или собственный).
 
 ## 13.2 Env-vars контракт
@@ -22,149 +24,234 @@ GitHub Pages мог к нему ходить. Задача-контекст — 
 
 | Var | Prod-значение | Dev-default | Where set |
 |-----|---------------|-------------|-----------|
-| `SPRING_PROFILES_ACTIVE` | `prod` | (dev) | Fly.io env |
-| `JWT_SIGNING_KEY` | `openssl rand -base64 48` | — (required) | Fly.io **secret** |
-| `DB_URL` | `jdbc:postgresql://<neon-host>/<db>?sslmode=require` | localhost | Fly.io **secret** |
-| `DB_USER` | Neon user | `postgres` | Fly.io **secret** |
-| `DB_PASSWORD` | Neon password | `postgres` | Fly.io **secret** |
-| `APP_CORS_ORIGINS` | `https://<gh-user>.github.io` | `http://localhost:[*]` | Fly.io env |
-| `PORT` | `8080` (Fly.io выставит сам) | 8080 | Fly.io platform |
+| `SPRING_PROFILES_ACTIVE` | `prod` | (dev) | Container env |
+| `JWT_SIGNING_KEY` | `openssl rand -base64 48` | — (required) | Lockbox secret |
+| `DB_URL` | `jdbc:postgresql://<pg-host>:6432/<db>?sslmode=verify-full&sslrootcert=/etc/ssl/certs/YandexCA.crt` | localhost | Container env |
+| `DB_USER` | user из Managed PG | `postgres` | Container env |
+| `DB_PASSWORD` | password из Managed PG | `postgres` | Lockbox secret |
+| `APP_CORS_ORIGINS` | `https://<gh-user>.github.io` | `http://localhost:[*]` | Container env |
+| `PORT` | `8080` (YC выставит через `$PORT`) | 8080 | YC platform |
 
-CORS/WS читают один и тот же список — comma-separated, если origin'ов несколько.
+CORS/WS читают один и тот же список — comma-separated для нескольких origin'ов.
 
-## 13.3 Локальная проверка Docker-образа
+## 13.3 Часть A — что делает владелец аккаунта (ручные шаги в UI/CLI)
 
-Перед первым deploy'ем — собрать и погонять контейнер локально:
+Эти шаги требуют паспортные данные / телефон РФ / согласие на договор.
 
+### A.1 Регистрация + грант
+1. `console.cloud.yandex.ru` → войти через Яндекс.ID.
+2. Создать **платёжный аккаунт** — паспортные данные, привязка карты (для активации гранта; списаний в пределах гранта не будет).
+3. Активировать приветственный грант (обычно предлагается автоматически).
+4. Проверить: платёжный аккаунт в статусе **ACTIVE**, в разделе «Гранты» видна активная скидка.
+
+### A.2 Облако и папка
+1. Cloud создаётся автоматически при регистрации (например `default`).
+2. Внутри Cloud — создать folder: `ultimatum-game` (в UI: «Сервисы» → «Resource Manager» → «Создать каталог»).
+3. Записать `cloud-id` и `folder-id` (видны в URL и в свойствах folder'а).
+
+### A.3 CLI
 ```bash
-# 1. Собрать
-docker build -t ultimatum-game:local .
-
-# 2. Проверить, что стартует с prod-профилем и внешним datasource.
-#    Postgres поднят из compose.yaml (localhost:5432).
-docker run --rm -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
-  -e JWT_SIGNING_KEY="$(openssl rand -base64 48)" \
-  -e DB_URL="jdbc:postgresql://host.docker.internal:5432/postgres" \
-  -e DB_USER=postgres \
-  -e DB_PASSWORD=postgres \
-  -e APP_CORS_ORIGINS="http://localhost:3000" \
-  ultimatum-game:local
-
-# 3. В другом терминале:
-curl -s http://localhost:8080/api/v1/actuator/health
-# → {"status":"UP"}
+curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+# перезапустить shell либо `source ~/.zshrc`
+yc init
+# на этапе setup — вставить OAuth-token из https://oauth.yandex.ru/...
+# выбрать cloud-id и folder-id из шагов выше
+# default zone: ru-central1-a
 ```
 
-Если старт не идёт — смотреть логи контейнера: скорее всего Flyway не смог
-подключиться к БД (проверить `DB_URL`) или `JWT_SIGNING_KEY` короче 32 байт.
-
-## 13.4 Deploy на Fly.io
-
-### Setup DB (Neon)
-
-1. `console.neon.tech` → создать проект → регион, максимально близкий к Fly.io региону.
-2. Скопировать connection string (postgres-format): `postgresql://user:pwd@host/db?sslmode=require`.
-3. Преобразовать в JDBC-формат: `jdbc:postgresql://host/db?sslmode=require&user=user&password=pwd`
-   или задать user/pwd отдельно (как ниже).
-
-### Setup app (Fly.io)
-
+Проверка:
 ```bash
-# Login
-flyctl auth login
-
-# Init (единожды, в корне репо)
-flyctl launch --no-deploy --copy-config --name ultimatum-game --region <region>
-# → создаётся fly.toml. Не деплоить пока — сначала secrets.
-
-# Secrets (не в git!)
-flyctl secrets set \
-  JWT_SIGNING_KEY="$(openssl rand -base64 48)" \
-  DB_URL="jdbc:postgresql://<neon-host>/<db>?sslmode=require" \
-  DB_USER="<neon-user>" \
-  DB_PASSWORD="<neon-pwd>"
-
-# Env (публичные)
-flyctl secrets set \
-  SPRING_PROFILES_ACTIVE=prod \
-  APP_CORS_ORIGINS="https://<gh-user>.github.io"
-# (для Fly.io разница между "secret" и "env" минимальна — оба скрыты от git)
-
-# Deploy
-flyctl deploy
+yc config list
+# → token: ..., cloud-id: b1g..., folder-id: b1g...
 ```
 
-### Проверка
+### A.4 Отдать агенту
+
+После A.1–A.3 — сообщить:
+- `folder-id`;
+- default zone (`ru-central1-a` рекомендую);
+- готовность продолжить (агент сделает A.5 — E из своего терминала).
+
+## 13.4 Часть B — что делает агент (yc CLI)
+
+Ниже — команды, которые агент запустит после ввода `folder-id` в его сессию.
+Ручные шаги пользователя не нужны, но все они **логируются** в `## Лог` T-090
+для аудита.
+
+### B.1 Container Registry
+```bash
+yc container registry create --name ultimatum-game
+# → registry-id: crp...
+export CR_ID=crp...
+# authenticate docker с yc
+yc container registry configure-docker
+```
+
+### B.2 Push образа
+```bash
+docker build -t cr.yandex/$CR_ID/ultimatum-game:v1 .
+docker push cr.yandex/$CR_ID/ultimatum-game:v1
+```
+
+### B.3 Managed PostgreSQL
+```bash
+# Минимальная конфигурация: 1 host, s3-c2-m8 (2 vCPU, 8GB RAM), 20GB SSD.
+# На грантах ~1500-2000₽/мес.
+yc managed-postgresql cluster create \
+  --name ultimatum-pg \
+  --environment production \
+  --network-name default \
+  --host zone-id=ru-central1-a,subnet-id=$(yc vpc subnet get default-ru-central1-a --format json | jq -r .id) \
+  --resource-preset s3-c2-m8 \
+  --disk-size 20 \
+  --disk-type network-ssd \
+  --postgresql-version 15 \
+  --user name=utg,password=$(openssl rand -base64 24) \
+  --database name=ultimatum,owner=utg \
+  --deletion-protection
+
+# Получить connection endpoint
+yc managed-postgresql cluster get ultimatum-pg --format json | jq -r '.host'
+# → <cluster-id>.mdb.yandexcloud.net (порт 6432 для connection pooler pgbouncer)
+```
+
+### B.4 Lockbox secrets
+```bash
+yc lockbox secret create --name utg-secrets \
+  --payload "[{'key':'JWT_SIGNING_KEY','text_value':'$(openssl rand -base64 48)'},{'key':'DB_PASSWORD','text_value':'<pg-password-from-step-B.3>'}]"
+
+# Service account для Container'а
+yc iam service-account create --name utg-sa
+export SA_ID=$(yc iam service-account get utg-sa --format json | jq -r .id)
+
+# Права: pull из registry, чтение lockbox
+yc resource-manager folder add-access-binding <folder-id> \
+  --role container-registry.images.puller --subject serviceAccount:$SA_ID
+yc resource-manager folder add-access-binding <folder-id> \
+  --role lockbox.payloadViewer --subject serviceAccount:$SA_ID
+```
+
+### B.5 Serverless Container
+```bash
+yc serverless container create --name ultimatum-game
+export CONT_ID=$(yc serverless container get ultimatum-game --format json | jq -r .id)
+
+# Скачать сертификат CA для PostgreSQL (нужен для sslmode=verify-full)
+# Обычно кладём в Dockerfile при build'е, но можно и в runtime через init-script.
+# См. Dockerfile — сертификат уже встроен в eclipse-temurin (default CA-bundle).
+# Для Yandex PG — нужен их CA:
+#   https://storage.yandexcloud.net/cloud-certs/CA.pem
+# В runbook рассматриваем два варианта:
+#   (a) `sslmode=require` — без verify-full, проще; CA не нужен. РЕКОМЕНДУЕТСЯ для MVP.
+#   (b) добавить CA в Dockerfile:
+#         RUN wget -O /etc/ssl/certs/YandexCA.crt \
+#             https://storage.yandexcloud.net/cloud-certs/CA.pem
+#         RUN update-ca-certificates
+#       и sslmode=verify-full.
+
+yc serverless container revision deploy \
+  --container-name ultimatum-game \
+  --image cr.yandex/$CR_ID/ultimatum-game:v1 \
+  --service-account-id $SA_ID \
+  --cores 1 --core-fraction 100 --memory 512MB \
+  --concurrency 16 \
+  --execution-timeout 60s \
+  --environment SPRING_PROFILES_ACTIVE=prod \
+  --environment "DB_URL=jdbc:postgresql://<pg-host>:6432/ultimatum?sslmode=require" \
+  --environment DB_USER=utg \
+  --environment "APP_CORS_ORIGINS=https://<gh-user>.github.io" \
+  --secret name=utg-secrets,version-id=<lockbox-version>,key=JWT_SIGNING_KEY,environment-variable=JWT_SIGNING_KEY \
+  --secret name=utg-secrets,version-id=<lockbox-version>,key=DB_PASSWORD,environment-variable=DB_PASSWORD
+
+# Публичный HTTPS endpoint
+yc serverless container get ultimatum-game --format json | jq -r .url
+# → https://bba...-containers.yandexcloud.net
+```
+
+**Внимание — cold start**. Spring Boot стартует ~12-15s (см. bootRun smoke).
+Serverless Containers держат «холодный» инстанс `min_instances=0` по умолчанию —
+первый после простоя запрос ждёт full startup. Для реального прод-показа
+установить:
 
 ```bash
-flyctl status
-flyctl logs
-
-curl -s https://ultimatum-game.fly.dev/api/v1/actuator/health
-# → {"status":"UP"}
-
-# Prometheus scrape (при желании подключить Grafana Cloud)
-curl -s https://ultimatum-game.fly.dev/api/v1/actuator/prometheus | head
+yc serverless container revision deploy \
+  ... \
+  --min-instances 1  # платно, но убирает cold start (~500-800₽/мес)
 ```
 
 ## 13.5 Smoke-test (end-to-end)
 
-Проверка REST + JWT + STOMP через реальный URL:
-
 ```bash
-API=https://ultimatum-game.fly.dev/api/v1
+API=$(yc serverless container get ultimatum-game --format json | jq -r .url)/api/v1
+echo "$API"
 
 # 1. Register + login
-curl -s -X POST "$API/auth/register" -H 'Content-Type: application/json' \
-  -d '{"username":"smoke","password":"smoketest123"}'
-JWT=$(curl -s -X POST "$API/auth/login" -H 'Content-Type: application/json' \
-  -d '{"username":"smoke","password":"smoketest123"}' | jq -r .token)
-echo "$JWT"  # непустая строка
+NICK="smoke-$RANDOM"
+curl -s -X POST "$API/auth/quick-register" -H 'Content-Type: application/json' \
+  -d "{\"nickname\":\"$NICK\",\"password\":\"smoketest123\",\"role\":\"PLAYER\"}" | jq
 
-# 2. Authorized endpoint
-curl -s -H "Authorization: Bearer $JWT" "$API/session?state=ACTIVE"
-# → [] или список
+# 2. Authorized endpoint (ADMIN нужен для /session — регистрируй ADMIN или используй /statistics)
+curl -s "$API/actuator/health"
+# → {"status":"UP"}
 
-# 3. WS handshake (нужен wscat)
-wscat -c "wss://ultimatum-game.fly.dev/api/v1/ws" -H "Authorization: Bearer $JWT"
-# → Connected (press CTRL+C to quit)
+# 3. WS handshake — Serverless Containers поддерживают WebSocket с версии ноября 2023.
+#    Порт тот же, wscat нужен для проверки.
+wscat -c "wss://$(echo $API | sed 's|https://||' | sed 's|/api/v1||')/api/v1/ws"
 ```
 
-Если хоть один шаг сломался — искать причину в `flyctl logs` (JSON-логи, ищем по
-`level=ERROR`).
+Если что-то сломалось — логи через:
+```bash
+yc serverless container logs read ultimatum-game --since 5m
+```
 
 ## 13.6 Ротация secrets
 
-- `JWT_SIGNING_KEY`: `flyctl secrets set JWT_SIGNING_KEY="$(openssl rand -base64 48)"`.
-  Все выданные ранее JWT инвалидируются (подпись перестанет проверяться) — все
-  клиенты потребуют re-login. Планировать в maintenance-окно.
-- `DB_PASSWORD`: сначала обновить в Neon dashboard → `flyctl secrets set DB_PASSWORD=...`
-  → Fly перезапустит app. Downtime — секунды.
+```bash
+# Новый JWT_SIGNING_KEY — все выданные ранее токены становятся невалидными
+yc lockbox secret add-version --name utg-secrets \
+  --payload "[{'key':'JWT_SIGNING_KEY','text_value':'$(openssl rand -base64 48)'},{'key':'DB_PASSWORD','text_value':'<current-db-pwd>'}]"
+
+# Обновить ссылку на новую version в container revision
+NEW_VER=$(yc lockbox secret list-versions utg-secrets --format json | jq -r '.[0].id')
+yc serverless container revision deploy ... --secret ...version-id=$NEW_VER...
+```
 
 ## 13.7 Откат
 
 ```bash
-# Список релизов
-flyctl releases
+# История revision'ов
+yc serverless container revision list --container-name ultimatum-game
 
-# Откат на предыдущий
-flyctl releases rollback <version>
+# Активировать предыдущую
+yc serverless container revision activate --id <prev-revision-id>
 ```
 
-Если проблема в миграции Flyway — откат образа не откатит схему. Для схемы —
+Если проблема в миграции Flyway — откат revision'а не откатит схему. Для схемы —
 писать compensating migration (`V<next>__revert_of_V<broken>.sql`), а не редактировать
 уже применённые версии (см. `docs/10-configuration.md` § миграции).
 
-## 13.8 Что дальше
+## 13.8 Стоимость (ориентировочно, вне гранта)
+
+| Ресурс | Конфигурация | Стоимость (~) |
+|--------|--------------|----------------|
+| Managed PG | 1 host s3-c2-m8, 20GB SSD | 1500-2000₽/мес |
+| Serverless Container (idle) | min-instances=0 | 0₽ (только требования) |
+| Serverless Container (min=1) | 512MB, always-on | 500-800₽/мес |
+| Container Registry | до 500MB | ~50₽/мес |
+| Lockbox | 2 secrets | копейки |
+| **Итого MVP** | без cold-start | ~2000-2800₽/мес |
+
+Приветственный грант ~5000₽ покрывает 2 месяца работы MVP.
+
+## 13.9 Что дальше
 
 - **Frontend cutover**: см. `docs/tasks/T-090-prod-deploy-readiness.md` § Phase 5 —
-  спецификация для интегратора фронта (env-vars, GH Actions, JWT flow, smoke).
-- **Observability в prod**: логи Fly.io → Grafana Cloud Loki (через logfmt drain).
-  См. `docs/12-observability.md` — там же список dashboards, которые полезно
-  завести на Grafana Cloud.
-- **JWT-revocation TTL** (T-061): сейчас revocation list растёт unbounded в памяти;
-  в prod с длительным uptime стоит закрыть до раскатки на реальных пользователей.
+  спецификация для интегратора фронта.
+- **Observability в prod**: логи Serverless Containers доступны через Cloud
+  Logging. Prometheus scrape пока не подключён (Serverless Containers не имеют
+  постоянного IP для scrape'а извне — нужен push-адаптер, отдельная задача).
+- **JWT-revocation TTL** (T-061): revocation list растёт unbounded в памяти;
+  при `min-instances=1` в prod с длительным uptime стоит закрыть.
 
 ## См. также
 
