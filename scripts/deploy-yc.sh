@@ -149,7 +149,7 @@ else
   yc lockbox secret create --name "$SECRET_NAME" --payload "$PAYLOAD" >/dev/null
 fi
 SECRET_ID=$(yc lockbox secret get "$SECRET_NAME" --format json | jq -r .id)
-SECRET_VER=$(yc lockbox secret list-versions --secret-name "$SECRET_NAME" --format json | jq -r '.[0].id')
+SECRET_VER=$(yc lockbox secret list-versions --name "$SECRET_NAME" --format json | jq -r '.[0].id')
 echo "secret-id=$SECRET_ID version=$SECRET_VER"
 
 # ---- Step 7: Serverless Container ------------------------------------------
