@@ -71,13 +71,18 @@ fi
 IMAGE="cr.yandex/$REGISTRY_ID/ultimatum-game:$IMAGE_TAG"
 
 # ---- Step 2: Docker build (linux/amd64) + push -----------------------------
-log "Step 2: Docker build (linux/amd64 — YC Serverless Container runs on amd64) + push"
-# ВСЕГДА пересобираем под amd64 — image ultimatum-game:local собран под host-arch
-# (arm64 на Apple Silicon → 'exec format error' в YC при попытке запуска).
-# BuildKit не требуется — cross-build через QEMU/binfmt автоматически.
-docker build --platform=linux/amd64 -t "$IMAGE" .
+log "Step 2: Docker buildx build --platform=linux/amd64 --push (YC Serverless Container runs on amd64)"
+# Legacy docker builder не поддерживает cross-arch build (падает на COPY: 'image
+# does not provide the specified platform'). Требуется buildx-plugin:
+#   brew install docker-buildx
+#   + "cliPluginsExtraDirs": ["/opt/homebrew/lib/docker/cli-plugins"] в ~/.docker/config.json
+# --push собирает и пушит одной командой (не нужен docker tag/push отдельно).
+command -v docker-buildx >/dev/null 2>&1 || docker buildx version >/dev/null 2>&1 || {
+  echo "docker buildx not found. Install: brew install docker-buildx, then add cliPluginsExtraDirs to ~/.docker/config.json"
+  exit 1
+}
 yc container registry configure-docker >/dev/null 2>&1 || true
-docker push "$IMAGE"
+docker buildx build --platform=linux/amd64 --push -t "$IMAGE" .
 
 # ---- Step 3: VPC network + subnet ------------------------------------------
 log "Step 3: VPC network + subnet"
