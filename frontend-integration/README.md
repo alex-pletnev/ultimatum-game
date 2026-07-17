@@ -16,6 +16,7 @@
 | 08 | [state-machines.md](08-state-machines.md) | Жизненный цикл Session и Round |
 | 09 | [integration-flows.md](09-integration-flows.md) | Сквозные сценарии: от создания сессии до финиша |
 | 10 | [npc.md](10-npc.md) | NPC — боты со стратегиями, autoAdvanceRounds, all-NPC-симуляция |
+| 11 | [prod-deployment.md](11-prod-deployment.md) | Prod URLs, env-vars, CORS, HTTPS, startup latency, GH Pages deploy |
 
 ## Спецификации
 
