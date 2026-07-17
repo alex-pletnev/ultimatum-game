@@ -49,7 +49,7 @@ tags: [infra, deploy, security]
 ### Dockerfile
 - [x] Multi-stage: `gradle:8.14.3-jdk21` → build → `eclipse-temurin:21-jre-alpine` runtime.
 - [x] `ENTRYPOINT` c `-XX:MaxRAMPercentage=75.0` + `UseZGC` + `ExitOnOutOfMemoryError` для free-tier 512MB.
-- [ ] Локально проверено: `docker build -t ultimatum-game . && docker run ...` — старт до READY. (следующим шагом)
+- [x] Локально проверено: `docker build` + `docker run` с prod-env — старт до READY за 12.4s, health 200, `/auth/quick-register` вернул JWT, Flyway миграции применились.
 
 ### Миграции (blocker)
 - [x] T-044 закрыт (Flyway baseline от текущей schema, `ddl-auto=validate`).
@@ -205,3 +205,8 @@ jobs:
     - `docs/13-deploy.md` (12- занят observability): Fly.io + Neon runbook, env-vars, secrets, smoke, откат.
     - `docs/10-configuration.md` + `11-known-gaps.md` + `README.md` синхронизированы.
   `./gradlew check` — зелёный (44s). Осталось: локальный docker-run smoke; Phase 4 (хостинг Fly.io + Neon) — требует твоего участия; Phase 5 (frontend cutover) — уже заспецена.
+- 2026-07-17: Smoke-тесты пройдены.
+  1. `SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun` — READY за 15.5s, JSON-логи (prod-profile активен), `/actuator/health` → 200, `/actuator/prometheus` → 200, `/actuator/info` → **500** (побочный баг: NoResourceFoundException не обрабатывается → T-098).
+  2. `docker build` (2m 56s, image 434MB) + `docker run` c prod-env → READY за 12.4s из контейнера. `/auth/quick-register` → 201 с JWT, `/session` без JWT → 403 (Security работает). Springwolf-warning про `SessionAdminWsController::openSession/abortCurrentRound` без `@Payload` — не блокирует старт, но грязнит логи (мельком).
+  Dockerfile упрощён: убран BuildKit `--mount=type=cache` (для совместимости с обычным Docker builder без buildx), убран warmup-слой с `|| true` — это заодно закрывает T-097. Base для build-stage сменён с `gradle:8.14.3-jdk21` на `eclipse-temurin:21-jdk-alpine` (Gradle-версия всё равно фиксирована wrapper'ом).
+  Follow-up'ы: T-098 (NoResourceFoundException → 404, medium), T-097 закрывается новым Dockerfile'ом.

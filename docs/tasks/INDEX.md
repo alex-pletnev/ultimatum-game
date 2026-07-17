@@ -33,13 +33,14 @@
 | T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается (повтор паттерна) | pending | low | 2026-07-16 | [T-094](T-094-read-tool-before-write-tool.md) |
 | T-095 | SessionServiceTest — split на функциональные группы (LargeClass detekt suppress) | pending | low | 2026-07-17 | [T-095](T-095-split-session-service-test.md) |
 | T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не `./gradlew check` | pending | medium | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
-| T-097 | Dockerfile warmup-слой `./gradlew dependencies ... \|\| true` глотает ошибки | pending | low | 2026-07-17 | [T-097](T-097-dockerfile-warmup-layer-swallows-errors.md) |
+| T-098 | NoResourceFoundException возвращает 500 вместо 404 (обнаружено на /actuator/info в prod) | pending | medium | 2026-07-17 | [T-098](T-098-no-resource-found-returns-500.md) |
 
 ## Отменённые задачи
 
 | ID | Название | Отменено | Файл |
 |----|----------|----------|------|
 | T-068 | IndexSqlInitializer — ScriptUtils.executeSqlScript вместо split(';') | 2026-07-16 | [T-068](T-068-scriptutils-instead-of-manual-sql-split.md) |
+| T-097 | Dockerfile warmup-слой `./gradlew dependencies ... \|\| true` глотает ошибки | 2026-07-17 | [T-097](T-097-dockerfile-warmup-layer-swallows-errors.md) |
 
 ## Закрытые задачи
 

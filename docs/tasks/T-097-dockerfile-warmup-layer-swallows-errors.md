@@ -1,7 +1,7 @@
 ---
 id: T-097
 title: Dockerfile warmup-слой `./gradlew dependencies ... || true` глотает ошибки
-status: pending
+status: cancelled
 priority: low
 created: 2026-07-17
 updated: 2026-07-17
@@ -44,3 +44,7 @@ maven-central down, wrong version), cache-слой всё равно commit'не
 ## Лог
 
 - 2026-07-17: заведено self-review'ом T-090 Phase 1+2 (commit 4065f8a). Категория B.
+- 2026-07-17: cancelled. Dockerfile переписан в рамках T-090 smoke-теста —
+  warmup-слой полностью удалён (BuildKit cache-mount не работал без buildx,
+  а без него варианта с `|| true` смысла нет). Кэш зависимостей всё равно
+  живёт в docker layer'е `bootJar`-задачи. Root cause убран.

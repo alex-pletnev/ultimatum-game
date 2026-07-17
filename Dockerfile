@@ -1,19 +1,16 @@
-# syntax=docker/dockerfile:1.7
-
 # ---- Stage 1: build ----------------------------------------------------------
-FROM gradle:8.14.3-jdk21 AS build
+FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /workspace
 
-# Кэш-слой зависимостей: сначала манифесты, потом исходники.
-COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts ./
-COPY --chown=gradle:gradle gradle ./gradle
-COPY --chown=gradle:gradle gradlew gradlew.bat ./
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-    ./gradlew --no-daemon dependencies -q || true
-
-COPY --chown=gradle:gradle src ./src
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-    ./gradlew --no-daemon bootJar -x test
+# Wrapper фиксирует версию Gradle (см. gradle-wrapper.properties), поэтому base
+# image — просто JDK, а не gradle:*. Warmup-слой зависимостей не выделяем: без
+# BuildKit-cache-mount он даёт лишний Docker-layer без ощутимого выигрыша, а с
+# `|| true` глотал бы ошибки download.
+COPY settings.gradle.kts build.gradle.kts ./
+COPY gradle ./gradle
+COPY gradlew ./
+COPY src ./src
+RUN ./gradlew --no-daemon bootJar -x test
 
 # ---- Stage 2: runtime --------------------------------------------------------
 FROM eclipse-temurin:21-jre-alpine AS runtime
