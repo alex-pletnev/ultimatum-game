@@ -85,9 +85,17 @@ echo "subnet: $SUBNET_ID"
 
 # ---- Step 6: cloud-init user-data -----------------------------------------
 log "Step 6: cloud-init user-data"
+SSH_PUB=$(cat "$HOME/.ssh/id_ed25519.pub" 2>/dev/null || cat "$HOME/.ssh/id_rsa.pub" 2>/dev/null)
+[[ -z "$SSH_PUB" ]] && { echo "no SSH pubkey found in ~/.ssh/"; exit 1; }
 CLOUD_INIT=$(mktemp -t cloud-init-XXXXXX.yaml)
 cat > "$CLOUD_INIT" <<CLOUDINIT
 #cloud-config
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - $SSH_PUB
 package_update: true
 packages:
   - docker.io
@@ -173,7 +181,6 @@ yc compute instance create \
   --create-boot-disk "image-id=$UBUNTU_IMAGE,size=20,type=network-hdd" \
   --network-interface "subnet-id=$SUBNET_ID,nat-ip-version=ipv4,nat-address=$PUBLIC_IP" \
   --service-account-id "$SA_ID" \
-  --ssh-key "$HOME/.ssh/id_ed25519.pub" \
   --metadata-from-file "user-data=$CLOUD_INIT" \
   --metadata "serial-port-enable=1"
 
