@@ -106,8 +106,10 @@ write_files:
       # SA metadata → IAM токен
       TOKEN=\$(curl -s -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token | jq -r .access_token)
 
-      # docker login через printf (не требует TTY)
-      printf '%s' "\$TOKEN" | docker login --username iam --password-stdin cr.yandex
+      # docker login без stdin (cloud-init stdin недоступен — printf/echo не помогают).
+      # Password в args менее secure (виден в 'ps'), но VM ephemeral, ports docker
+      # exec не выдаёт список процессов извне.
+      docker login -u iam -p "\$TOKEN" cr.yandex
 
       docker pull $IMAGE
 
