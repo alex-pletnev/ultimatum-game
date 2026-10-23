@@ -35,3 +35,11 @@ tags: [backend, concurrency, ux]
 - Production smoke frontend: регистрация, создание, боты, старт и счёт без 404 и ошибок JavaScript после переноса уведомлений.
 - Независимое read-only ревью не выявило блокеров. Миграции и новые зависимости не понадобились.
 - Существующая ошибка Springwolf при сканировании команд без @Payload остаётся в T-099; здоровье сервера и игра проверены.
+
+## Публикация и блокер инфраструктуры
+
+- Изменения кода: `f5a0f70`; [GitHub CI](https://github.com/alex-pletnev/ultimatum-game/actions/runs/39995760508) — success.
+- Новый frontend `966a70c` опубликован на [GitHub Pages](https://alex-pletnev.github.io/ultimatum-game-ui/). Проверены мобильный учебный раунд и HashRouter на опубликованном сайте.
+- [Release](https://github.com/alex-pletnev/ultimatum-game/actions/runs/39996302346) остановлен на Login to Yandex Container Registry: `UNAUTHENTICATED: Subject … was not found`. Секрет `YC_SA_JSON_CREDENTIALS` ссылается на недоступный сервисный аккаунт. Этап deploy пропущен, сервер не обновлён.
+- Публичный backend не ответил на health-check ещё до попытки релиза (таймаут 15 секунд). Это отдельное от изменений кода состояние инфраструктуры.
+- Следующий шаг: восстановить сервисный аккаунт/доступ к существующему реестру и обновить `YC_SA_JSON_CREDENTIALS`, затем повторить Release для `f5a0f70b851c5fa043bfd353523e55713de4e86b`. После выкладки проверить health и доступность совместной игры. Новые облачные ресурсы не создавались.
