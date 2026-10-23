@@ -34,6 +34,7 @@
 | T-105 | Правило — при архитектурном pivot'е runbook обновляется в том же commit'е | pending | medium | 2026-07-17 | [T-105](T-105-runbook-rot-after-pivot.md) |
 | T-106 | PR + worktrees + parallel-agents workflow — правила, wire в harness, условный триггер | pending | medium | 2026-07-17 | [T-106](T-106-worktrees-parallel-agents-workflow.md) |
 
+
 ## Отменённые задачи
 
 | ID | Название | Отменено | Файл |
@@ -124,6 +125,8 @@
 | T-094 | Read-tool перед Write/Edit обязателен — Bash cat не считается | done | 2026-07-17 | [T-094](T-094-read-tool-before-write-tool.md) |
 | T-096 | Правило — изменения prod-профиля верифицируются runtime'ом, не gradle check | done | 2026-07-17 | [T-096](T-096-verify-prod-profile-runtime-before-commit.md) |
 | T-100 | Правило — trust memory over reality (API-контракты + CLI-синтаксис) — читать контракт, не помнить | done | 2026-07-17 | [T-100](T-100-read-api-contract-before-smoke-test.md) |
+| T-107 | Надёжное подключение и обновление состояния игры | done | 2026-10-23 | [T-107](T-107-atomic-team-capacity.md) |
+
 
 
 ## Легенда статусов

@@ -28,6 +28,7 @@ import edu.itmo.ultimatumgame.model.Role
 import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
+import edu.itmo.ultimatumgame.model.SessionConfig
 import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.Team
@@ -119,6 +120,20 @@ class SessionService(
         val session = sessionRepository.findById(sessionId)
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         return session
+    }
+
+    private fun getSessionForMembershipUpdate(sessionId: UUID): Session {
+        // Lock before reading eager members so concurrent joins see committed capacity.
+        sessionRepository.lockById(sessionId)
+            ?: throw IdNotFoundException("Сессия с $sessionId не найдена")
+        return getSessionEntity(sessionId)
+    }
+
+    // Each player needs a responder from another team.
+    private fun ensureTeamCapacity(team: Team, config: SessionConfig, count: Int = 1) {
+        if (team.members.size + count > config.numPlayers / 2) {
+            throw SessionJoinRejectedException("В команде ${team.name} больше нет свободных мест")
+        }
     }
 
     fun getSessionWithTeamsAndMembers(sessionId: UUID): SessionWithTeamsAndMembersResponse {
@@ -275,8 +290,7 @@ class SessionService(
     @Transactional
     fun joinSession(sessionId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
         val user = userService.getCurrentUser()
-        val session = sessionRepository.findById(sessionId)
-            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
+        val session = getSessionForMembershipUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         if (session.members.contains(user)) {
@@ -298,6 +312,7 @@ class SessionService(
                 ?: error("Для подключения к режиму ${config.sessionType} обязательно надо указывать teamId")
             val team: Team = session.teams.find { it.id == tId }
                 ?: error("В сессии $sessionId не найдена команда $tId")
+            ensureTeamCapacity(team, config)
             team.members += user
             session.members += user
             session.observers.remove(user)
@@ -315,7 +330,7 @@ class SessionService(
 
     @Transactional
     fun addNpcMember(sessionId: UUID, npcId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
-        val session = getSessionEntity(sessionId)
+        val session = getSessionForMembershipUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         check(session.state == SessionState.CREATED && session.openToConnect) {
@@ -333,6 +348,7 @@ class SessionService(
             val tId = teamId ?: error("Для TEAM_BATTLE обязательно указывать teamId")
             val team: Team = session.teams.find { it.id == tId }
                 ?: error("В сессии $sessionId не найдена команда $tId")
+            ensureTeamCapacity(team, config)
             team.members += profile.user
         }
         session.members += profile.user
@@ -345,7 +361,7 @@ class SessionService(
 
     @Transactional
     fun bulkCreateAndJoinNpcs(sessionId: UUID, req: BulkNpcsRequest): BulkNpcsResponse {
-        val session = getSessionEntity(sessionId)
+        val session = getSessionForMembershipUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         check(session.state == SessionState.CREATED && session.openToConnect) {
@@ -429,11 +445,13 @@ class SessionService(
                     ?: throw IdNotFoundException(
                         "В сессии ${session.id} не найдена команда ${req.teamId}"
                     )
+                ensureTeamCapacity(team, config, req.count)
                 List(req.count) { team }
             } else {
                 val planned = session.teams.associateWith { it.members.size }.toMutableMap()
                 List(req.count) {
                     val target = planned.minBy { (_, size) -> size }.key
+                    ensureTeamCapacity(target, config, planned.getValue(target) - target.members.size + 1)
                     planned[target] = planned.getValue(target) + 1
                     target
                 }
@@ -457,8 +475,7 @@ class SessionService(
     @Transactional
     fun joinSessionAsObserver(sessionId: UUID): SessionWithTeamsAndMembersResponse {
         val observer = userService.getCurrentUser()
-        val session = sessionRepository.findById(sessionId)
-            .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
+        val session = getSessionForMembershipUpdate(sessionId)
         if (session.observers.contains(observer)) return sessionWithTeamsAndMembersMapper.toDto(session)
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
         if (session.admin == observer) {

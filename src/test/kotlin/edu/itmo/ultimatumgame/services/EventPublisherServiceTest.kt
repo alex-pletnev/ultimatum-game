@@ -18,6 +18,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.transaction.support.TransactionSynchronization
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.UUID
 import kotlin.test.Test
 
@@ -129,5 +131,40 @@ class EventPublisherServiceTest {
         service.publishOffersShuffled(sessionId, payload)
 
         verify { messagingTemplate.convertAndSend("/topic/session/$sessionId/offersShuffled", payload) }
+    }
+
+    @Test
+    fun `session updates are delivered only after commit`() {
+        val sessionId = UUID.randomUUID()
+        val s = session()
+        val dto = mockk<SessionWithTeamsAndMembersResponse>(relaxed = true)
+        every { sessionMapper.toDto(s) } returns dto
+        TransactionSynchronizationManager.initSynchronization()
+        try {
+            service.publishSessionStatus(sessionId, s)
+            verify(exactly = 0) { messagingTemplate.convertAndSend(any<String>(), any<Any>()) }
+            TransactionSynchronizationManager.getSynchronizations().forEach { it.afterCommit() }
+            verify(exactly = 1) {
+                messagingTemplate.convertAndSend("/topic/session/$sessionId/sessionStatus", dto)
+            }
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization()
+        }
+    }
+
+    @Test
+    fun `rolled back rounds do not notify players`() {
+        val r = round()
+        every { roundMapper.toDto(r) } returns mockk(relaxed = true)
+        TransactionSynchronizationManager.initSynchronization()
+        try {
+            service.publishRoundStatus(UUID.randomUUID(), r)
+            TransactionSynchronizationManager.getSynchronizations().forEach {
+                it.afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK)
+            }
+            verify(exactly = 0) { messagingTemplate.convertAndSend(any<String>(), any<Any>()) }
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization()
+        }
     }
 }

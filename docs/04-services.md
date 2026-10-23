@@ -37,6 +37,8 @@
 | `joinSession` | `(sessionId: UUID, teamId: UUID?) → SessionWithTeamsAndMembersResponse` | `members.add`; для TEAM_BATTLE — `team.members.add`; publish `sessionStatus` |
 | `joinSessionAsObserver` | `(sessionId: UUID) → SessionWithTeamsAndMembersResponse` | `observers.add`; удаляет из `members` если был; publish `sessionStatus` |
 
+Изменения состава (`joinSession`, `joinSessionAsObserver`, `addNpcMember`, `bulkCreateAndJoinNpcs`) сначала блокируют строку `session` через `SessionRepository.lockById` (`SELECT … FOR UPDATE`). В той же транзакции читаются участники и проверяются места; конкурирующий вход видит уже зафиксированный состав. Для TEAM_BATTLE ни люди, ни боты не могут занять больше `floor(numPlayers / 2)` мест в одной команде; отказ — HTTP 409. Bulk проверяет распределение до создания пользователей.
+
 Проверки `joinSession`:
 - уже в сессии → идемпотентный return.
 - `openToConnect == false` → `SessionJoinRejectedException`.
@@ -91,7 +93,7 @@
 
 ## EventPublisherService
 
-`services/EventPublisherService.kt`. Использует `SimpMessagingTemplate` (Lazy).
+`services/EventPublisherService.kt`. Использует `SimpMessagingTemplate` (Lazy). DTO собирается внутри транзакции; отправка выполняется через `TransactionSynchronization.afterCommit`. При rollback сообщения не отправляются, поэтому получивший событие клиент видит уже сохранённое состояние в REST. Вызовы вне транзакции отправляются сразу.
 
 | Метод | Destination |
 |-------|-------------|

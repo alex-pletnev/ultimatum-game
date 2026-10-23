@@ -188,7 +188,7 @@ enum class SessionType(val shuffleStrategy: ShuffleStrategy) {
 
 | Репозиторий | Родитель | Кастомные методы |
 |-------------|----------|-------------------|
-| `SessionRepository` (`:12-32`) | `CrudRepository<Session, UUID>` | `findAll(pageable)`, `searchByNameTrgm(...)` — native pg_trgm search |
+| `SessionRepository` | `CrudRepository<Session, UUID>` | `findAll(pageable)`, `searchByNameTrgm(...)` — native pg_trgm search; `lockById(UUID)` — блокировка строки перед изменением состава |
 | `UserRepository` (`:9-10`) | `JpaRepository<User, UUID>` | нет |
 | `TeamRepository` (`:4-6`) | `CrudRepository<Team, UUID>` | нет |
 | `RoundRepository` (`:4-6`) | `CrudRepository<Round, UUID>` | нет |

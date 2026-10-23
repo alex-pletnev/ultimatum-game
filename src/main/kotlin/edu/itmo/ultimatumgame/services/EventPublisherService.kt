@@ -24,6 +24,8 @@ import io.github.springwolf.core.asyncapi.annotations.AsyncPublisher
 import org.springframework.context.annotation.Lazy
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionSynchronization
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.UUID
 
 @Service
@@ -37,6 +39,19 @@ class EventPublisherService(
 
     private val logger = logger()
 
+    private fun sendAfterCommit(destination: String, payload: Any) {
+        // Clients refetch REST on receipt, so notify only when the new state is readable.
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(object : TransactionSynchronization {
+                override fun afterCommit() {
+                    messagingTemplate.convertAndSend(destination, payload)
+                }
+            })
+        } else {
+            messagingTemplate.convertAndSend(destination, payload)
+        }
+    }
+
     @AsyncPublisher(
         operation = AsyncOperation(
             channelName = "/topic/session/{sessionId}/offerCreated",
@@ -49,7 +64,7 @@ class EventPublisherService(
         val dto = offerMapper.toDto(offer)
         val destination = "/topic/session/$sessionId/offerCreated"
         logger.info("Публикация события OfferCreated в $destination для offer=$dto")
-        messagingTemplate.convertAndSend(destination, dto)
+        sendAfterCommit(destination, dto)
     }
 
     @AsyncPublisher(
@@ -65,7 +80,7 @@ class EventPublisherService(
         val dto = offerMapper.toAssignedDto(offer)
         val destination = "/topic/session/$sessionId/player/$responderId/offer"
         logger.info("Публикация assigned-offer в $destination для offer={}", dto)
-        messagingTemplate.convertAndSend(destination, dto)
+        sendAfterCommit(destination, dto)
     }
 
     @AsyncPublisher(
@@ -80,7 +95,7 @@ class EventPublisherService(
         val dto = decisionMapper.toDto(decision)
         val destination = "/topic/session/$sessionId/decisionMade"
         logger.info("Публикация события DecisionMade в $destination для decision=$dto")
-        messagingTemplate.convertAndSend(destination, dto)
+        sendAfterCommit(destination, dto)
     }
 
     @AsyncPublisher(
@@ -97,7 +112,7 @@ class EventPublisherService(
         logger.info(
             "Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})"
         )
-        messagingTemplate.convertAndSend(destination, dto)
+        sendAfterCommit(destination, dto)
     }
 
     @AsyncPublisher(
@@ -113,7 +128,7 @@ class EventPublisherService(
         logger.info(
             "Публикация события OffersShuffled в $destination для сессии $sessionId (assignments=${payload.assignments.size})"
         )
-        messagingTemplate.convertAndSend(destination, payload)
+        sendAfterCommit(destination, payload)
     }
 
     @AsyncPublisher(
@@ -129,7 +144,7 @@ class EventPublisherService(
         logger.info(
             "Публикация события ScoreUpdated в $destination для сессии $sessionId (roundsCompleted=${score.roundsCompleted})"
         )
-        messagingTemplate.convertAndSend(destination, score)
+        sendAfterCommit(destination, score)
     }
 
     @AsyncPublisher(
@@ -144,6 +159,6 @@ class EventPublisherService(
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
         val destination = "/topic/session/$sessionId/sessionStatus"
         logger.info("Публикация события SessionStatus в $destination для сессии #${dto.displayName} (id=${dto.id})")
-        messagingTemplate.convertAndSend(destination, dto)
+        sendAfterCommit(destination, dto)
     }
 }

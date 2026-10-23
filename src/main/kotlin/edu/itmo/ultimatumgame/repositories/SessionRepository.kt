@@ -15,6 +15,9 @@ import java.util.UUID
 @Repository
 interface SessionRepository : CrudRepository<Session, UUID>, JpaSpecificationExecutor<Session> {
 
+    @Query(value = "SELECT id FROM session WHERE id = :id FOR UPDATE", nativeQuery = true)
+    fun lockById(@Param("id") id: UUID): UUID?
+
     fun findAll(pageable: Pageable): Page<Session>
 
     @Query(

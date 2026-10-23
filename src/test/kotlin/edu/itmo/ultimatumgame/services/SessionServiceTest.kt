@@ -78,6 +78,10 @@ class SessionServiceTest {
         userRepository,
     )
 
+    init {
+        every { sessionRepo.lockById(any()) } answers { firstArg<UUID>() }
+    }
+
     // ---------- createSession ----------
 
     @Test
@@ -785,5 +789,47 @@ class SessionServiceTest {
         assertFalse(s.members.contains(u))
         assertFalse(tA.members.contains(u))
         assertTrue(s.observers.contains(u))
+    }
+
+    @Test
+    fun `joinSession rejects a full team without consuming another team seat`() {
+        val members = mutableSetOf(user(), user())
+        val full = team(members = members.toMutableSet())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 4)
+        val s = session(members = members, teams = mutableSetOf(full, team()), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { userService.getCurrentUser() } returns user()
+
+        assertThrows<SessionJoinRejectedException> { service.joinSession(s.id!!, full.id) }
+        assertEquals(2, s.members.size)
+        verify(exactly = 0) { sessionRepo.save(any()) }
+    }
+
+    @Test
+    fun `addNpcMember rejects a full team`() {
+        val members = mutableSetOf(user(), user())
+        val full = team(members = members.toMutableSet())
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 4)
+        val s = session(members = members, teams = mutableSetOf(full, team()), config = cfg)
+        val npcId = UUID.randomUUID()
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { npcProfileRepository.findById(npcId) } returns Optional.of(
+            NpcProfile(user = user(role = Role.NPC), strategy = NpcStrategy.FAIR, params = NpcParams.Fair())
+        )
+
+        assertThrows<SessionJoinRejectedException> { service.addNpcMember(s.id!!, npcId, full.id) }
+        assertEquals(2, s.members.size)
+    }
+
+    @Test
+    fun `bulk NPC assignment rejects team overflow before creating users`() {
+        val full = team(members = mutableSetOf(user()))
+        val cfg = sessionConfig(sessionType = SessionType.TEAM_BATTLE, numTeams = 2, numPlayers = 4)
+        val s = session(members = full.members.toMutableSet(), teams = mutableSetOf(full, team()), config = cfg)
+        every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        val req = BulkNpcsRequest(count = 2, strategy = NpcStrategy.FAIR, params = NpcParams.Fair(), teamId = full.id)
+
+        assertThrows<SessionJoinRejectedException> { service.bulkCreateAndJoinNpcs(s.id!!, req) }
+        verify(exactly = 0) { userRepository.save(any<User>()) }
     }
 }
