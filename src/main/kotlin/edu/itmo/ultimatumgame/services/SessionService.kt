@@ -53,6 +53,8 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import java.util.UUID
 
+private const val MAX_HISTORY_PAGE_SIZE = 50
+
 @Service
 class SessionService(
     private val sessionRepository: SessionRepository,
@@ -73,6 +75,9 @@ class SessionService(
     @Transactional
     fun createSession(createSessionRequest: CreateSessionRequest): SessionWithTeamsAndMembersResponse {
         logger.info("Создание новой сессии из запроса {}", createSessionRequest)
+        require(createSessionRequest.state == SessionState.CREATED && createSessionRequest.id == null) {
+            "Новая игра должна начинаться в состоянии CREATED без заданного id"
+        }
         var newSession = sessionMapper.toEntity(createSessionRequest)
         logger.debug("Новая сессия после маппинга {}", newSession)
         newSession.admin = userService.getCurrentUser()
@@ -80,6 +85,11 @@ class SessionService(
         createRounds(newSession)
         logger.debug("Новая сессия после initRounds {}", newSession)
         createTeams(newSession)
+        if (createSessionRequest.hostPlays) {
+            val host = requireNotNull(newSession.admin)
+            newSession.members += host
+            newSession.teams.firstOrNull()?.members?.add(host)
+        }
         logger.debug("Новая сессия после initTeams {}", newSession)
         newSession = sessionRepository.save(newSession)
         logger.debug("Новая сессия после save {}", newSession)
@@ -122,7 +132,7 @@ class SessionService(
         return session
     }
 
-    private fun getSessionForMembershipUpdate(sessionId: UUID): Session {
+    fun getSessionForUpdate(sessionId: UUID): Session {
         // Lock before reading eager members so concurrent joins see committed capacity.
         sessionRepository.lockById(sessionId)
             ?: throw IdNotFoundException("Сессия с $sessionId не найдена")
@@ -262,6 +272,12 @@ class SessionService(
         return response
     }
 
+    fun getMySessions(page: Int, pageSize: Int): Page<SessionResponse> =
+        sessionRepository.findMine(
+            securityService.getCurrentUserId(),
+            PageRequest.of(page, pageSize.coerceIn(1, MAX_HISTORY_PAGE_SIZE)),
+        ).map { sessionMapper.toDto(it) }
+
     /**
      * Собирает [Specification] по опциональным фильтрам (T-057). Все условия AND.
      * Search по displayName — ILIKE (без pg_trgm ranking, потому что Specification API это не даёт;
@@ -290,7 +306,7 @@ class SessionService(
     @Transactional
     fun joinSession(sessionId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
         val user = userService.getCurrentUser()
-        val session = getSessionForMembershipUpdate(sessionId)
+        val session = getSessionForUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         if (session.members.contains(user)) {
@@ -300,11 +316,6 @@ class SessionService(
         if (session.members.size >= config.numPlayers) {
             throw SessionJoinRejectedException(
                 "В сессии $sessionId достигнуто максимальное количество игроков (${session.members.size} из ${config.numPlayers})"
-            )
-        }
-        if (session.admin == user) {
-            throw SessionJoinRejectedException(
-                "Вы на можете подключиться к сессии в качестве участника, так как вы ее администратор"
             )
         }
         if (config.sessionType == SessionType.TEAM_BATTLE) {
@@ -330,7 +341,7 @@ class SessionService(
 
     @Transactional
     fun addNpcMember(sessionId: UUID, npcId: UUID, teamId: UUID?): SessionWithTeamsAndMembersResponse {
-        val session = getSessionForMembershipUpdate(sessionId)
+        val session = getSessionForUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         check(session.state == SessionState.CREATED && session.openToConnect) {
@@ -361,7 +372,7 @@ class SessionService(
 
     @Transactional
     fun bulkCreateAndJoinNpcs(sessionId: UUID, req: BulkNpcsRequest): BulkNpcsResponse {
-        val session = getSessionForMembershipUpdate(sessionId)
+        val session = getSessionForUpdate(sessionId)
         val config = session.config
             ?: error("Session.config не должен быть null к этому моменту")
         check(session.state == SessionState.CREATED && session.openToConnect) {
@@ -435,7 +446,7 @@ class SessionService(
         config: edu.itmo.ultimatumgame.model.SessionConfig,
         req: BulkNpcsRequest,
     ): List<Team?> = when (config.sessionType) {
-        SessionType.FREE_FOR_ALL -> {
+        SessionType.FREE_FOR_ALL, SessionType.DICTATOR -> {
             require(req.teamId == null) { "teamId недопустим для FREE_FOR_ALL" }
             List(req.count) { null }
         }
@@ -475,7 +486,7 @@ class SessionService(
     @Transactional
     fun joinSessionAsObserver(sessionId: UUID): SessionWithTeamsAndMembersResponse {
         val observer = userService.getCurrentUser()
-        val session = getSessionForMembershipUpdate(sessionId)
+        val session = getSessionForUpdate(sessionId)
         if (session.observers.contains(observer)) return sessionWithTeamsAndMembersMapper.toDto(session)
         if (!session.openToConnect) throw SessionJoinRejectedException("Сессия $sessionId закрыта для подключений")
         if (session.admin == observer) {
@@ -509,7 +520,7 @@ class SessionService(
             ?: error("Session.config не должен быть null к этому моменту")
 
         when (cfg.sessionType) {
-            SessionType.FREE_FOR_ALL -> {
+            SessionType.FREE_FOR_ALL, SessionType.DICTATOR -> {
                 require(cfg.numTeams == 0) {
                     "Для режима FREE_FOR_ALL numTeams должно быть 0 (сейчас ${cfg.numTeams})"
                 }

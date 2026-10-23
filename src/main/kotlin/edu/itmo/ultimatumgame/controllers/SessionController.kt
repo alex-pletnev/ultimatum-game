@@ -38,7 +38,7 @@ class SessionController(
     private val logger = logger()
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER')")
     @ResponseStatus(HttpStatus.CREATED)
     fun createSession(
         @RequestBody @Valid createSessionRequest: CreateSessionRequest
@@ -138,7 +138,7 @@ class SessionController(
     }
 
     @PostMapping("/{sessionId}/join-npc")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     fun joinNpc(
         @PathVariable sessionId: String,
         @Valid @RequestBody req: JoinNpcRequest,
@@ -149,7 +149,7 @@ class SessionController(
     }
 
     @PostMapping("/{sessionId}/npcs")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     fun bulkNpcs(
         @PathVariable sessionId: String,
         @Valid @RequestBody req: BulkNpcsRequest,

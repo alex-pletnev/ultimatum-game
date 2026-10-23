@@ -1,0 +1,78 @@
+package edu.itmo.ultimatumgame.services
+
+import edu.itmo.ultimatumgame.dto.requests.BulkNpcsRequest
+import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
+import edu.itmo.ultimatumgame.dto.requests.SessionConfigDto
+import edu.itmo.ultimatumgame.dto.requests.SoloSessionRequest
+import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
+import edu.itmo.ultimatumgame.model.NpcParams
+import edu.itmo.ultimatumgame.model.NpcStrategy
+import edu.itmo.ultimatumgame.model.SessionType
+import jakarta.transaction.Transactional
+import org.springframework.stereotype.Service
+import java.util.UUID
+
+private const val REMATCH_NAME_LIMIT = 89
+
+@Service
+class SessionScenariosService(
+    private val sessions: SessionService,
+    private val gameplay: AdminGameplayService,
+) {
+    @Transactional
+    fun solo(request: SoloSessionRequest): SessionWithTeamsAndMembersResponse {
+        require(request.sessionType != SessionType.TEAM_BATTLE) { "Соло доступно без команд" }
+        val game = sessions.createSession(
+            CreateSessionRequest(
+                displayName = if (request.sessionType == SessionType.DICTATOR) "Диктатор · соло" else "Игра с ботом",
+                hostPlays = true,
+                config = SessionConfigDto(
+                    sessionType = request.sessionType,
+                    numRounds = request.numRounds,
+                    numPlayers = 2,
+                    roundSum = 100,
+                    timeoutMoveSec = 60,
+                ),
+            )
+        )
+        sessions.bulkCreateAndJoinNpcs(
+            game.id,
+            BulkNpcsRequest(
+                count = 1,
+                strategy = request.strategy,
+                params = defaults(request.strategy),
+            )
+        )
+        gameplay.startSession(game.id)
+        return sessions.getSessionWithTeamsAndMembers(game.id)
+    }
+
+    @Transactional
+    fun rematch(id: UUID): SessionWithTeamsAndMembersResponse {
+        val previous = sessions.getSessionEntity(id)
+        val config = requireNotNull(previous.config)
+        return sessions.createSession(
+            CreateSessionRequest(
+                displayName = previous.displayName.take(REMATCH_NAME_LIMIT) + " · реванш",
+                hostPlays = previous.members.any { it.id == previous.admin?.id },
+                config = SessionConfigDto(
+                    config.sessionType,
+                    config.numRounds,
+                    config.numTeams,
+                    config.numPlayers,
+                    config.roundSum,
+                    config.timeoutMoveSec,
+                    config.autoAdvanceRounds,
+                ),
+            )
+        )
+    }
+
+    private fun defaults(strategy: NpcStrategy): NpcParams = when (strategy) {
+        NpcStrategy.FAIR -> NpcParams.Fair()
+        NpcStrategy.SELFISH -> NpcParams.Selfish()
+        NpcStrategy.RANDOM -> NpcParams.Random()
+        NpcStrategy.VENGEFUL -> NpcParams.Vengeful()
+        NpcStrategy.ADAPTIVE -> NpcParams.Adaptive()
+    }
+}

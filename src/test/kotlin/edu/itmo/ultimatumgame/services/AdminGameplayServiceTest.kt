@@ -2,6 +2,7 @@ package edu.itmo.ultimatumgame.services
 
 import edu.itmo.ultimatumgame.TestFixtures.round
 import edu.itmo.ultimatumgame.TestFixtures.session
+import edu.itmo.ultimatumgame.TestFixtures.user
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
@@ -39,9 +40,9 @@ class AdminGameplayServiceTest {
     fun `startSession — переводит state в RUNNING, current в round 1 с фазой WAIT_OFFERS, закрывает openToConnect`() {
         val r1 = round(roundNumber = 1)
         val r2 = round(roundNumber = 2)
-        val s = session()
+        val s = session(members = mutableSetOf(user(), user()))
         s.rounds = mutableSetOf(r1, r2)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.startSession(s.id!!)
@@ -56,7 +57,7 @@ class AdminGameplayServiceTest {
     @Test
     fun `closeSession — openToConnect=false + публикация статуса`() {
         val s = session(openToConnect = true)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.closeSession(s.id!!)
@@ -68,7 +69,7 @@ class AdminGameplayServiceTest {
     @Test
     fun `openSession — openToConnect=true + публикация статуса`() {
         val s = session(openToConnect = false)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.openSession(s.id!!)
@@ -81,7 +82,7 @@ class AdminGameplayServiceTest {
     fun `abortSession — state=ABORTED, openToConnect=false, публикует roundStatus если есть текущий раунд`() {
         val r = round()
         val s = session(currentRound = r, openToConnect = true)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.abortSession(s.id!!)
@@ -94,7 +95,7 @@ class AdminGameplayServiceTest {
     @Test
     fun `abortSession без текущего раунда — не публикует RoundStatus`() {
         val s = session(currentRound = null, openToConnect = true)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.abortSession(s.id!!)
@@ -109,7 +110,7 @@ class AdminGameplayServiceTest {
         val r2 = round(roundNumber = 2, roundPhase = RoundPhase.CREATED)
         val s = session(currentRound = r1)
         s.rounds = mutableSetOf(r1, r2)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.startNextRound(s.id!!)
@@ -125,7 +126,7 @@ class AdminGameplayServiceTest {
         val r1 = round(roundNumber = 1, roundPhase = RoundPhase.ALL_DECISIONS_RECEIVED)
         val s = session(currentRound = r1)
         s.rounds = mutableSetOf(r1)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.startNextRound(s.id!!)
@@ -139,7 +140,7 @@ class AdminGameplayServiceTest {
     @Test
     fun `startNextRound бросает если currentRound null`() {
         val s = session(currentRound = null)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> { service.startNextRound(s.id!!) }
     }
@@ -148,7 +149,7 @@ class AdminGameplayServiceTest {
     fun `abortCurrentRound — переводит фазу в ABORTED, публикует roundStatus, эмитит RoundAborted`() {
         val r = round(roundNumber = 1, roundPhase = RoundPhase.WAIT_OFFERS)
         val s = session(state = SessionState.RUNNING, currentRound = r)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.abortCurrentRound(s.id!!)
@@ -161,7 +162,7 @@ class AdminGameplayServiceTest {
     fun `abortCurrentRound — бросает если сессия не RUNNING`() {
         val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
         val s = session(state = SessionState.CREATED, currentRound = r)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
     }
@@ -169,7 +170,7 @@ class AdminGameplayServiceTest {
     @Test
     fun `abortCurrentRound — бросает если нет активного раунда`() {
         val s = session(state = SessionState.RUNNING, currentRound = null)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
     }
@@ -178,7 +179,7 @@ class AdminGameplayServiceTest {
     fun `abortCurrentRound — бросает если раунд уже FINISHED`() {
         val r = round(roundPhase = RoundPhase.FINISHED)
         val s = session(state = SessionState.RUNNING, currentRound = r)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
     }
@@ -187,7 +188,7 @@ class AdminGameplayServiceTest {
     fun `abortCurrentRound — бросает если раунд уже ABORTED (идемпотентность)`() {
         val r = round(roundPhase = RoundPhase.ABORTED)
         val s = session(state = SessionState.RUNNING, currentRound = r)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> { service.abortCurrentRound(s.id!!) }
     }
@@ -198,7 +199,7 @@ class AdminGameplayServiceTest {
         val r2 = round(roundNumber = 2, roundPhase = RoundPhase.CREATED)
         val s = session(state = SessionState.RUNNING, currentRound = r1)
         s.rounds = mutableSetOf(r1, r2)
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubSaveIdentity()
 
         service.startNextRound(s.id!!)

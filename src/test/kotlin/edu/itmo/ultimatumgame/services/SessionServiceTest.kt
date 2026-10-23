@@ -79,7 +79,7 @@ class SessionServiceTest {
     )
 
     init {
-        every { sessionRepo.lockById(any()) } answers { firstArg<UUID>() }
+        every { sessionRepo.lockById(any()) } returns 1
     }
 
     // ---------- createSession ----------
@@ -460,13 +460,18 @@ class SessionServiceTest {
     }
 
     @Test
-    fun `joinSession — SessionJoinRejectedException если admin пытается joinнуться`() {
+    fun `joinSession allows the host to participate`() {
         val admin = user(role = Role.ADMIN)
         val s = session(admin = admin, members = mutableSetOf())
         every { userService.getCurrentUser() } returns admin
         every { sessionRepo.findById(s.id!!) } returns Optional.of(s)
+        every { sessionRepo.save(s) } returns s
+        every { sessionWithTeamsAndMembersMapper.toDto(s) } returns mockk(relaxed = true)
 
-        assertThrows<SessionJoinRejectedException> { service.joinSession(s.id!!, null) }
+        service.joinSession(s.id!!, null)
+
+        assertTrue(s.members.contains(admin))
+        verify { sessionRepo.save(s) }
     }
 
     @Test

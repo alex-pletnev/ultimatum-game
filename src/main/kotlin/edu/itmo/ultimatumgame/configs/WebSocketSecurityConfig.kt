@@ -53,11 +53,11 @@ class WebSocketSecurityConfig {
         messages
             .simpDestMatchers("/app/session/*/offer.create").hasAnyRole("PLAYER", "ADMIN")
             .simpDestMatchers("/app/session/*/make.decision").hasAnyRole("PLAYER", "ADMIN")
-            .simpDestMatchers("/app/session/*/start").hasRole("ADMIN")
-            .simpDestMatchers("/app/session/*/close").hasRole("ADMIN")
-            .simpDestMatchers("/app/session/*/open").hasRole("ADMIN")
-            .simpDestMatchers("/app/session/*/round.start").hasRole("ADMIN")
-            .simpDestMatchers("/app/session/*/round.abort").hasRole("ADMIN")
+            .simpDestMatchers("/app/session/*/start").hasAnyRole("PLAYER", "ADMIN")
+            .simpDestMatchers("/app/session/*/close").hasAnyRole("PLAYER", "ADMIN")
+            .simpDestMatchers("/app/session/*/open").hasAnyRole("PLAYER", "ADMIN")
+            .simpDestMatchers("/app/session/*/round.start").hasAnyRole("PLAYER", "ADMIN")
+            .simpDestMatchers("/app/session/*/round.abort").hasAnyRole("PLAYER", "ADMIN")
 
         // ---------- подписки (SUBSCRIBE) ----------
         messages

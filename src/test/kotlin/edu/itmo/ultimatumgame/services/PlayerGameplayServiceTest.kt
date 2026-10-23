@@ -87,7 +87,7 @@ class PlayerGameplayServiceTest {
         val r = round(roundPhase = RoundPhase.WAIT_OFFERS)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubOfferSaveIdentity()
         stubRoundSave()
 
@@ -109,7 +109,7 @@ class PlayerGameplayServiceTest {
         // Уже один оффер от b
         r.offers += offer(proposer = b, round = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubOfferSaveIdentity()
         stubRoundSave()
         stubSessionSave()
@@ -129,7 +129,7 @@ class PlayerGameplayServiceTest {
         r.offers += offer(proposer = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<DuplicateIdException> {
             service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = 10))
@@ -141,7 +141,7 @@ class PlayerGameplayServiceTest {
         val a = user()
         val s = session(members = mutableSetOf(a), currentRound = null)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> {
             service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = 5))
@@ -154,7 +154,7 @@ class PlayerGameplayServiceTest {
         val r = round()
         val s = session(members = mutableSetOf(a), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalStateException> {
             service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = null))
@@ -171,7 +171,7 @@ class PlayerGameplayServiceTest {
             config = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(roundSum = 100),
         )
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<IllegalArgumentException> {
             service.sendOffer(s.id!!, a.id!!, CreateOfferCmd(amount = 101))
@@ -189,7 +189,7 @@ class PlayerGameplayServiceTest {
             config = edu.itmo.ultimatumgame.TestFixtures.sessionConfig(roundSum = 100),
         )
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubOfferSaveIdentity()
         stubRoundSave()
 
@@ -210,7 +210,7 @@ class PlayerGameplayServiceTest {
         r.offers += offerFromB
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubDecisionSaveIdentity()
         stubRoundSave()
 
@@ -235,7 +235,7 @@ class PlayerGameplayServiceTest {
         r.decisions += Decision(id = UUID.randomUUID(), round = r, responder = b, offer = offB, decision = true)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubDecisionSaveIdentity()
         stubRoundSave()
         stubSessionSave()
@@ -281,7 +281,7 @@ class PlayerGameplayServiceTest {
             config = cfg,
         )
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubDecisionSaveIdentity()
         stubRoundSave()
         stubSessionSave()
@@ -324,7 +324,7 @@ class PlayerGameplayServiceTest {
             config = cfg,
         )
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
         stubDecisionSaveIdentity()
         stubRoundSave()
         stubSessionSave()
@@ -360,7 +360,7 @@ class PlayerGameplayServiceTest {
         r.decisions += Decision(id = UUID.randomUUID(), round = r, responder = a, offer = offB, decision = true)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         assertThrows<DuplicateIdException> {
             service.makeDecision(s.id!!, a.id!!, MakeDecisionCmd(offerId = offB.id.toString(), decision = false))
@@ -375,7 +375,7 @@ class PlayerGameplayServiceTest {
         r.offers += offer(proposer = b, responder = a, round = r)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
         every { userService.getUserById(a.id!!) } returns a
-        every { sessionService.getSessionEntity(s.id!!) } returns s
+        every { sessionService.getSessionForUpdate(s.id!!) } returns s
 
         val strangerId = UUID.randomUUID()
         assertThrows<IdNotFoundException> {

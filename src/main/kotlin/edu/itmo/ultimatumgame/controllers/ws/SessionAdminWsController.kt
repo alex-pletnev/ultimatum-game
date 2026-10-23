@@ -28,7 +28,7 @@ class SessionAdminWsController(
         )
     )
     @StompAsyncOperationBinding
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     @MessageMapping("session/{sessionId}/start")
     @Transactional
     fun startSession(
@@ -48,7 +48,7 @@ class SessionAdminWsController(
         )
     )
     @StompAsyncOperationBinding
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     @MessageMapping("session/{sessionId}/close")
     @Transactional
     fun closeSession(
@@ -68,7 +68,7 @@ class SessionAdminWsController(
         )
     )
     @StompAsyncOperationBinding
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     @MessageMapping("session/{sessionId}/open")
     @Transactional
     fun openSession(
@@ -88,7 +88,7 @@ class SessionAdminWsController(
         )
     )
     @StompAsyncOperationBinding
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     @MessageMapping("session/{sessionId}/round.start")
     @Transactional
     fun startNextRound(
@@ -109,7 +109,7 @@ class SessionAdminWsController(
         )
     )
     @StompAsyncOperationBinding
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLAYER') and @sessionAccess.isHost(#sessionId, authentication)")
     @MessageMapping("session/{sessionId}/round.abort")
     @Transactional
     fun abortCurrentRound(

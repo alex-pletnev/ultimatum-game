@@ -40,7 +40,7 @@ class SecurityConfiguration(
                     // T-086: публичные read-only летописи партии (без JWT)
                     .requestMatchers(HttpMethod.GET, "/statistics/*/csv").permitAll()
                     .requestMatchers(HttpMethod.GET, "/session/*/with-teams-and-members").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/session").hasAnyRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/session").hasAnyRole("ADMIN", "PLAYER")
                     .requestMatchers("/ws/**").permitAll()
                     .anyRequest().authenticated()
             }

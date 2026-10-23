@@ -34,7 +34,6 @@
 | T-105 | Правило — при архитектурном pivot'е runbook обновляется в том же commit'е | pending | medium | 2026-07-17 | [T-105](T-105-runbook-rot-after-pivot.md) |
 | T-106 | PR + worktrees + parallel-agents workflow — правила, wire в harness, условный триггер | pending | medium | 2026-07-17 | [T-106](T-106-worktrees-parallel-agents-workflow.md) |
 
-
 ## Отменённые задачи
 
 | ID | Название | Отменено | Файл |
@@ -47,6 +46,7 @@
 
 | ID | Название | Статус | Закрыто | Файл |
 |----|----------|--------|---------|------|
+| T-108 | Текущий сервер, игровые сценарии и владение партиями | done | 2026-10-23 | [T-108](T-108-server-and-gameplay.md) |
 | T-004 | Встроить автоматический commit + push в skills трекера | done | 2026-07-12 | [T-004](T-004-git-automation.md) |
 | T-005 | Добавить `.gitignore` | done | 2026-07-12 | [T-005](T-005-add-gitignore.md) |
 | T-006 | Автогенерация REST/WS спек, удаление ручных YAML | done | 2026-07-12 | [T-006](T-006-api-spec-autogeneration.md) |

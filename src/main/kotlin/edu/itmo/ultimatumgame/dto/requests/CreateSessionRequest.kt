@@ -18,4 +18,5 @@ data class CreateSessionRequest(
     val state: SessionState = SessionState.CREATED,
     @field:Valid @field:NotNull val config: SessionConfigDto? = null,
     val openToConnect: Boolean = true,
+    val hostPlays: Boolean = false,
 )

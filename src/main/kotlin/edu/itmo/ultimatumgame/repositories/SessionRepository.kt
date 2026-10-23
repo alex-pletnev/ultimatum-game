@@ -15,8 +15,18 @@ import java.util.UUID
 @Repository
 interface SessionRepository : CrudRepository<Session, UUID>, JpaSpecificationExecutor<Session> {
 
-    @Query(value = "SELECT id FROM session WHERE id = :id FOR UPDATE", nativeQuery = true)
-    fun lockById(@Param("id") id: UUID): UUID?
+    @Query(value = "SELECT 1 FROM session WHERE id = :id FOR UPDATE", nativeQuery = true)
+    fun lockById(@Param("id") id: UUID): Int?
+
+    fun existsByIdAndAdminId(id: UUID, userId: UUID): Boolean
+
+    @Query(
+        value = """SELECT DISTINCT s FROM Session s LEFT JOIN s.members m LEFT JOIN s.observers o
+            WHERE s.admin.id = :userId OR m.id = :userId OR o.id = :userId ORDER BY s.createdAt DESC""",
+        countQuery = """SELECT COUNT(DISTINCT s) FROM Session s LEFT JOIN s.members m LEFT JOIN s.observers o
+            WHERE s.admin.id = :userId OR m.id = :userId OR o.id = :userId"""
+    )
+    fun findMine(@Param("userId") userId: UUID, pageable: Pageable): Page<Session>
 
     fun findAll(pageable: Pageable): Page<Session>
 

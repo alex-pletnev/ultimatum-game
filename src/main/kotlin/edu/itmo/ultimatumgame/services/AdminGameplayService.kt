@@ -32,9 +32,14 @@ class AdminGameplayService(
     @Transactional
     fun startSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод startSession c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Получена сущность сессии {} с состоянием {}", session.id, session.state)
 
+        check(session.state == SessionState.CREATED) { "Игра уже началась или завершена" }
+        check(session.members.size >= 2) { "Для начала нужны хотя бы два игрока" }
+        check(session.teams.none { it.members.size > session.members.size / 2 }) {
+            "Распределите участников по командам поровну"
+        }
         session.state = SessionState.RUNNING
         session.currentRound = session.rounds.find { it.roundNumber == 1 }
         session.currentRound?.let {
@@ -59,7 +64,7 @@ class AdminGameplayService(
     @Transactional
     fun closeSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод closeSession c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Закрытие сессии {} для подключений", session.id)
 
         session.openToConnect = false
@@ -73,7 +78,7 @@ class AdminGameplayService(
     @Transactional
     fun openSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод openSession c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Открытие сессии {} для подключений", session.id)
 
         session.openToConnect = true
@@ -87,7 +92,7 @@ class AdminGameplayService(
     @Transactional
     fun abortSession(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод abortSession c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Прерывание сессии {}", session.id)
 
         session.state = SessionState.ABORTED
@@ -105,7 +110,7 @@ class AdminGameplayService(
     @Transactional
     fun startNextRound(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод startNextRound c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         val currentRound = session.currentRound ?: error("Текущий раунд не должен быть null на данном этапе")
         logger.debug("Завершение раунда {} для сессии {}", currentRound.roundNumber, session.id)
 
@@ -160,7 +165,7 @@ class AdminGameplayService(
     @Transactional
     fun abortCurrentRound(sessionId: UUID) = withSessionMdc(sessionId) {
         logger.info("Вызван метод abortCurrentRound c sessionId={}", sessionId)
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         check(session.state == SessionState.RUNNING) {
             "Прерывание раунда возможно только для сессии в состоянии RUNNING, текущее: ${session.state}"
         }

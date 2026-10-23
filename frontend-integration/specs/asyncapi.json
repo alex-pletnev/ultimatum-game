@@ -904,7 +904,7 @@
             "type" : "integer"
           },
           "sessionType" : {
-            "enum" : [ "FREE_FOR_ALL", "TEAM_BATTLE" ],
+            "enum" : [ "FREE_FOR_ALL", "DICTATOR", "TEAM_BATTLE" ],
             "type" : "string"
           },
           "timeoutMoveSec" : {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 
 enum class SessionType(val shuffleStrategy: ShuffleStrategy) {
     FREE_FOR_ALL(FreeForAllStrategy()),
+    DICTATOR(FreeForAllStrategy()),
     TEAM_BATTLE(TeamBattleStrategy());
 
     companion object {

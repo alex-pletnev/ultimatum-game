@@ -27,6 +27,7 @@ import edu.itmo.ultimatumgame.util.logger
 import edu.itmo.ultimatumgame.util.toUuidOrThrow
 import edu.itmo.ultimatumgame.util.withSessionMdc
 import jakarta.transaction.Transactional
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -55,9 +56,10 @@ class PlayerGameplayService(
         val user = userService.getUserById(playerId)
         logger.debug("Получен пользователь {}", user.id)
 
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Получена сессия {} с состоянием {}", session.id, session.state)
 
+        if (session.members.none { it.id == playerId }) throw AccessDeniedException("Вы не участник этой игры")
         val roundSum = session.config?.roundSum
             ?: error("session.config.roundSum должен быть задан к этому моменту")
         require(offerValue in 0..roundSum) {
@@ -133,7 +135,7 @@ class PlayerGameplayService(
         val user = userService.getUserById(playerId)
         logger.debug("Получен пользователь {}", user.id)
 
-        val session = sessionService.getSessionEntity(sessionId)
+        val session = sessionService.getSessionForUpdate(sessionId)
         logger.debug("Получена сессия {} с состоянием {}", session.id, session.state)
 
         val round = session.currentRound ?: error("session.currentRound не должен быть null к этому моменту")
@@ -154,6 +156,7 @@ class PlayerGameplayService(
                 logger.error("Оффер с id={} не найден в раунде {} сессии {}", offerId, round.roundNumber, session.id)
                 throw IdNotFoundException("Не найден id офера для makeDecision")
             }
+        if (offer.responder?.id != playerId) throw AccessDeniedException("Это предложение адресовано другому игроку")
         logger.debug("Найден оффер {} для принятия решения", offer.id)
 
         val decision = decisionRepository.save(

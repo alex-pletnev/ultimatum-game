@@ -24,6 +24,7 @@ import edu.itmo.ultimatumgame.model.Round
 import edu.itmo.ultimatumgame.model.RoundPhase
 import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.model.SessionState
+import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.model.User
 import edu.itmo.ultimatumgame.model.npc.AdaptiveStrategy
 import edu.itmo.ultimatumgame.model.npc.DecisionCtx
@@ -172,10 +173,11 @@ class NpcService(
             logger.debug("playDecisions: пропущено, phase={} (ожидается OFFERS_SENT)", round.roundPhase)
             return
         }
+        val automatic = session.config?.sessionType == SessionType.DICTATOR
         data class NpcAssignment(val npc: User, val incoming: Offer)
 
         val pendingAssignments: List<NpcAssignment> = session.members
-            .filter { it.role == Role.NPC }
+            .filter { it.role == Role.NPC || automatic }
             .filter { npc -> round.decisions.none { it.responder?.id == npc.id } }
             .mapNotNull { npc ->
                 val incoming = round.offers.find { it.responder?.id == npc.id } ?: return@mapNotNull null
@@ -185,13 +187,13 @@ class NpcService(
         logger.info("playDecisions: {} NPC-игроков ожидают decision в сессии {}", pendingAssignments.size, session.id)
 
         for ((npc, incoming) in pendingAssignments) {
-            val profile = npcProfileRepo.findByUserId(npc.id!!)
-            if (profile == null) {
-                logger.warn("playDecisions: NPC {} без профиля — пропущен", npc.id)
-                continue
+            val accepted = if (automatic) {
+                true
+            } else {
+                val profile = npcProfileRepo.findByUserId(npc.id!!) ?: continue
+                val ctx = buildDecisionCtx(session, round, npc, incoming, profile)
+                runStrategyDecide(profile, session, round, npc, ctx)
             }
-            val ctx = buildDecisionCtx(session, round, npc, incoming, profile)
-            val accepted = runStrategyDecide(profile, session, round, npc, ctx)
             val decision = decisionRepo.save(
                 Decision(
                     session = session,
