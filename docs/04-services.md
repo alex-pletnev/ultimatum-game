@@ -6,6 +6,7 @@
 
 | Сервис | Файл | Роль |
 |--------|------|------|
+| `SessionScenariosService` | `services/SessionScenariosService.kt` | solo/rematch и заполнение лобби случайными NPC |
 | `SessionService` | `services/SessionService.kt` | CRUD/поиск сессий, join |
 | `PlayerGameplayService` | `services/PlayerGameplayService.kt` | sendOffer, makeDecision |
 | `AdminGameplayService` | `services/AdminGameplayService.kt` | start/close/open/abort/round.start |
@@ -48,6 +49,14 @@
 Приватные утилиты:
 - `createRounds(Session)` — заполняет `rounds` N объектами `Round(roundNumber=1..N, phase=CREATED)`.
 - `createTeams(Session)` — для `TEAM_BATTLE` создаёт `numTeams` команд с именами «Команда №1..N»; для `FREE_FOR_ALL` — ничего.
+
+---
+
+## SessionScenariosService
+
+`fillRandomNpcs(UUID)` возвращает `SessionWithTeamsAndMembersResponse`. В общей транзакции блокирует строку сессии через `getSessionForUpdate`, проверяет `CREATED`, вычисляет свободные места с учётом ограничений команд. Полный состав возвращается без изменений; закрытая неполная сессия отклоняется с `SessionJoinRejectedException` (409).
+
+Для новых NPC использует перемешанный набор пяти стратегий и существующий `defaults`; повторение набора обеспечивает разнообразие. `bulkCreateAndJoinNpcs` получает группы одной стратегии размером не более 100, создаёт профили и распределяет игроков по наименее заполненным командам. Внешняя транзакция сохраняет атомарность всех групп.
 
 ---
 

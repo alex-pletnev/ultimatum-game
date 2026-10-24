@@ -6,13 +6,16 @@
 
 | Параметр | Значение | Строка |
 |----------|----------|--------|
-| STOMP endpoint | `/ws` (полный: `/api/v1/ws`) | `:31` |
-| Broker | In-memory Simple Broker | `:26` |
-| Broker destination prefix | `/topic` | `:26` |
-| Application destination prefix | `/app` | `:27` |
-| Handshake CORS | `setAllowedOrigins("*")` | `:51` |
+| STOMP endpoint | `/ws` (полный: `/api/v1/ws`) | `:40` |
+| Broker | In-memory Simple Broker | `:27` |
+| Broker destination prefix | `/topic` | `:27` |
+| Application destination prefix | `/app` | `:28` |
+| Порядок исходящих сообщений | `setPreservePublishOrder(true)` | `:29` |
+| Handshake CORS | `setAllowedOriginPatterns` из `app.cors.origins` | `:62` |
 
 Аннотация класса: `@EnableWebSocketMessageBroker`.
+
+`setPreservePublishOrder(true)` сохраняет порядок отправки событий внутри одной клиентской WebSocket-сессии. Это необходимо при заполнении лобби несколькими группами NPC: промежуточный `sessionStatus` не должен прийти после итогового состава. Отправка выполняется после commit транзакции; настройка порядка предотвращает перестановку сообщений многопоточным `clientOutboundChannel`. См. [документацию Spring Framework 6.2](https://docs.spring.io/spring-framework/reference/6.2/web/websocket/stomp/ordered-messages.html).
 
 ## Подключение
 

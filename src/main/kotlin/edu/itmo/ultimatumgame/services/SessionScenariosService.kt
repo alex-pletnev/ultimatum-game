@@ -5,20 +5,47 @@ import edu.itmo.ultimatumgame.dto.requests.CreateSessionRequest
 import edu.itmo.ultimatumgame.dto.requests.SessionConfigDto
 import edu.itmo.ultimatumgame.dto.requests.SoloSessionRequest
 import edu.itmo.ultimatumgame.dto.responses.SessionWithTeamsAndMembersResponse
+import edu.itmo.ultimatumgame.exceptions.SessionJoinRejectedException
 import edu.itmo.ultimatumgame.model.NpcParams
 import edu.itmo.ultimatumgame.model.NpcStrategy
+import edu.itmo.ultimatumgame.model.SessionState
 import edu.itmo.ultimatumgame.model.SessionType
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 private const val REMATCH_NAME_LIMIT = 89
+private const val NPC_BATCH_SIZE = 100
 
 @Service
 class SessionScenariosService(
     private val sessions: SessionService,
     private val gameplay: AdminGameplayService,
 ) {
+    @Transactional
+    fun fillRandomNpcs(id: UUID): SessionWithTeamsAndMembersResponse {
+        val session = sessions.getSessionForUpdate(id)
+        if (session.state != SessionState.CREATED) {
+            throw SessionJoinRejectedException("Заполнить ботами можно только лобби до начала игры")
+        }
+        val config = requireNotNull(session.config)
+        val capacity = if (config.sessionType == SessionType.TEAM_BATTLE) {
+            minOf(config.numPlayers, session.teams.size * (config.numPlayers / 2))
+        } else {
+            config.numPlayers
+        }
+        val remaining = (capacity - session.members.size).coerceAtLeast(0)
+        if (remaining == 0) return sessions.getSessionWithTeamsAndMembers(id)
+        if (!session.openToConnect) throw SessionJoinRejectedException("Лобби закрыто для подключения")
+        val strategies = NpcStrategy.entries.shuffled()
+        List(remaining) { strategies[it % strategies.size] }.chunked(NPC_BATCH_SIZE).forEach { batch ->
+            batch.groupingBy { it }.eachCount().forEach { (strategy, count) ->
+                sessions.bulkCreateAndJoinNpcs(id, BulkNpcsRequest(count, strategy, defaults(strategy)))
+            }
+        }
+        return sessions.getSessionWithTeamsAndMembers(id)
+    }
+
     @Transactional
     fun solo(request: SoloSessionRequest): SessionWithTeamsAndMembersResponse {
         require(request.sessionType != SessionType.TEAM_BATTLE) { "Соло доступно без команд" }

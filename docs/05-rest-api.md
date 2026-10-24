@@ -18,6 +18,7 @@
 | GET | `/session/{id}/rounds` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:74-81` |
 | POST | `/session/{sessionId}/join` | ADMIN, PLAYER | `SessionController.kt:81-92` |
 | POST | `/session/{sessionId}/join/observer` | ADMIN, PLAYER, OBSERVER | `SessionController.kt:94-101` |
+| POST | `/session/{id}/npcs/random` | ADMIN, PLAYER — только владелец | `SessionScenariosController.kt` |
 | GET | `/user` | authenticated | `UserController.kt:35-41` |
 | GET | `/user/id` | authenticated | `UserController.kt:23-33` |
 | GET | `/statistics/{sessionId}/csv` | ADMIN, PLAYER, OBSERVER | `StatisticController.kt:29-45` |
@@ -65,6 +66,15 @@
   - `openToConnect: Boolean` — default `true`
 - **Response 201:** `SessionWithTeamsAndMembersResponse`
 - **Побочные эффекты:** создаётся Session с N раундами и M командами. Текущий пользователь становится `admin`.
+
+### `POST /session/{id}/npcs/random` — заполнить свободные места ботами
+- **Роль:** ADMIN или PLAYER, только владелец сессии.
+- **Body:** отсутствует.
+- **Response 200:** `SessionWithTeamsAndMembersResponse` с заполненным составом; игра остаётся `CREATED`.
+- Используется перемешанный набор стратегий FAIR, SELFISH, RANDOM, VENGEFUL, ADAPTIVE с параметрами по умолчанию. Набор повторяется до заполнения мест, поэтому при наличии пяти свободных мест представлены все стратегии.
+- Вычисление свободных мест и создание NPC выполняются под блокировкой сессии в общей транзакции. Для двух команд нечётный лимит округляется вниз до чётного, каждая команда ограничена `floor(numPlayers / 2)` игроками.
+- Повторный запрос в полное лобби возвращает текущий состав. Закрытое неполное лобби и сессия вне `CREATED` отклоняются с 409; чужой владелец — 403.
+- Работает при вместимости до 120 игроков; существующие игроки сохраняются. События `sessionStatus` доставляются после commit.
 
 ### `GET /session` — список сессий
 - **Query:**

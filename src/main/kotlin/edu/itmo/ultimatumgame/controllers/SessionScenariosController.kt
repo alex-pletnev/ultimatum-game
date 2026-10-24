@@ -38,6 +38,11 @@ class SessionScenariosController(
     fun solo(@Valid @RequestBody request: SoloSessionRequest): SessionWithTeamsAndMembersResponse =
         scenarios.solo(request)
 
+    @PostMapping("/{id}/npcs/random")
+    @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN') and @sessionAccess.isHost(#id, authentication)")
+    fun fillRandomNpcs(@PathVariable id: String): SessionWithTeamsAndMembersResponse =
+        scenarios.fillRandomNpcs(id.toUuidOrThrow())
+
     @PostMapping("/{id}/rematch")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN') and @sessionAccess.isHost(#id, authentication)")

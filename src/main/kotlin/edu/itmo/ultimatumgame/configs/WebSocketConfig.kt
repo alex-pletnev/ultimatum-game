@@ -26,6 +26,7 @@ class WebSocketConfig(
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         registry.enableSimpleBroker("/topic")
         registry.setApplicationDestinationPrefixes("/app")
+        registry.setPreservePublishOrder(true)
     }
 
     // T-090: Spring API принимает только vararg — spread над короткой List<String>
