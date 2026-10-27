@@ -113,3 +113,5 @@ tags: [gameplay, auth, analytics]
   при генерации AsyncAPI. Игровой путь проверен, это долг документации контракта.
 - Для существующих профилей с сохранённым входом: открыть «Код входа» и получить код.
   Возврат с другого устройства требует сохранённого секретного кода. UUID/ник не является паролем.
+
+Релизные code commits: backend `641e59c`, frontend `581a377`, оба в `origin/main`. Checkout: `/home/dev/ug/ultimatum-game` и `/home/dev/ug/ultimatum-game-ui`, владелец origin `alex-pletnev`. Последующая фиксация handoff меняет только документацию.
