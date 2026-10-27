@@ -44,7 +44,9 @@ import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionCreated
 import edu.itmo.ultimatumgame.util.SessionMapper
 import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper
+import edu.itmo.ultimatumgame.util.anonymized
 import edu.itmo.ultimatumgame.util.logger
+import edu.itmo.ultimatumgame.util.publicPlayerId
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -151,6 +153,7 @@ class SessionService(
             .orElseThrow { IdNotFoundException("Сессия с $sessionId не найдена") }
         logger.debug("Найдена сессия {}", session)
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
+        securityService.getCurrentUserIdOrNull()?.let { dto.myPlayerId = session.publicPlayerId(it) }
         return dto
     }
 
@@ -160,7 +163,7 @@ class SessionService(
         logger.debug("Найдена сессия {}", session)
         val round = session.currentRound ?: throw IdNotFoundException("Текущий раунд null сессия ${session.displayName} еще не началась")
         val dto = roundMapper.toDto(round)
-        return enrichWithHints(dto, round, session.members)
+        return enrichWithHints(dto, round, session.members).anonymized(session)
     }
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -174,7 +177,7 @@ class SessionService(
             .sortedBy { it.roundNumber }
             .map { round ->
                 val members = round.session?.members.orEmpty()
-                enrichWithHints(roundMapper.toDto(round), round, members)
+                enrichWithHints(roundMapper.toDto(round), round, members).anonymized(round.session)
             }
     }
 
@@ -336,6 +339,7 @@ class SessionService(
         eventPublisherService.publishSessionStatus(sessionId, session)
         domainEventLogger.emit(PlayerJoined(sessionId = sessionId, userId = user.id!!, role = user.role))
         val dto = sessionWithTeamsAndMembersMapper.toDto(session)
+        securityService.getCurrentUserIdOrNull()?.let { dto.myPlayerId = session.publicPlayerId(it) }
         return dto
     }
 

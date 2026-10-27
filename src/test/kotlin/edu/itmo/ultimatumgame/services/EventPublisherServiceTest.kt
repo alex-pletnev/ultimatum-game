@@ -66,7 +66,7 @@ class EventPublisherServiceTest {
     @Test
     fun `publishDecisionMade шлёт DTO в topic session_decisionMade`() {
         val sessionId = UUID.randomUUID()
-        val d = mockk<Decision>()
+        val d = mockk<Decision> { every { session } returns null }
         val dto = mockk<DecisionMadeResponse>()
         every { decisionMapper.toDto(d) } returns dto
 

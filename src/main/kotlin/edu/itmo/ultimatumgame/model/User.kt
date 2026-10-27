@@ -31,6 +31,9 @@ data class User(
     @field:Column(nullable = false, updatable = false)
     val createdAt: Date = Date(),
 ) : UserDetails {
+    @field:Column(unique = true, length = 64)
+    var recoveryCodeHash: String? = null
+
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
         mutableListOf(SimpleGrantedAuthority(role.name))
 

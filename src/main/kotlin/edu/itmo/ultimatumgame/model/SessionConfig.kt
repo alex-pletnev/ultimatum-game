@@ -24,4 +24,6 @@ data class SessionConfig(
     val timeoutMoveSec: Int,
     @field:Column(nullable = false)
     val autoAdvanceRounds: Boolean = false,
+    @field:Column(nullable = false)
+    val anonymous: Boolean = false,
 )

@@ -10,4 +10,5 @@ data class JwtAuthenticationResponse(
     val accessToken: String,
     val refreshToken: String?,
     val expiresIn: Long,
+    val recoveryCode: String? = null,
 )

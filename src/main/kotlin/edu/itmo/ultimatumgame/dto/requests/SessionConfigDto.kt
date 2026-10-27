@@ -35,4 +35,5 @@ data class SessionConfigDto(
         description = "Автоматически прогонять следующий раунд после закрытия текущего (для all-NPC симуляции).",
     )
     val autoAdvanceRounds: Boolean = false,
+    val anonymous: Boolean = false,
 )

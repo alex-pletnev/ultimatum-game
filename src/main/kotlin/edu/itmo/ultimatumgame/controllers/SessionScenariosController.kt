@@ -43,6 +43,18 @@ class SessionScenariosController(
     fun fillRandomNpcs(@PathVariable id: String): SessionWithTeamsAndMembersResponse =
         scenarios.fillRandomNpcs(id.toUuidOrThrow())
 
+    @PostMapping("/{id}/autopilot/{playerId}")
+    @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN') and @sessionAccess.isHost(#id, authentication)")
+    fun setAutopilot(
+        @PathVariable id: String,
+        @PathVariable playerId: String,
+        @RequestParam enabled: Boolean,
+    ): SessionWithTeamsAndMembersResponse = scenarios.setAutopilot(
+        id.toUuidOrThrow(),
+        playerId.toUuidOrThrow(),
+        enabled
+    )
+
     @PostMapping("/{id}/rematch")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('PLAYER', 'ADMIN') and @sessionAccess.isHost(#id, authentication)")

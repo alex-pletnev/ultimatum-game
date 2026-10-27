@@ -27,12 +27,13 @@ Content-Type: application/json
 }
 ```
 
-**200 OK:**
+**201 Created:**
 ```json
 {
   "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
   "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
-  "expiresIn": 900        // TTL access-токена в секундах (OAuth 2.0 совместимо)
+  "expiresIn": 900,       // TTL access-токена в секундах
+  "recoveryCode": "<secret-code>" // сохранить для возвращения в профиль
 }
 ```
 
@@ -48,14 +49,19 @@ Content-Type: application/json
 POST /api/v1/auth/quick-login
 Content-Type: application/json
 
-{ "id": "550e8400-e29b-41d4-a716-446655440000" }
+{ "recoveryCode": "<secret-code>" }
 ```
 
-**200 OK:** тот же `{ accessToken, refreshToken, expiresIn }`.
+**200 OK:** тот же `{ accessToken, refreshToken, expiresIn, recoveryCode }`.
 
 **Ошибки:**
-- `400` — не UUID.
-- `404` — пользователь не найден.
+- `400` — пустой код или длиннее 100 символов.
+- `401` — неверный код.
+
+Публичный UUID/ник больше не даёт вход. Код содержит 32 случайных байта; сервер хранит SHA-256.
+Авторизованный старый профиль получает код через `POST /auth/recovery-code` (без body), ответ `{ "recoveryCode": "..." }`. Повторная выдача заменяет прежний код. Код нельзя публиковать или писать в лог.
+Временный сетевой сбой/5xx refresh не удаляет вход; 401/403 означает недействительный refresh.
+Перед WS reconnect клиент обновляет истекающий access через refresh.
 
 ## Профиль текущего пользователя
 
@@ -123,7 +129,8 @@ Authorization: Bearer <accessToken>
 
 | Endpoint | Требуемая роль |
 |----------|----------------|
-| `POST /auth/*` | permitAll |
+| `POST /auth/quick-register`, `/auth/quick-login`, `/auth/refresh` | permitAll |
+| `POST /auth/recovery-code`, `/auth/logout` | authenticated |
 | `GET /user`, `GET /user/id` | authenticated |
 | `POST /session` | ADMIN |
 | `GET /session/**`, `GET /statistics/**` | ADMIN, PLAYER, OBSERVER |

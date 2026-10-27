@@ -79,6 +79,7 @@ class SessionServiceTest {
     )
 
     init {
+        every { securityService.getCurrentUserIdOrNull() } returns null
         every { sessionRepo.lockById(any()) } returns 1
     }
 

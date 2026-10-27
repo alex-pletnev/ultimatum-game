@@ -57,7 +57,7 @@
 
 ### `AuthenticateUserRequestDto`
 ```json
-{ "id": "550e8400-..." }
+{ "recoveryCode": "<secret-code>" }
 ```
 
 ### `RefreshTokenRequest`
@@ -357,3 +357,13 @@ Broadcast payload при новом решении.
 
 - `CreateOfferCmd.amount` → `Offer.offerValue` (в БД поле называется `offerValue`, в API запросе — `amount`).
 - Остальные поля мапятся 1-в-1 по имени.
+
+## Дополнения групповой игры (T-110)
+
+`SessionConfigDto` и `SessionConfigResponse`: `anonymous: boolean` (default false). UI включает для новых игр.
+`SessionWithTeamsAndMembersResponse`: `autopilotPlayerIds: UUID[]`, `myPlayerId: UUID | null` — персональный ID для сопоставления собственного результата, только REST с авторизацией.
+`OfferPrewResponse` и `DecisionPrewResponse`: `automatic: boolean`.
+`OfferStatsDto` и CSV: `offerAutomatic: boolean`, `decisionAutomatic: boolean`.
+`JwtAuthenticationResponse`: `recoveryCode: string | null`, выдаётся при регистрации/восстановлении, отсутствует при refresh.
+
+В анонимной игре ID и имена в сделках и статистике заменены стабильными псевдонимами внутри партии. Не сопоставляйте их с публичным составом; для своего счёта используйте `myPlayerId`.

@@ -40,12 +40,12 @@ class AuthServiceTest {
     fun `quickLogin — возвращает access + refresh + expiresIn`() {
         val u = user()
         loginTarget = u
-        every { userService.getUserDetailService() } returns ::lookupUserById
+        every { userService.findByRecoveryCodeHash(any()) } returns u
         every { jwtService.generateAccessToken(u) } returns "access"
         every { jwtService.generateRefreshToken(u) } returns "refresh"
         every { jwtService.accessTokenTtlSeconds() } returns 900L
 
-        val resp = service.quickLogin(AuthenticateUserRequest(u.id!!))
+        val resp = service.quickLogin(AuthenticateUserRequest("test-secret-code"))
 
         assertEquals("access", resp.accessToken)
         assertEquals("refresh", resp.refreshToken)

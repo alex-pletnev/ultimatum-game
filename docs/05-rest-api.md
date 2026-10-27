@@ -39,13 +39,13 @@
   - 403 `UserRoleNotAllowedException` — `role = NPC`
 
 ### `POST /auth/quick-login`
-Вход по существующему `userId`.
+Восстановление профиля по секретному коду.
 
-- **Body:** `AuthenticateUserRequestDto` `{ id: String (UUID) }`
+- **Body:** `AuthenticateUserRequestDto` `{ recoveryCode: String }`
 - **Response 200:** `JwtAuthenticationResponse`
 - **Ошибки:**
-  - 400 `InvalidUuidFormatException`
-  - 404 `IdNotFoundException`
+  - 400 — пустой/слишком длинный код
+  - 401 — код не найден
 
 ---
 

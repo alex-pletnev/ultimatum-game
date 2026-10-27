@@ -488,10 +488,12 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.DecisionPrewResponse" : {
         "examples" : [ {
+          "automatic" : true,
           "createdAt" : "2015-07-20T15:49:04-07:00",
           "decision" : true,
           "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           "offer" : {
+            "automatic" : true,
             "createdAt" : "2015-07-20T15:49:04-07:00",
             "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "offerValue" : 0,
@@ -516,6 +518,9 @@
           }
         } ],
         "properties" : {
+          "automatic" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "format" : "date-time",
             "type" : "string"
@@ -534,6 +539,7 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
+        "required" : [ "automatic" ],
         "title" : "DecisionPrewResponse",
         "type" : "object"
       },
@@ -613,6 +619,7 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.OfferPrewResponse" : {
         "examples" : [ {
+          "automatic" : true,
           "createdAt" : "2015-07-20T15:49:04-07:00",
           "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           "offerValue" : 0,
@@ -630,6 +637,9 @@
           }
         } ],
         "properties" : {
+          "automatic" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "format" : "date-time",
             "type" : "string"
@@ -649,6 +659,7 @@
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
           }
         },
+        "required" : [ "automatic" ],
         "title" : "OfferPrewResponse",
         "type" : "object"
       },
@@ -755,10 +766,12 @@
       "edu.itmo.ultimatumgame.dto.responses.RoundResponse" : {
         "examples" : [ {
           "decisions" : [ {
+            "automatic" : true,
             "createdAt" : "2015-07-20T15:49:04-07:00",
             "decision" : true,
             "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "offer" : {
+              "automatic" : true,
               "createdAt" : "2015-07-20T15:49:04-07:00",
               "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
               "offerValue" : 0,
@@ -789,6 +802,7 @@
           } ],
           "myRole" : "PROPOSER",
           "offers" : [ {
+            "automatic" : true,
             "createdAt" : "2015-07-20T15:49:04-07:00",
             "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "offerValue" : 0,
@@ -815,6 +829,7 @@
               "role" : "ADMIN"
             },
             "config" : {
+              "anonymous" : true,
               "autoAdvanceRounds" : true,
               "numPlayers" : 0,
               "numRounds" : 0,
@@ -875,6 +890,7 @@
       },
       "edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse" : {
         "examples" : [ {
+          "anonymous" : true,
           "autoAdvanceRounds" : true,
           "numPlayers" : 0,
           "numRounds" : 0,
@@ -884,6 +900,9 @@
           "timeoutMoveSec" : 0
         } ],
         "properties" : {
+          "anonymous" : {
+            "type" : "boolean"
+          },
           "autoAdvanceRounds" : {
             "type" : "boolean"
           },
@@ -912,7 +931,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "autoAdvanceRounds", "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
+        "required" : [ "anonymous", "autoAdvanceRounds", "numPlayers", "numRounds", "numTeams", "roundSum", "sessionType", "timeoutMoveSec" ],
         "title" : "SessionConfigResponse",
         "type" : "object"
       },
@@ -925,6 +944,7 @@
             "role" : "ADMIN"
           },
           "config" : {
+            "anonymous" : true,
             "autoAdvanceRounds" : true,
             "numPlayers" : 0,
             "numRounds" : 0,
@@ -1020,7 +1040,9 @@
             "nickname" : "string",
             "role" : "ADMIN"
           },
+          "autopilotPlayerIds" : [ "3fa85f64-5717-4562-b3fc-2c963f66afa6" ],
           "config" : {
+            "anonymous" : true,
             "autoAdvanceRounds" : true,
             "numPlayers" : 0,
             "numRounds" : 0,
@@ -1043,6 +1065,7 @@
             "nickname" : "string",
             "role" : "ADMIN"
           } ],
+          "myPlayerId" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           "observers" : [ {
             "createdAt" : "2015-07-20T15:49:04-07:00",
             "id" : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -1065,6 +1088,14 @@
         "properties" : {
           "admin" : {
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
+          },
+          "autopilotPlayerIds" : {
+            "items" : {
+              "format" : "uuid",
+              "type" : "string"
+            },
+            "type" : "array",
+            "uniqueItems" : true
           },
           "config" : {
             "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.SessionConfigResponse"
@@ -1090,6 +1121,10 @@
             "type" : "array",
             "uniqueItems" : true
           },
+          "myPlayerId" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
           "observers" : {
             "items" : {
               "$ref" : "#/components/schemas/edu.itmo.ultimatumgame.dto.responses.UserResponse"
@@ -1112,7 +1147,7 @@
             "uniqueItems" : true
           }
         },
-        "required" : [ "admin", "config", "createdAt", "displayName", "id", "members", "observers", "openToConnect", "state", "teams" ],
+        "required" : [ "admin", "autopilotPlayerIds", "config", "createdAt", "displayName", "id", "members", "observers", "openToConnect", "state", "teams" ],
         "title" : "SessionWithTeamsAndMembersResponse",
         "type" : "object"
       },

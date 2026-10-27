@@ -17,6 +17,7 @@ import edu.itmo.ultimatumgame.util.DecisionMapper
 import edu.itmo.ultimatumgame.util.OfferMapper
 import edu.itmo.ultimatumgame.util.RoundMapper
 import edu.itmo.ultimatumgame.util.SessionWithTeamsAndMembersMapper
+import edu.itmo.ultimatumgame.util.anonymized
 import edu.itmo.ultimatumgame.util.logger
 import io.github.springwolf.bindings.stomp.annotations.StompAsyncOperationBinding
 import io.github.springwolf.core.asyncapi.annotations.AsyncOperation
@@ -61,7 +62,7 @@ class EventPublisherService(
     )
     @StompAsyncOperationBinding
     fun publishOfferCreated(sessionId: UUID, offer: Offer) {
-        val dto = offerMapper.toDto(offer)
+        val dto = offerMapper.toDto(offer).anonymized(offer.session)
         val destination = "/topic/session/$sessionId/offerCreated"
         logger.info("Публикация события OfferCreated в $destination для offer=$dto")
         sendAfterCommit(destination, dto)
@@ -77,7 +78,7 @@ class EventPublisherService(
     )
     @StompAsyncOperationBinding
     fun publishOfferToPlayer(sessionId: UUID, responderId: UUID, offer: Offer) {
-        val dto = offerMapper.toAssignedDto(offer)
+        val dto = offerMapper.toAssignedDto(offer).anonymized(offer.session)
         val destination = "/topic/session/$sessionId/player/$responderId/offer"
         logger.info("Публикация assigned-offer в $destination для offer={}", dto)
         sendAfterCommit(destination, dto)
@@ -92,7 +93,7 @@ class EventPublisherService(
     )
     @StompAsyncOperationBinding
     fun publishDecisionMade(sessionId: UUID, decision: Decision) {
-        val dto = decisionMapper.toDto(decision)
+        val dto = decisionMapper.toDto(decision).anonymized(decision.session)
         val destination = "/topic/session/$sessionId/decisionMade"
         logger.info("Публикация события DecisionMade в $destination для decision=$dto")
         sendAfterCommit(destination, dto)
@@ -107,7 +108,7 @@ class EventPublisherService(
     )
     @StompAsyncOperationBinding
     fun publishRoundStatus(sessionId: UUID, round: Round) {
-        val dto = roundMapper.toDto(round)
+        val dto = roundMapper.toDto(round).anonymized(round.session)
         val destination = "/topic/session/$sessionId/roundStatus"
         logger.info(
             "Публикация события RoundStatus в $destination для раунда #${dto.roundNumber} (phase=${dto.roundPhase})"

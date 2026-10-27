@@ -19,4 +19,7 @@ data class SessionWithTeamsAndMembersResponse(
     val teams: MutableSet<TeamResponse>,
     val members: MutableSet<UserResponse>,
     val observers: MutableSet<UserResponse>,
-)
+) {
+    var autopilotPlayerIds: Set<UUID> = emptySet()
+    var myPlayerId: UUID? = null
+}

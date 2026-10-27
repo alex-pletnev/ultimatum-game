@@ -27,6 +27,8 @@ data class OfferStatsDto(
     val responderScore: Int, // сколько получил responder по итогам оффера
     val roundNumber: Int,
     val timestamp: Date,
+    val offerAutomatic: Boolean = false,
+    val decisionAutomatic: Boolean = false,
 )
 
 data class SessionScoreDto(

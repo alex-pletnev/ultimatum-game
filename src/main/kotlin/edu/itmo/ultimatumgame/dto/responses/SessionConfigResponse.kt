@@ -13,4 +13,5 @@ data class SessionConfigResponse(
     val roundSum: Int,
     val timeoutMoveSec: Int,
     val autoAdvanceRounds: Boolean = false,
+    val anonymous: Boolean = false,
 )

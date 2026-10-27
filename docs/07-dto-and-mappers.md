@@ -29,7 +29,8 @@ data class CreateUserRequest(
 ```kotlin
 data class AuthenticateUserRequestDto(
     @field:NotBlank
-    val id: String? = "",
+    @field:Size(max = 100)
+    val recoveryCode: String = "",
 )
 ```
 

@@ -7,5 +7,7 @@ import java.util.UUID
 
 @Repository
 interface UserRepository : JpaRepository<User, UUID> {
+    fun findByRecoveryCodeHash(recoveryCodeHash: String): User?
+
     fun existsByNickname(nickname: String): Boolean
 }

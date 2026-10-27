@@ -19,4 +19,6 @@ data class OfferPrewResponse(
     val responder: UserResponse?,
     val offerValue: Int?,
     val createdAt: Date?,
-)
+) {
+    var automatic: Boolean = false
+}

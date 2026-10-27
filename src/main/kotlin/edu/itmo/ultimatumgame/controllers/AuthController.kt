@@ -12,6 +12,7 @@ import edu.itmo.ultimatumgame.util.logger
 import jakarta.annotation.security.PermitAll
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -46,12 +47,14 @@ class AuthController(
     fun quickLogin(
         @RequestBody @Valid authenticateUserRequestDto: AuthenticateUserRequestDto
     ): JwtAuthenticationResponse {
-        logger.info("Запрос быстрого входа: id=${authenticateUserRequestDto.id}")
         val authenticateUserRequest = authenticateUserRequestDto.toDomain()
         val jwtToken = authService.quickLogin(authenticateUserRequest)
-        logger.info("Токен выдан после входа для id=${authenticateUserRequest.id}")
         return jwtToken
     }
+
+    @PostMapping("/recovery-code")
+    @PreAuthorize("isAuthenticated()")
+    fun resetRecoveryCode(): Map<String, String> = authService.resetRecoveryCode()
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)

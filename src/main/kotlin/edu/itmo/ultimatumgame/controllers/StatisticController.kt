@@ -28,6 +28,10 @@ class StatisticController(
      * Скачать CSV со всеми офферами указанной сессии.
      */
     // T-086: публичный read-only endpoint — летопись партии без JWT.
+    @GetMapping("/{sessionId}/score")
+    fun score(@PathVariable sessionId: UUID): edu.itmo.ultimatumgame.dto.responses.SessionScoreDto =
+        statsService.getSessionStats(sessionId).score
+
     @GetMapping("/{sessionId}/csv")
     fun downloadCsv(@PathVariable sessionId: UUID): ResponseEntity<ByteArrayResource> =
         try {

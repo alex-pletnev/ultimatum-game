@@ -16,6 +16,22 @@ class TeamBattleStrategyTest {
     private val strategy = TeamBattleStrategy()
 
     @Test
+    fun `three and four teams always receive a unique opponent even with uneven sizes`() {
+        for (sizes in listOf(listOf(2, 2, 2), listOf(3, 2, 1), listOf(2, 2, 1, 1))) {
+            val teams = sizes.map { size -> team(members = (1..size).map { user() }.toMutableSet()) }.toMutableSet()
+            val members = teams.flatMap { it.members }.toMutableSet()
+            val round = round(offers = members.map { offer(proposer = it) }.toMutableList())
+            val session = session(members = members, teams = teams, currentRound = round)
+            val membership = teams.flatMap { t -> t.members.map { it.id to t.id } }.toMap()
+            repeat(100) { _ ->
+                strategy.shuffleOffers(session)
+                assertEquals(members.size, round.offers.map { it.responder!!.id }.toSet().size)
+                assertTrue(round.offers.all { membership[it.proposer!!.id] != membership[it.responder!!.id] })
+            }
+        }
+    }
+
+    @Test
     fun `happy path — 2 команды по 2 игрока, responder всегда из чужой команды`() {
         val a1 = user(nickname = "A1")
         val a2 = user(nickname = "A2")

@@ -3,7 +3,9 @@
 package edu.itmo.ultimatumgame.model
 
 import jakarta.persistence.CascadeType
+import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -65,6 +67,14 @@ class Session(
     @field:ManyToMany(cascade = [CascadeType.MERGE])
     var observers: MutableSet<User> = mutableSetOf(),
 ) {
+    @field:Column(nullable = false)
+    var anonymityKey: UUID = UUID.randomUUID()
+
+    @field:ElementCollection
+    @field:CollectionTable(name = "session_autopilot", joinColumns = [JoinColumn(name = "session_id")])
+    @field:Column(name = "user_id", nullable = false)
+    val autopilotPlayerIds: MutableSet<UUID> = mutableSetOf()
+
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false

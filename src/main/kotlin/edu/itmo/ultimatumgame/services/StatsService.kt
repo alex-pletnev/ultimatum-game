@@ -16,6 +16,7 @@ import edu.itmo.ultimatumgame.model.SessionType
 import edu.itmo.ultimatumgame.repositories.DecisionRepository
 import edu.itmo.ultimatumgame.repositories.OfferRepository
 import edu.itmo.ultimatumgame.repositories.SessionRepository
+import edu.itmo.ultimatumgame.util.anonymized
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -64,6 +65,12 @@ class StatsService(
                 responderScore = rScore,
                 roundNumber = offer.round!!.roundNumber,
                 timestamp = offer.createdAt,
+                offerAutomatic = offer.automatic || offer.proposer?.role == edu.itmo.ultimatumgame.model.Role.NPC,
+                decisionAutomatic = dec != null && (
+                    dec.automatic ||
+                        dec.responder?.role == edu.itmo.ultimatumgame.model.Role.NPC ||
+                        session.config?.sessionType == SessionType.DICTATOR
+                    ),
             )
         }.sortedBy { it.roundNumber }
 
@@ -76,8 +83,8 @@ class StatsService(
             createdAt = session.createdAt,
             totalRounds = session.rounds.size,
             decisionsCount = decisions.size,
-            offers = offerDtos,
-            score = score,
+            offers = offerDtos.map { it.anonymized(session) },
+            score = score.anonymized(session),
         )
     }
 

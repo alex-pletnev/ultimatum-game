@@ -135,21 +135,26 @@ class NpcService(
             return
         }
         val pendingNpcs = session.members
-            .filter { it.role == Role.NPC && round.offers.none { off -> off.proposer?.id == it.id } }
+            .filter {
+                (it.role == Role.NPC || it.id in session.autopilotPlayerIds) && round.offers.none { off -> off.proposer?.id == it.id }
+            }
         if (pendingNpcs.isEmpty()) return
         logger.info("playOffers: {} NPC-игроков ожидают offer в сессии {}", pendingNpcs.size, session.id)
 
         for (npc in pendingNpcs) {
-            val profile = npcProfileRepo.findByUserId(npc.id!!)
-            if (profile == null) {
-                logger.warn("playOffers: NPC {} без профиля — пропущен", npc.id)
-                continue
+            val amount = if (npc.id in session.autopilotPlayerIds) {
+                (session.config!!.roundSum + 1) / 2
+            } else {
+                val profile = npcProfileRepo.findByUserId(npc.id!!)
+                if (profile == null) {
+                    logger.warn("playOffers: NPC {} без профиля — пропущен", npc.id)
+                    continue
+                }
+                runStrategyOffer(profile, session, round, npc, buildOfferCtx(session, round, npc, profile))
             }
-            val ctx = buildOfferCtx(session, round, npc, profile)
-            val amount = runStrategyOffer(profile, session, round, npc, ctx)
             val clamped = amount.coerceIn(0, session.config!!.roundSum)
             val offer = offerRepo.save(
-                Offer(session = session, round = round, proposer = npc, offerValue = clamped)
+                Offer(session = session, round = round, proposer = npc, offerValue = clamped).apply { automatic = true }
             )
             round.offers += offer
             roundRepo.save(round)
@@ -177,7 +182,7 @@ class NpcService(
         data class NpcAssignment(val npc: User, val incoming: Offer)
 
         val pendingAssignments: List<NpcAssignment> = session.members
-            .filter { it.role == Role.NPC || automatic }
+            .filter { it.role == Role.NPC || automatic || it.id in session.autopilotPlayerIds }
             .filter { npc -> round.decisions.none { it.responder?.id == npc.id } }
             .mapNotNull { npc ->
                 val incoming = round.offers.find { it.responder?.id == npc.id } ?: return@mapNotNull null
@@ -189,6 +194,8 @@ class NpcService(
         for ((npc, incoming) in pendingAssignments) {
             val accepted = if (automatic) {
                 true
+            } else if (npc.id in session.autopilotPlayerIds) {
+                incoming.offerValue * 2 >= session.config!!.roundSum
             } else {
                 val profile = npcProfileRepo.findByUserId(npc.id!!) ?: continue
                 val ctx = buildDecisionCtx(session, round, npc, incoming, profile)
@@ -201,7 +208,7 @@ class NpcService(
                     responder = npc,
                     offer = incoming,
                     decision = accepted,
-                )
+                ).apply { this.automatic = true }
             )
             round.decisions += decision
             roundRepo.save(round)

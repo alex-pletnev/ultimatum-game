@@ -14,7 +14,7 @@ Authorization: Bearer <accessToken>
 | Метод | Путь | Роль | Кратко |
 |-------|------|------|--------|
 | POST | `/auth/quick-register` | permitAll | Регистрация нового пользователя |
-| POST | `/auth/quick-login` | permitAll | Вход по существующему `userId` |
+| POST | `/auth/quick-login` | permitAll | Восстановление по секретному `recoveryCode` |
 | POST | `/auth/refresh` | permitAll | Обмен refresh → новый access |
 | POST | `/auth/logout` | authenticated | Отзыв текущего access-токена |
 | GET | `/user` | authenticated | Профиль текущего пользователя |
@@ -206,3 +206,10 @@ offerId,roundNumber,amount,proposerId,proposerNickname,responderId,responderNick
 ```
 
 Полная таблица кодов — [07-error-handling.md](07-error-handling.md).
+
+## Групповая игра (T-110)
+
+- `POST /auth/recovery-code` — authenticated; выдать/заменить секретный код текущего профиля.
+- `POST /session/{id}/autopilot/{playerId}?enabled=true|false` — владелец RUNNING игры; автопилот 50/50 без изменения состава. Повторное включение не дублирует ход.
+- `GET /statistics/{id}/score` — authenticated; итог всех игроков/команд, включая ещё не сделавших ход.
+- Анонимность распространяется на REST/WS/CSV. Персональную подписку на предложение может открыть только адресат.

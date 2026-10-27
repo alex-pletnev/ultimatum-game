@@ -21,7 +21,25 @@ private const val NPC_BATCH_SIZE = 100
 class SessionScenariosService(
     private val sessions: SessionService,
     private val gameplay: AdminGameplayService,
+    private val npcService: NpcService,
+    private val events: EventPublisherService,
 ) {
+    @Transactional
+    fun setAutopilot(id: UUID, playerId: UUID, enabled: Boolean): SessionWithTeamsAndMembersResponse {
+        val session = sessions.getSessionForUpdate(id)
+        check(session.state == SessionState.RUNNING) { "Автопилот доступен во время игры" }
+        require(session.members.any { it.id == playerId && it.role != edu.itmo.ultimatumgame.model.Role.NPC }) {
+            "Участник не найден или уже является ботом"
+        }
+        if (enabled) session.autopilotPlayerIds.add(playerId) else session.autopilotPlayerIds.remove(playerId)
+        session.currentRound?.let { round ->
+            npcService.playOffers(round)
+            npcService.playDecisions(round)
+        }
+        events.publishSessionStatus(id, session)
+        return sessions.getSessionWithTeamsAndMembers(id)
+    }
+
     @Transactional
     fun fillRandomNpcs(id: UUID): SessionWithTeamsAndMembersResponse {
         val session = sessions.getSessionForUpdate(id)
@@ -90,6 +108,7 @@ class SessionScenariosService(
                     config.roundSum,
                     config.timeoutMoveSec,
                     config.autoAdvanceRounds,
+                    config.anonymous,
                 ),
             )
         )

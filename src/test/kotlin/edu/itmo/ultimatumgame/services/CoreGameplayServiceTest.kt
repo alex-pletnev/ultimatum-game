@@ -30,6 +30,7 @@ class CoreGameplayServiceTest {
         r.offers = mutableListOf(oA, oB)
         val s = session(members = mutableSetOf(a, b), currentRound = r)
 
+        r.session = s
         service.initWaitDecisionsPhase(s)
 
         assertEquals(RoundPhase.OFFERS_SENT, r.roundPhase)

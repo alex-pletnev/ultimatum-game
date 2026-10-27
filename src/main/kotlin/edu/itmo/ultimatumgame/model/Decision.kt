@@ -48,6 +48,9 @@ class Decision(
     @field:Column(nullable = false, updatable = false)
     var createdAt: Date = Date(),
 ) {
+    @field:Column(nullable = false)
+    var automatic: Boolean = false
+
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false

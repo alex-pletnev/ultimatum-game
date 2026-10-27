@@ -16,6 +16,8 @@ class UserService(
     fun getUserById(id: UUID): User =
         userRepository.findById(id).orElseThrow { IdNotFoundException("Пользователь с $id не найден") }
 
+    fun findByRecoveryCodeHash(hash: String): User? = userRepository.findByRecoveryCodeHash(hash)
+
     fun save(user: User): User = userRepository.save(user)
 
     fun create(user: User): User {

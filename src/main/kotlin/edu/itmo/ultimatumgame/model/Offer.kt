@@ -43,6 +43,9 @@ class Offer(
     var createdAt: Date = Date(),
 
 ) {
+    @field:Column(nullable = false)
+    var automatic: Boolean = false
+
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false

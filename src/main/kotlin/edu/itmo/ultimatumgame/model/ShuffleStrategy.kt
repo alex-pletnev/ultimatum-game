@@ -2,8 +2,6 @@
 
 package edu.itmo.ultimatumgame.model
 
-import java.util.UUID
-
 interface ShuffleStrategy {
     fun shuffleOffers(session: Session)
 }
@@ -44,35 +42,22 @@ class TeamBattleStrategy : ShuffleStrategy {
         val round = session.currentRound
             ?: error("session.currentRound не должен быть null к этому моменту")
 
-        // Собираем карту userId -> teamId
-        val userToTeam: Map<UUID, UUID> = session.teams
-            .flatMap { team -> team.members.map { it.id!! to team.id!! } }
-            .toMap()
-
-        // Кандидаты-отвечающие
-        val responders = session.members.toMutableList()
-        check(responders.size == round.offers.size) {
-            "Неверное состояние: участников и оферов должно быть равное число"
+        val groups = session.teams.filter { it.members.isNotEmpty() }.shuffled()
+        val ordered = groups.flatMap { it.members.shuffled() }
+        val largest = groups.maxOfOrNull { it.members.size } ?: 0
+        check(ordered.size == session.members.size && ordered.toSet() == session.members) {
+            "Каждый участник должен состоять ровно в одной команде"
         }
-
-        round.offers.forEach { offer ->
-            val proposer = offer.proposer
-                ?: error("offer.proposer не должен быть null")
-            val proposerTeam = userToTeam[proposer.id]
-                ?: error("Пользователь ${proposer.id} не состоит ни в одной команде")
-
-            // Фильтруем тех, кто не в той же команде
-            val valid = responders.filter { responder ->
-                userToTeam[responder.id] != proposerTeam
-            }
-            check(valid.isNotEmpty()) {
-                "Невозможно подобрать отвечающего из другой команды для ${proposer.id}"
-            }
-
-            // Случайный выбор и удаление из списка
-            val chosen = valid.random()
-            responders.remove(chosen)
-            offer.responder = chosen
+        check(largest > 0 && largest * 2 <= ordered.size) {
+            "В одной команде не может быть больше половины всех участников"
         }
+        check(round.offers.size == ordered.size && round.offers.map { it.proposer }.toSet() == session.members) {
+            "Каждый участник должен сделать ровно одно предложение"
+        }
+        // Rotating contiguous team blocks by the largest block guarantees cross-team pairs.
+        val assignments = ordered.indices.associate { index ->
+            ordered[index].id to ordered[(index + largest) % ordered.size]
+        }
+        round.offers.forEach { it.responder = assignments.getValue(it.proposer!!.id) }
     }
 }

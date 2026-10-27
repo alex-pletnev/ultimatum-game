@@ -28,7 +28,7 @@ class CsvService {
             "responderTeamId", "responderTeamName",
             "accepted",
             "proposerScore", "responderScore",
-            "timestamp"
+            "timestamp", "offerAutomatic", "decisionAutomatic"
         )
 
         val baos = ByteArrayOutputStream()
@@ -49,7 +49,7 @@ class CsvService {
                     o.responderTeam?.id, o.responderTeam?.name,
                     o.accepted,
                     o.proposerScore, o.responderScore,
-                    o.timestamp
+                    o.timestamp, o.offerAutomatic, o.decisionAutomatic
                 )
             }
         }

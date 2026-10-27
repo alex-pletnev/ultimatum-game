@@ -8,6 +8,7 @@
 
 | ID | Название | Статус | Приоритет | Обновлено | Файл |
 |----|----------|--------|-----------|-----------|------|
+| T-110 | Надёжная групповая игра, восстановление, анонимность и команды | done | high | 2026-10-27 | [T-110](T-110-group-play-reliability.md) |
 | T-009 | Стабилизировать AsyncAPI snapshot (SpringStompDefaultHeaders) | pending | low | 2026-07-16 | [T-009](T-009-asyncapi-snapshot-determinism.md) |
 | T-016 | Согласовать версии Kotlin-плагинов (kapt vs jvm/spring/jpa) | pending | low | 2026-07-13 | [T-016](T-016-align-kotlin-plugin-versions.md) |
 | T-018 | Тесты должны падать быстро при отсутствии инфраструктуры (Docker/Postgres) | pending | medium | 2026-07-13 | [T-018](T-018-tests-fail-fast-on-missing-infra.md) |

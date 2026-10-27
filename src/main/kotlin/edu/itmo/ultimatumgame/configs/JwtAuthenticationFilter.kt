@@ -1,15 +1,16 @@
-@file:Suppress("TooGenericExceptionCaught")
+@file:Suppress("ReturnCount")
 
 package edu.itmo.ultimatumgame.configs
 
+import edu.itmo.ultimatumgame.exceptions.IdNotFoundException
 import edu.itmo.ultimatumgame.services.JwtService
 import edu.itmo.ultimatumgame.services.UserService
 import edu.itmo.ultimatumgame.util.logger
+import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -43,43 +44,32 @@ class JwtAuthenticationFilter(
             filterChain.doFilter(request, response)
             return
         }
-        val jwt: String = authHeader.substring(BEARER_PREFIX.length)
-        val username: String = jwtService.extractUsername(jwt)
-
-        if (username.isNotBlank() && SecurityContextHolder.getContext().authentication == null) {
-            log.info("Попытка аутентификации пользователя с id=$username по токену")
-            try {
-                val userDetail = userService.getUserDetailService().invoke(UUID.fromString(username))
-                if (jwtService.isTokenValid(jwt, userDetail)) {
-                    log.info("Токен валиден для пользователя id=$username (${userDetail.role}) ")
-                    val context = SecurityContextHolder.createEmptyContext()
-
-                    val authorities = userDetail.authorities
-                        .map { "ROLE_$it" }
-                        .map { SimpleGrantedAuthority(it) }
-                    val authToken = UsernamePasswordAuthenticationToken(
-                        userDetail,
-                        null,
-                        authorities
-                    )
-                    authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                    context.authentication = authToken
-                    SecurityContextHolder.setContext(context)
-                    MDC.put(MDC_USER_ID, username)
-                    MDC.put(MDC_ROLE, userDetail.role.name)
-                } else {
-                    log.warn("Невалидный токен для пользователя id=$username")
-                }
-            } catch (e: Exception) {
-                throw AccessDeniedException("В доступе отказано", e)
+        try {
+            val jwt = authHeader.substring(BEARER_PREFIX.length)
+            val username = jwtService.extractUsername(jwt)
+            val user = userService.getUserDetailService().invoke(UUID.fromString(username))
+            if (!jwtService.isTokenValid(jwt, user)) {
+                unauthorized(response)
+                return
             }
-        } else {
-            if (username.isBlank()) log.warn("Не удалось извлечь username из токена")
-            if (SecurityContextHolder.getContext().authentication != null) {
-                log.debug(
-                    "Пользователь уже аутентифицирован, пропускаем фильтр"
-                )
-            }
+            val auth = UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                user.authorities.map { SimpleGrantedAuthority("ROLE_$it") }
+            )
+            auth.details = WebAuthenticationDetailsSource().buildDetails(request)
+            SecurityContextHolder.getContext().authentication = auth
+            MDC.put(MDC_USER_ID, username)
+            MDC.put(MDC_ROLE, user.role.name)
+        } catch (_: JwtException) {
+            unauthorized(response)
+            return
+        } catch (_: IllegalArgumentException) {
+            unauthorized(response)
+            return
+        } catch (_: IdNotFoundException) {
+            unauthorized(response)
+            return
         }
         try {
             filterChain.doFilter(request, response)
@@ -87,5 +77,13 @@ class JwtAuthenticationFilter(
             MDC.remove(MDC_USER_ID)
             MDC.remove(MDC_ROLE)
         }
+    }
+
+    private fun unauthorized(response: HttpServletResponse) {
+        SecurityContextHolder.clearContext()
+        response.status = HttpServletResponse.SC_UNAUTHORIZED
+        response.contentType = "application/json"
+        response.characterEncoding = Charsets.UTF_8.name()
+        response.writer.write("""{"status":401,"message":"Вход истёк. Обновите авторизацию."}""")
     }
 }

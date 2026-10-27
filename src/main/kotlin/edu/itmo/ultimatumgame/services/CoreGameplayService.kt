@@ -9,6 +9,7 @@ import edu.itmo.ultimatumgame.model.Session
 import edu.itmo.ultimatumgame.util.DomainEventLogger
 import edu.itmo.ultimatumgame.util.OfferShuffled
 import edu.itmo.ultimatumgame.util.logger
+import edu.itmo.ultimatumgame.util.publicPlayerId
 import edu.itmo.ultimatumgame.util.withRoundMdc
 import edu.itmo.ultimatumgame.util.withSessionMdc
 import org.springframework.stereotype.Service
@@ -57,8 +58,8 @@ class CoreGameplayService(
             val responderId = offer.responder?.id ?: return@mapNotNull null
             OfferAssignment(
                 offerId = offer.id!!,
-                proposerId = offer.proposer!!.id!!,
-                responderId = responderId,
+                proposerId = round.session!!.publicPlayerId(offer.proposer!!.id!!),
+                responderId = round.session!!.publicPlayerId(responderId),
             )
         }
         eventPublisherService.publishOffersShuffled(

@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
 import org.springframework.messaging.support.MessageHeaderAccessor
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -48,6 +49,7 @@ class JwtStompChannelInterceptor(
             SecurityContextHolder.getContext().authentication !is AnonymousAuthenticationToken
         )
         if (accessor.command == StompCommand.SUBSCRIBE) {
+            checkPrivateSubscription(accessor)
             logger.info(
                 ">>> SUBSCRIBE interceptor: destination=${accessor.destination}, " +
                     "user=${accessor.user}, " +
@@ -104,6 +106,18 @@ class JwtStompChannelInterceptor(
             }
         }
         return message
+    }
+
+    private fun checkPrivateSubscription(accessor: StompHeaderAccessor) {
+        val destination = accessor.destination.orEmpty()
+        if (destination.any { it in "*?{}" }) {
+            throw AccessDeniedException("Подписка должна указывать конкретный канал")
+        }
+        val privatePlayer = Regex("^/topic/session/[^/]+/player/([^/]+)/offer$")
+            .matchEntire(destination)?.groupValues?.get(1)
+        if (privatePlayer != null && privatePlayer != accessor.user?.name) {
+            throw AccessDeniedException("Это предложение адресовано другому игроку")
+        }
     }
 
     override fun afterSendCompletion(
